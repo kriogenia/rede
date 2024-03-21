@@ -18,6 +18,11 @@ jobs:
         run: |
           echo 'RELEASE_NAME=Rede $RESOLVED_VERSION' >> "$GITHUB_ENV"
           echo 'RELEASE_TAG=rede_v$RESOLVED_VERSION' >> "$GITHUB_ENV"
+      - name: Changes on parser
+        if: contains(github.event.pull_request.labels.*.name, 'parser')
+        run: |
+          echo 'RELEASE_NAME=Parser $RESOLVED_VERSION' >> "$GITHUB_ENV"
+          echo 'RELEASE_TAG=parser_v$RESOLVED_VERSION' >> "$GITHUB_ENV"
   update_release_draft:
     permissions:
       contents: write
@@ -26,8 +31,7 @@ jobs:
     steps:
       - uses: release-drafter/release-drafter@v5
         with:
-          # config-name: release-drafter.yml
-          name: 'Rede $RESOLVED_VERSION'
-          tag: 'rede_v$RESOLVED_VERSION'
+          name: ${{ env.RELEASE_NAME }}
+          tag: ${{ env.RELEASE_TAG }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
