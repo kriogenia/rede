@@ -1,0 +1,37 @@
+name: Release Drafter
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [labeled, opened, reopened, synchronize]
+  pull_request_target:
+    types: [labeled, opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  set_name_tag_templates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Changes on bin
+        if: contains(github.event.pull_request.labels.*.name, 'bin')
+        run: |
+          echo 'RELEASE_NAME=Rede $RESOLVED_VERSION' >> "$GITHUB_ENV"
+          echo 'RELEASE_TAG=rede_v$RESOLVED_VERSION' >> "$GITHUB_ENV"
+  update_release_draft:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v5
+        with:
+          # config-name: release-drafter.yml
+          name: 'Rede $RESOLVED_VERSION'
+          tag: 'rede_v$RESOLVED_VERSION'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
