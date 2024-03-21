@@ -2,19 +2,15 @@ name: Release Drafter
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
   pull_request:
-    types: [labeled, opened, reopened, synchronize]
-  pull_request_target:
-    types: [labeled, opened, reopened, synchronize]
+    types: [closed, labeled, opened, reopened, synchronize]
 
 permissions:
   contents: read
 
 jobs:
   set_name_tag_templates:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Changes on bin
