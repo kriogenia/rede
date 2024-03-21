@@ -1,0 +1,83 @@
+categories:
+  - title: 'Breaking Changes'
+    labels:
+      - 'breaking-change'
+  - title: 'New Features'
+    labels:
+      - 'feature'
+  - title: 'Improvements'
+    labels:
+      - 'enhancement'
+  - title: 'Bug Fixes'
+    labels:
+      - 'bug'
+  - title: 'Dependency updates'
+    labels:
+      - 'dependencies'
+  - title: 'Documentation'
+    labels:
+      - 'documentation'
+  - title: 'Maintenance'
+    labels:
+      - 'tyding'
+change-template: '- (#$NUMBER) $TITLE - @$AUTHOR'
+change-title-escapes: '\<*_&'
+version-resolver:
+  major:
+    labels:
+      - 'breaking-change'
+  minor:
+    labels:
+      - 'feature'
+      - 'enhancement'
+  patch:
+    labels:
+      - 'bug'
+      - 'dependencies'
+      - 'documentation'
+      - 'tyding'
+  default: 'patch'
+autolabeler:
+  - label: 'bin'
+    files:
+      - 'bin/**'
+  - label: 'breaking-change'
+    branch:
+      - '/.*!:.*/'
+  - label: 'feature'
+    branch:
+      - '/feature\/.+/i'
+      - '/feat\/.+/i'
+    title:
+      - '/feature.*: /i'
+      - '/feat.*: /i'
+  - label: 'enhancement'
+    branch:
+      - '/improvement\/.+/i'
+      - '/enhancement\/.+/i'
+    title:
+      - '/improvement.*: /i'
+      - '/enhancement.*: /i'
+  - label: 'bug'
+    branch:
+      - '/fix\/.+/i'
+      - '/bugfix\/.+/i'
+      - '/bug\/.+/i'
+      - '/hotfix\/.+/i'
+    title:
+      - '/fix.*: /i'
+      - '/bugfix.*: /i'
+      - '/bug.*: /i'
+      - '/hotfix.*: /i'
+  - label: 'dependencies'
+    branch:
+      - '/dependabot\/.*/'
+  - label: 'documentation'
+    files:
+      - '*.md'
+    branch:
+      - '/docs{0,1}\/.+/'
+    title:
+      - '/docs{0,1}: /i'
+
+template: "$CHANGES"
