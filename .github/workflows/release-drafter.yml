@@ -1,0 +1,35 @@
+name: Release Drafter
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [closed, labeled, opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+env:
+  RD_CONFIG_NAME: 'drafts/rede.yml'
+
+jobs:
+  set_config_name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Changes on parser
+        if: contains(github.event.pull_request.labels.*.name, 'parser') || github.event_name == 'workflow_dispatch'
+        run: echo "RD_CONFIG_NAME=drafts/parser.yml" >> $GITHUB_ENV
+    outputs:
+      config-name: ${{ env.RD_CONFIG_NAME }}
+  update_release_draft:
+    needs: set_config_name
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - run: echo ${{ needs.set_config_name.config-name }}
+      - uses: release-drafter/release-drafter@v5
+        with:
+          config-name: ${{ needs.set_config_name.outputs.config-name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
