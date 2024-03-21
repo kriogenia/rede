@@ -1,8 +1,15 @@
-[package]
-name = "rede"
-version = "0.1.0"
+[workspace]
+members = [
+    "bin"
+]
+resolver = "2"
+
+[workspace.package]
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = [ "SotoEstevez <ricardo@sotoestevez.dev"]
+homepage = "TODO"
+repository = "https://github.com/kriogenia/rede"
+license = "Apache-2.0 OR MIT"
 
-[dependencies]
+[workspace.dependencies]
