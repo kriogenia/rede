@@ -79,5 +79,12 @@ autolabeler:
       - '/docs{0,1}\/.+/'
     title:
       - '/docs{0,1}: /i'
+  - label: 'tyding'
+    branch:
+      - '/chore\/.+/i'
+      - '/tyding\/.+/i'
+    title:
+      - '/chores{0,1}: /i'
+      - '/tyding{0,1}: /i'
 
 template: "$CHANGES"
