@@ -1,0 +1,4 @@
+_extends: .github:.github/release-drafter.yml
+name-template: 'rede $RESOLVED_VERSION'
+tag-template: 'rede_v$RESOLVED_VERSION'
+tag-prefix: 'rede_v'

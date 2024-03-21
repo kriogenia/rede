@@ -1,0 +1,6 @@
+_extends: .github:.github/release-drafter.yml
+name-template: 'rede_parser $RESOLVED_VERSION'
+tag-template: 'parser_v$RESOLVED_VERSION'
+tag-prefix: 'parser_v'
+include-paths:
+  - "parser/"
