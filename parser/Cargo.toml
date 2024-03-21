@@ -1,0 +1,17 @@
+[package]
+name = "rede_parser"
+version = "0.1.0"
+edition.workspace = true
+
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+
+categories = [ "parser-implementations", "development-tools" ]
+description = "Parser in charge of modeling Rede's files"
+documentation = "TODO"
+keywords = [ "parser", "rede", "toml", "http" ]
+readme = "./README.md"
+
+[dependencies]

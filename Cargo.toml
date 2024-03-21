@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "bin"
+    "bin",
+    "parser"
 ]
 resolver = "2"
 
