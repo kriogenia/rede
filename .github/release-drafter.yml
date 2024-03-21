@@ -41,6 +41,9 @@ autolabeler:
   - label: 'bin'
     files:
       - 'bin/**'
+  - label: 'parser'
+    files:
+      - 'parser/**'
   - label: 'breaking-change'
     branch:
       - '/.*!:.*/'
