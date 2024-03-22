@@ -1,7 +1,8 @@
+use serde::Deserialize;
 use strum::EnumString;
 
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, EnumString, PartialEq)]
+#[derive(Debug, Deserialize, EnumString, PartialEq)]
 #[strum(ascii_case_insensitive)]
 /// Representation of the HTTP methods supported by Rede
 pub enum Method {
