@@ -1,0 +1,15 @@
+# expected: GET localhot:8080/v1/movies?offset=0&limit=10&genres=scifi,fantasy&released=true&rating=M
+
+[http]
+method = "GET"
+url = "localhost:8080/v1/movies"
+
+#[header]
+#Content-Type = "application/json"
+
+[queryparams]
+offset = 0
+limit = 10
+genres = [ "scifi", "fantasy" ]
+released = true
+rating = "M"
