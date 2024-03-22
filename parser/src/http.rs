@@ -1,22 +1,28 @@
 mod schema;
 
-use crate::http::schema::Schema;
+use crate::http::schema::{QueryParams, Schema};
 use crate::method::Method;
 use std::str::FromStr;
 
 pub struct Request {
     pub method: Method,
     pub url: String,
+    pub query_params: Vec<(String, String)>,
 }
 
 impl FromStr for Request {
-    type Err = ();
+    type Err = (); // todo
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let schema: Schema = toml::from_str(s).unwrap(); // todo add error management
+        let schema: Schema = toml::from_str(s).unwrap();
+        let query_params = schema
+            .query_params
+            .map(QueryParams::into_pairs)
+            .unwrap_or_default();
         Ok(Self {
             method: schema.http.method,
             url: schema.http.url,
+            query_params,
         })
     }
 }
