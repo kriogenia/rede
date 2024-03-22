@@ -1,5 +1,6 @@
 mod schema;
 
+use crate::error::Error;
 use crate::http::schema::{QueryParams, Schema};
 use crate::method::Method;
 use std::str::FromStr;
@@ -11,10 +12,10 @@ pub struct Request {
 }
 
 impl FromStr for Request {
-    type Err = (); // todo
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let schema: Schema = toml::from_str(s).unwrap();
+        let schema: Schema = Schema::from_str(s)?;
         let query_params = schema
             .query_params
             .map(QueryParams::into_pairs)

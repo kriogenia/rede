@@ -1,5 +1,7 @@
+use crate::error::Error;
 use crate::method::Method;
 use serde::Deserialize;
+use std::str::FromStr;
 use toml::map::Map;
 use toml::Value;
 
@@ -19,6 +21,25 @@ pub(super) struct Http {
 #[derive(Deserialize)]
 pub(super) struct QueryParams(Map<String, Value>);
 
+impl FromStr for Schema {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let schema: Schema = toml::from_str(s)?;
+
+        if let Some(qp) = &schema.query_params {
+            if qp.has_value(|v| matches!(v, Value::Datetime(_))) {
+                return Err(Error::invalid_type("queryparams", "datetime"));
+            }
+            if qp.has_value(|v| matches!(v, Value::Table(_))) {
+                return Err(Error::invalid_type("queryparams", "table"));
+            }
+        }
+
+        Ok(schema)
+    }
+}
+
 impl QueryParams {
     pub fn into_pairs(self) -> Vec<(String, String)> {
         self.0
@@ -26,17 +47,23 @@ impl QueryParams {
             .map(|(key, val)| (key, flatten_value(val)))
             .collect()
     }
+
+    fn has_value(&self, filter: fn(&Value) -> bool) -> bool {
+        self.0.values().any(filter)
+    }
 }
 
 fn flatten_value(val: Value) -> String {
     match val {
         Value::String(s) => s,
-        Value::Datetime(_) | Value::Table(_) => todo!("return error"),
         Value::Array(a) => a
             .into_iter()
             .map(flatten_value)
             .collect::<Vec<String>>()
             .join(","),
+        Value::Datetime(_) | Value::Table(_) => {
+            unreachable!("these types are rejected in from_str")
+        }
         _ => val.to_string(),
     }
 }
@@ -44,6 +71,7 @@ fn flatten_value(val: Value) -> String {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::http::Request;
 
     const ALL: &str = r#"
     [http]
@@ -85,9 +113,39 @@ mod test {
     }
 
     #[test]
-    fn missing_required() {
-        let err = toml::from_str::<Schema>("").err().unwrap();
-        assert!(err.message().contains("missing"));
+    fn missing_fields() {
+        assert_eq!(
+            Schema::from_str("").err().unwrap(),
+            Error::MissingField("missing field `http`".to_string())
+        );
+        assert_eq!(
+            Request::from_str("[http]").err().unwrap(),
+            Error::MissingField("missing field `method`".to_string())
+        );
+    }
+
+    #[test]
+    fn invalid_types() {
+        let string = r#"
+        [http]
+        method = "GET"
+        url = "url"
+
+        [queryparams]
+        date = 1970-01-01
+        "#;
+        assert_eq!(
+            Schema::from_str(string).err().unwrap(),
+            Error::InvalidType {
+                field: "queryparams".to_string(),
+                invalid_type: "datetime".to_string(),
+            }
+        )
+    }
+
+    #[test]
+    fn invalid_method() {
+        // todo
     }
 
     #[test]
