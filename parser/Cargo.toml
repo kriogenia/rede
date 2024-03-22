@@ -15,4 +15,6 @@ keywords = [ "parser", "rede", "toml", "http" ]
 readme = "./README.md"
 
 [dependencies]
+serde = { version = "1.0", features = ["derive"] }
 strum = { version = "0.25", features = ["derive"] }
+toml = "0.8"

@@ -1,3 +1,4 @@
 #![warn(clippy::pedantic)]
 
-mod method;
+pub mod http;
+pub mod method;
