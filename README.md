@@ -13,28 +13,27 @@ of these requests. It should also end up being a valid CI/CD tool to test APIs.
 Imagine the following file `./request.toml` in your project.
 
 ```toml
-[metadata]
-name = "Add new movie"
-api_version = "v1"
-
-[params]
-title = "string"
-
-[params.release_date]
-type = "string"
-hint = 'Release date in format "YYYY-MM-DD"'
-default = '{{utils.today("YYYY-MM-DD")}}'
-
 [http]
 method = "POST"
 url = "{{host}}/v1/movies"
 
-[header]
+[metadata]
+name = "Add new movie"
+api_version = "v1"
+
+[input_params]
+title = "string"
+
+[input_params.release_date]
+type = "string"
+hint = 'Release date in format "YYYY-MM-DD"'
+default = '{{utils.today("YYYY-MM-DD")}}'
+
+[headers]
 Content-Type = "application/json"
 Authorization = "Bearer {{token}}"
 
-[body]
-json = '''
+body.json = '''
 {
   "title": {{title}},
   "release_date": {{release_date}},
@@ -46,7 +45,6 @@ json = '''
 And imagine that you also have a `./env/local.toml` file like this:
 
 ```toml
-[env]
 host = "http://localhost:8080"
 token = "MyPersonalToken"
 ```
@@ -55,12 +53,13 @@ Then from your project you could run `rede` and this would happen:
 
 ```shell
 $ rede run --env local request
+> Loading **Add new movie**
 > Please, insert: `title` (string):
 $ The Lion King
 > Please, insert: Release date in format "YYYY-MM-DD"
 > Send empty line to use default: "2024-02-29"
 $ 1994-10-07
-> Sending request: 
+> Sending request:
 > POST localhost:8080/v1/movies
 > - Headers:
 > Content-Type application/json
