@@ -1,37 +1,28 @@
 use serde::Deserialize;
-use strum::EnumString;
 
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Deserialize, EnumString, PartialEq)]
-#[strum(ascii_case_insensitive)]
+#[derive(Debug, Deserialize, PartialEq)]
 /// Representation of the HTTP methods supported by Rede
 pub enum Method {
+    #[serde(alias = "get")]
     GET,
+    #[serde(alias = "post")]
     POST,
+    #[serde(alias = "put")]
     PUT,
+    #[serde(alias = "patch")]
     PATCH,
+    #[serde(alias = "delete")]
     DELETE,
+    #[serde(alias = "head")]
     HEAD,
+    #[serde(alias = "options")]
     OPTIONS,
+    #[serde(alias = "connect")]
     CONNECT,
+    #[serde(alias = "trace")]
     TRACE,
     /// RFC: https://httpwg.org/http-extensions/draft-ietf-httpbis-safe-method-w-body.html
+    #[serde(alias = "query")]
     QUERY,
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-    use strum::ParseError;
-
-    #[test]
-    fn from_str() {
-        assert_eq!(Method::try_from("GET").unwrap(), Method::GET);
-        assert_eq!(Method::try_from("post").unwrap(), Method::POST);
-        assert_eq!(Method::try_from("pUt").unwrap(), Method::PUT);
-        assert_eq!(
-            Method::try_from("unknown"),
-            Err(ParseError::VariantNotFound)
-        )
-    }
 }
