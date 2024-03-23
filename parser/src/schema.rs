@@ -1,11 +1,12 @@
 mod query_params;
+mod validation;
 
 pub(crate) use query_params::QueryParams;
 
 use crate::error::Error;
+use crate::schema::validation::validate_types;
 use serde::Deserialize;
 use std::str::FromStr;
-use toml::Value;
 
 #[derive(Deserialize)]
 pub(crate) struct Schema {
@@ -21,21 +22,25 @@ pub(crate) struct Http {
     pub method: String,
 }
 
+#[cfg(test)]
+impl Schema {
+    pub fn new() -> Self {
+        Self {
+            http: Http {
+                url: "url".to_string(),
+                method: "GET".to_string(),
+            },
+            query_params: None,
+        }
+    }
+}
+
 impl FromStr for Schema {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let schema: Schema = toml::from_str(s)?;
-
-        if let Some(qp) = &schema.query_params {
-            if qp.has_value(|v| matches!(v, Value::Datetime(_))) {
-                return Err(Error::invalid_type("queryparams", "datetime"));
-            }
-            if qp.has_value(|v| matches!(v, Value::Table(_))) {
-                return Err(Error::invalid_type("queryparams", "table"));
-            }
-        }
-
+        validate_types(&schema)?;
         Ok(schema)
     }
 }
@@ -110,7 +115,7 @@ mod test {
     }
 
     #[test]
-    fn invalid_types() {
+    fn invalid_type() {
         let toml = r#"
         [http]
         method = "GET"
