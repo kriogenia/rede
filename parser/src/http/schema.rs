@@ -114,38 +114,43 @@ mod test {
 
     #[test]
     fn missing_fields() {
-        assert_eq!(
+        assert!(matches!(
             Schema::from_str("").err().unwrap(),
-            Error::MissingField("missing field `http`".to_string())
-        );
-        assert_eq!(
+            Error::MissingField(str) if str == "missing field `http`"
+        ));
+        assert!(matches!(
             Request::from_str("[http]").err().unwrap(),
-            Error::MissingField("missing field `method`".to_string())
-        );
+            Error::MissingField(str) if str == "missing field `method`"
+        ));
     }
 
     #[test]
     fn invalid_types() {
-        let string = r#"
+        let toml = r#"
         [http]
-        method = "GET"
+        method = "get"
         url = "url"
 
         [queryparams]
         date = 1970-01-01
         "#;
-        assert_eq!(
-            Schema::from_str(string).err().unwrap(),
-            Error::InvalidType {
-                field: "queryparams".to_string(),
-                invalid_type: "datetime".to_string(),
-            }
-        )
+        assert!(matches!(
+            Schema::from_str(toml).err().unwrap(),
+            Error::InvalidType { field, invalid_type } if field == "queryparams" && invalid_type == "datetime"
+        ))
     }
 
     #[test]
     fn invalid_method() {
-        // todo
+        let toml = r#"
+        [http]
+        url = "url"
+        method = "PURGE"
+        "#;
+        assert!(matches!(
+            Schema::from_str(toml).err().unwrap(),
+            Error::InvalidValue(str) if str.starts_with("unknown variant `PURGE")
+        ))
     }
 
     #[test]
