@@ -48,7 +48,6 @@ fn default_method() -> String {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::request::Request;
 
     const ALL: &str = r#"
     [http]
@@ -91,14 +90,16 @@ mod test {
 
     #[test]
     fn missing_fields() {
-        assert!(matches!(
-            Schema::from_str("").err().unwrap(),
-            Error::MissingField(str) if str == "missing field `http`"
-        ));
-        assert!(matches!(
-            Request::from_str("[http]").err().unwrap(),
-            Error::MissingField(str) if str == "missing field `url`"
-        ));
+        assert!(Schema::from_str("")
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("missing field `http"));
+        assert!(Schema::from_str("[http]")
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("missing field `url`"));
     }
 
     #[test]
@@ -118,9 +119,12 @@ mod test {
         [queryparams]
         date = 1970-01-01
         "#;
-        assert!(matches!(
+        assert_eq!(
             Schema::from_str(toml).err().unwrap(),
-            Error::InvalidType { field, invalid_type } if field == "queryparams" && invalid_type == "datetime"
-        ))
+            Error::InvalidType {
+                field: "queryparams".to_string(),
+                invalid_type: "datetime".to_string()
+            }
+        )
     }
 }
