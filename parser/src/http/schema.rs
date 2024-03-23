@@ -1,5 +1,4 @@
 use crate::error::Error;
-use crate::method::Method;
 use serde::Deserialize;
 use std::str::FromStr;
 use toml::map::Map;
@@ -14,8 +13,9 @@ pub(super) struct Schema {
 
 #[derive(Deserialize)]
 pub(super) struct Http {
-    pub method: Method,
     pub url: String,
+    #[serde(default = "default_method")]
+    pub method: String,
 }
 
 #[derive(Deserialize)]
@@ -51,6 +51,11 @@ impl QueryParams {
     fn has_value(&self, filter: fn(&Value) -> bool) -> bool {
         self.0.values().any(filter)
     }
+}
+
+#[inline]
+fn default_method() -> String {
+    "GET".to_string()
 }
 
 fn flatten_value(val: Value) -> String {
@@ -90,7 +95,7 @@ mod test {
     fn deserialize_all() {
         let mut schema: Schema = toml::from_str(ALL).unwrap();
         assert_eq!(schema.http.url, "https://example.org/api");
-        assert_eq!(schema.http.method, Method::GET);
+        assert_eq!(schema.http.method, "GET");
         let query_params = schema.query_params.take().unwrap();
         assert_eq!(query_params.0.len(), 5);
         assert_eq!(
@@ -120,15 +125,22 @@ mod test {
         ));
         assert!(matches!(
             Request::from_str("[http]").err().unwrap(),
-            Error::MissingField(str) if str == "missing field `method`"
+            Error::MissingField(str) if str == "missing field `url`"
         ));
+    }
+
+    #[test]
+    fn default_values() {
+        let toml = r#"http.url = "url""#;
+        let schema = Schema::from_str(toml).unwrap();
+        assert_eq!(schema.http.method, "GET");
     }
 
     #[test]
     fn invalid_types() {
         let toml = r#"
         [http]
-        method = "get"
+        method = "GET"
         url = "url"
 
         [queryparams]
@@ -137,19 +149,6 @@ mod test {
         assert!(matches!(
             Schema::from_str(toml).err().unwrap(),
             Error::InvalidType { field, invalid_type } if field == "queryparams" && invalid_type == "datetime"
-        ))
-    }
-
-    #[test]
-    fn invalid_method() {
-        let toml = r#"
-        [http]
-        url = "url"
-        method = "PURGE"
-        "#;
-        assert!(matches!(
-            Schema::from_str(toml).err().unwrap(),
-            Error::InvalidValue(str) if str.starts_with("unknown variant `PURGE")
         ))
     }
 
