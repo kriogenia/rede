@@ -1,31 +1,29 @@
+[http]
+method = "POST"
+url = "{{host}}/v1/movies"
+
 # the metadata section supports any kind of key-value allowing you to add more information to the http
 [metadata]
 name = "Add new movie"
 api_version = "v1"
 
 # parameters listed under params will be requested to the user when performing the query
-[params]
+[input_params]
 title = "string"    # the minimum requirement is to specify the type (string, boolean or number)
 
 # parameters can be further specified with additional properties
-[params.release_date]
+[input_params.release_date]
 type = "string"
 hint = 'Release date in format "YYYY-MM-DD"'
 default = '{{utils.today("YYYY-MM-DD")}}'       # some helpful functions will help you compute values for the http
-
-# obligatory fields to perform the http, at first only HTTP will be supported
-[http]
-method = "POST"
-url = "{{host}}/v1/movies"
 
 # headers are key-value pairs exactly like
 [header]
 Content-Type = "application/json"
 Authorization = "Bearer {{token}}"
 
-[body]
-# they key specifies the type of body that will be used
-json = '''
+# body supports different types in the form of keys
+body.json = '''
 {
   "title": {{title}},
   "release_date": {{release_date}},
