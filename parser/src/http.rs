@@ -2,11 +2,10 @@ mod schema;
 
 use crate::error::Error;
 use crate::http::schema::{QueryParams, Schema};
-use crate::method::Method;
 use std::str::FromStr;
 
 pub struct Request {
-    pub method: Method,
+    pub method: String,
     pub url: String,
     pub query_params: Vec<(String, String)>,
 }
