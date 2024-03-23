@@ -1,25 +1,25 @@
+mod query_params;
+
+pub(crate) use query_params::QueryParams;
+
 use crate::error::Error;
 use serde::Deserialize;
 use std::str::FromStr;
-use toml::map::Map;
 use toml::Value;
 
 #[derive(Deserialize)]
-pub(super) struct Schema {
+pub(crate) struct Schema {
     pub http: Http,
     #[serde(alias = "queryparams", alias = "query-params")]
     pub query_params: Option<QueryParams>,
 }
 
 #[derive(Deserialize)]
-pub(super) struct Http {
+pub(crate) struct Http {
     pub url: String,
     #[serde(default = "default_method")]
     pub method: String,
 }
-
-#[derive(Deserialize)]
-pub(super) struct QueryParams(Map<String, Value>);
 
 impl FromStr for Schema {
     type Err = Error;
@@ -40,43 +40,15 @@ impl FromStr for Schema {
     }
 }
 
-impl QueryParams {
-    pub fn into_pairs(self) -> Vec<(String, String)> {
-        self.0
-            .into_iter()
-            .map(|(key, val)| (key, flatten_value(val)))
-            .collect()
-    }
-
-    fn has_value(&self, filter: fn(&Value) -> bool) -> bool {
-        self.0.values().any(filter)
-    }
-}
-
 #[inline]
 fn default_method() -> String {
     "GET".to_string()
 }
 
-fn flatten_value(val: Value) -> String {
-    match val {
-        Value::String(s) => s,
-        Value::Array(a) => a
-            .into_iter()
-            .map(flatten_value)
-            .collect::<Vec<String>>()
-            .join(","),
-        Value::Datetime(_) | Value::Table(_) => {
-            unreachable!("these types are rejected in from_str")
-        }
-        _ => val.to_string(),
-    }
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::http::Request;
+    use crate::request::Request;
 
     const ALL: &str = r#"
     [http]
@@ -150,28 +122,5 @@ mod test {
             Schema::from_str(toml).err().unwrap(),
             Error::InvalidType { field, invalid_type } if field == "queryparams" && invalid_type == "datetime"
         ))
-    }
-
-    #[test]
-    fn query_params_as_pairs() {
-        let string = r#"
-        string = "value"
-        integer = 10
-        float = 2.0
-        boolean = false
-        array = [ "s", 10 ]
-        "#;
-        let pairs = toml::from_str::<QueryParams>(string).unwrap().into_pairs();
-
-        assert_eq!(pairs.len(), 5);
-        assert_pair(&pairs, "string", "value");
-        assert_pair(&pairs, "integer", "10");
-        assert_pair(&pairs, "float", "2.0");
-        assert_pair(&pairs, "boolean", "false");
-        assert_pair(&pairs, "array", "s,10");
-    }
-
-    fn assert_pair(pairs: &Vec<(String, String)>, key: &str, val: &str) {
-        assert_eq!(pairs.iter().find(|(k, _)| k == key).unwrap().1, val);
     }
 }

@@ -1,4 +1,6 @@
 #![warn(clippy::pedantic)]
 
 pub mod error;
-pub mod http;
+pub mod request;
+
+pub(crate) mod schema;

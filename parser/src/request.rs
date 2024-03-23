@@ -1,7 +1,5 @@
-mod schema;
-
 use crate::error::Error;
-use crate::http::schema::{QueryParams, Schema};
+use crate::schema::{QueryParams, Schema};
 use std::str::FromStr;
 
 pub struct Request {
