@@ -3,7 +3,7 @@ use toml::map::Map;
 use toml::Value;
 
 #[derive(Deserialize)]
-pub(crate) struct QueryParams(pub(super) Map<String, Value>);
+pub(crate) struct QueryParams(pub(crate) Map<String, Value>);
 
 impl QueryParams {
     pub fn into_pairs(self) -> Vec<(String, String)> {
@@ -13,8 +13,8 @@ impl QueryParams {
             .collect()
     }
 
-    pub fn has_value(&self, filter: fn(&Value) -> bool) -> bool {
-        self.0.values().any(filter)
+    pub fn has_value(&self, filter: fn(&&Value) -> bool) -> Option<&Value> {
+        self.0.values().find(filter)
     }
 }
 
