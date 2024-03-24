@@ -35,7 +35,7 @@ mod test {
         let mut query_params = map_with_base_types();
         query_params.insert("array".to_string(), Value::Array(vec![]));
 
-        let mut schema = Schema::new();
+        let mut schema = Schema::default();
         schema.metadata = Some(Metadata::new(metadata));
         schema.query_params = Some(QueryParams::new(query_params));
         assert!(validate_types(&schema).is_ok())
@@ -46,7 +46,7 @@ mod test {
         let mut metadata = Map::new();
         metadata.insert("array".to_string(), Value::Array(vec![]));
 
-        let mut schema = Schema::new();
+        let mut schema = Schema::default();
         schema.metadata = Some(Metadata::new(metadata));
         assert_eq!(
             validate_types(&schema).err().unwrap(),
@@ -62,7 +62,7 @@ mod test {
         let mut query_params = Map::new();
         query_params.insert("table".to_string(), Value::Table(Map::new()));
 
-        let mut schema = Schema::new();
+        let mut schema = Schema::default();
         schema.query_params = Some(QueryParams::new(query_params));
         assert_eq!(
             validate_types(&schema).err().unwrap(),

@@ -1,6 +1,6 @@
 use crate::error::Error;
 use crate::schema::{Metadata, QueryParams, Schema};
-use http::{Method, Version};
+use http::{HeaderMap, Method, Version};
 use std::collections::HashMap;
 
 pub struct Request {
@@ -8,6 +8,7 @@ pub struct Request {
     pub url: String,
     pub http_version: Version,
     pub metadata: HashMap<String, String>,
+    pub headers: HeaderMap,
     pub query_params: Vec<(String, String)>,
 }
 
@@ -25,6 +26,7 @@ impl TryFrom<Schema> for Request {
             url: schema.http.url,
             http_version: schema.http.version,
             metadata,
+            headers: schema.headers,
             query_params,
         })
     }
@@ -42,6 +44,9 @@ mod test {
         let mut metadata = Map::new();
         metadata.insert("name".to_string(), Value::String("test".to_string()));
 
+        let mut headers = HeaderMap::new();
+        headers.insert("Header", "Value".parse().unwrap());
+
         let mut query_params = Map::new();
         query_params.insert(
             "qp".to_string(),
@@ -54,14 +59,17 @@ mod test {
                 method: Method::GET,
                 version: Version::HTTP_11,
             },
+            headers,
             metadata: Some(Metadata::new(metadata)),
             query_params: Some(QueryParams::new(query_params)),
         };
+
         let request = Request::try_from(schema).unwrap();
         assert_eq!(request.url, "url");
         assert_eq!(request.method, Method::GET);
         assert_eq!(request.http_version, Version::HTTP_11);
         assert_eq!(request.metadata["name"], "test");
+        assert_eq!(request.headers["Header"], "Value");
         assert_eq!(
             request.query_params,
             vec![("qp".to_string(), "s,1".to_string())]

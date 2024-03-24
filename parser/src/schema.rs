@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use http::{Method, Version};
+use http::{HeaderMap, Method, Version};
 use serde::Deserialize;
 
 pub(crate) use table::Metadata;
@@ -13,35 +13,24 @@ mod table;
 mod validation;
 
 #[derive(Deserialize)]
+#[cfg_attr(test, derive(Default))]
 pub(crate) struct Schema {
     pub http: Http,
     pub metadata: Option<Metadata>,
+    #[serde(with = "http_serde::header_map", default)]
+    pub headers: HeaderMap,
     #[serde(alias = "queryparams", alias = "query-params")]
     pub query_params: Option<QueryParams>,
 }
 
 #[derive(Deserialize)]
+#[cfg_attr(test, derive(Default))]
 pub(crate) struct Http {
     pub url: String,
     #[serde(with = "http_serde::method", default)]
     pub method: Method,
     #[serde(with = "http_serde::version", default)]
     pub version: Version,
-}
-
-#[cfg(test)]
-impl Schema {
-    pub fn new() -> Self {
-        Self {
-            http: Http {
-                url: "url".to_string(),
-                method: Method::GET,
-                version: Version::HTTP_11,
-            },
-            metadata: None,
-            query_params: None,
-        }
-    }
 }
 
 impl FromStr for Schema {
@@ -70,6 +59,10 @@ mod test {
     name = "Test request"
     description = "Request with all supported options"
 
+    [headers]
+    Content-Type = "application/toml"
+    Api-Version = "v2"
+
     [queryparams]
     string = "string"
     integer = 10
@@ -94,6 +87,9 @@ mod test {
             metadata.0["description"],
             Value::String("Request with all supported options".to_string())
         );
+        assert_eq!(schema.headers.len(), 2);
+        assert_eq!(schema.headers["Content-Type"], "application/toml");
+        assert_eq!(schema.headers["Api-Version"], "v2");
         let query_params = schema.query_params.take().unwrap();
         assert_eq!(query_params.0.len(), 5);
         assert_eq!(
