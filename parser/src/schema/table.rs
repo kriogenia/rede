@@ -4,20 +4,20 @@ use std::collections::HashMap;
 use toml::map::Map;
 use toml::Value;
 
-mod implementors {
-    pub(crate) const METADATA: u8 = 0x00;
+mod variant {
+    pub(crate) const STRING_STRING: u8 = 0x00;
     pub(crate) const QUERY_PARAMS: u8 = 0x01;
 }
 
 /// Newtype implementation to wrap TOML tables where the set of keys can be free
-#[derive(Deserialize)]
+#[derive(Default, Deserialize)]
 pub(crate) struct Table<const T: u8>(pub(crate) Map<String, Value>);
 
-/// `metadata` table
-pub(crate) type Metadata = Table<{ implementors::METADATA }>;
-
+/// Type for tables that will be converted into `HashMap<String, String>` like the `metadata`
+/// or `path_params` tables.
+pub(crate) type StrStrTable = Table<{ variant::STRING_STRING }>;
 /// `query_params` table
-pub(crate) type QueryParams = Table<{ implementors::QUERY_PARAMS }>;
+pub(crate) type QueryParams = Table<{ variant::QUERY_PARAMS }>;
 
 impl<const T: u8> Table<T> {
     pub fn has_value(&self, filter: TypeFilterFn) -> Option<&Value> {
@@ -32,7 +32,7 @@ impl<const T: u8> Table<T> {
     }
 }
 
-impl Metadata {
+impl StrStrTable {
     pub fn into_map(self) -> HashMap<String, String> {
         self.into_pairs(flatten_value).into_iter().collect()
     }
@@ -74,7 +74,7 @@ mod constructors {
         };
     }
 
-    implement_new!(Metadata);
+    implement_new!(StrStrTable);
     implement_new!(QueryParams);
 }
 

@@ -25,7 +25,7 @@ pub(super) fn validate_types(schema: &Schema) -> Result<(), Error> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::schema::{Metadata, QueryParams};
+    use crate::schema::{QueryParams, StrStrTable};
     use toml::map::Map;
 
     #[test]
@@ -36,7 +36,7 @@ mod test {
         query_params.insert("array".to_string(), Value::Array(vec![]));
 
         let mut schema = Schema::default();
-        schema.metadata = Some(Metadata::new(metadata));
+        schema.metadata = Some(StrStrTable::new(metadata));
         schema.query_params = Some(QueryParams::new(query_params));
         assert!(validate_types(&schema).is_ok())
     }
@@ -47,7 +47,7 @@ mod test {
         metadata.insert("array".to_string(), Value::Array(vec![]));
 
         let mut schema = Schema::default();
-        schema.metadata = Some(Metadata::new(metadata));
+        schema.metadata = Some(StrStrTable::new(metadata));
         assert_eq!(
             validate_types(&schema).err().unwrap(),
             Error::InvalidType {
