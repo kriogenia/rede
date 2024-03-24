@@ -3,8 +3,8 @@ use std::str::FromStr;
 use http::{HeaderMap, Method, Version};
 use serde::Deserialize;
 
-pub(crate) use table::Metadata;
 pub(crate) use table::QueryParams;
+pub(crate) use table::StrStrTable;
 
 use crate::error::Error;
 use crate::schema::validation::validate_types;
@@ -16,11 +16,13 @@ mod validation;
 #[cfg_attr(test, derive(Default))]
 pub(crate) struct Schema {
     pub http: Http,
-    pub metadata: Option<Metadata>,
+    pub metadata: Option<StrStrTable>,
     #[serde(with = "http_serde::header_map", default)]
     pub headers: HeaderMap,
     #[serde(alias = "queryparams", alias = "query-params")]
     pub query_params: Option<QueryParams>,
+    #[serde(alias = "pathparams", alias = "path-params", default)]
+    pub path_params: StrStrTable,
 }
 
 #[derive(Deserialize)]
@@ -69,6 +71,12 @@ mod test {
     float = 0.1
     array = [ "first", "second" ]
     boolean = true
+
+    [path-params]
+    string = "string"
+    integer = 5
+    float = 1.2
+    boolean = false
     "#;
 
     #[test]
@@ -109,6 +117,14 @@ mod test {
                 Value::String("second".into()),
             ])
         );
+        assert_eq!(schema.path_params.0.len(), 4);
+        assert_eq!(
+            schema.path_params.0["string"],
+            Value::String("string".to_string())
+        );
+        assert_eq!(schema.path_params.0["integer"], Value::Integer(5));
+        assert_eq!(schema.path_params.0["float"], Value::Float(1.2));
+        assert_eq!(schema.path_params.0["boolean"], Value::Boolean(false));
     }
 
     #[test]

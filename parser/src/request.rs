@@ -1,5 +1,5 @@
 use crate::error::Error;
-use crate::schema::{Metadata, QueryParams, Schema};
+use crate::schema::{QueryParams, Schema, StrStrTable};
 use http::{HeaderMap, Method, Version};
 use std::collections::HashMap;
 
@@ -10,13 +10,17 @@ pub struct Request {
     pub metadata: HashMap<String, String>,
     pub headers: HeaderMap,
     pub query_params: Vec<(String, String)>,
+    pub path_params: HashMap<String, String>,
 }
 
 impl TryFrom<Schema> for Request {
     type Error = Error;
 
     fn try_from(schema: Schema) -> Result<Self, Self::Error> {
-        let metadata = schema.metadata.map(Metadata::into_map).unwrap_or_default();
+        let metadata = schema
+            .metadata
+            .map(StrStrTable::into_map)
+            .unwrap_or_default();
         let query_params = schema
             .query_params
             .map(QueryParams::into_param_pairs)
@@ -28,6 +32,7 @@ impl TryFrom<Schema> for Request {
             metadata,
             headers: schema.headers,
             query_params,
+            path_params: schema.path_params.into_map(),
         })
     }
 }
@@ -53,6 +58,9 @@ mod test {
             Value::Array(vec![Value::String("s".to_string()), Value::Integer(1)]),
         );
 
+        let mut path_params = Map::new();
+        path_params.insert("pp".to_string(), Value::String("value".to_string()));
+
         let schema = Schema {
             http: Http {
                 url: "url".to_string(),
@@ -60,8 +68,9 @@ mod test {
                 version: Version::HTTP_11,
             },
             headers,
-            metadata: Some(Metadata::new(metadata)),
+            metadata: Some(StrStrTable::new(metadata)),
             query_params: Some(QueryParams::new(query_params)),
+            path_params: StrStrTable::new(path_params),
         };
 
         let request = Request::try_from(schema).unwrap();
@@ -74,5 +83,6 @@ mod test {
             request.query_params,
             vec![("qp".to_string(), "s,1".to_string())]
         );
+        assert_eq!(request.path_params["pp"], "value");
     }
 }
