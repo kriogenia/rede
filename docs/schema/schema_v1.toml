@@ -41,7 +41,6 @@ version = "1.1"
 # HTTP method of the request
 # [optional] [ default = "GET" ]
 # The default could be different based on the request protocol.
-# Also supports the lowercase version of the method names
 method = "string"
 
 ####### The metadata table allows developers to add extra information

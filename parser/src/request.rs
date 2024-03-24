@@ -1,9 +1,10 @@
 use crate::error::Error;
 use crate::schema::{Metadata, QueryParams, Schema};
+use http::Method;
 use std::collections::HashMap;
 
 pub struct Request {
-    pub method: String,
+    pub method: Method,
     pub url: String,
     pub http_version: String,
     pub metadata: HashMap<String, String>,
@@ -20,7 +21,7 @@ impl TryFrom<Schema> for Request {
             .map(QueryParams::into_param_pairs)
             .unwrap_or_default();
         Ok(Self {
-            method: schema.http.method.to_uppercase(),
+            method: schema.http.method,
             url: schema.http.url,
             http_version: schema.http.version.to_string(),
             metadata,
@@ -50,7 +51,7 @@ mod test {
         let schema = Schema {
             http: Http {
                 url: "url".to_string(),
-                method: "get".to_string(),
+                method: Method::GET,
                 version: HttpVersion::OnePointOne,
             },
             metadata: Some(Metadata::new(metadata)),
@@ -58,7 +59,7 @@ mod test {
         };
         let request = Request::try_from(schema).unwrap();
         assert_eq!(request.url, "url");
-        assert_eq!(request.method, "GET");
+        assert_eq!(request.method, Method::GET);
         assert_eq!(request.http_version, "HTTP/1.1");
         assert_eq!(request.metadata["name"], "test");
         assert_eq!(

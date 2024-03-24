@@ -7,6 +7,7 @@ pub(crate) use table::QueryParams;
 
 use crate::error::Error;
 use crate::schema::validation::validate_types;
+use http::Method;
 use serde::Deserialize;
 use std::str::FromStr;
 
@@ -21,8 +22,8 @@ pub(crate) struct Schema {
 #[derive(Deserialize)]
 pub(crate) struct Http {
     pub url: String,
-    #[serde(default = "default_method")]
-    pub method: String,
+    #[serde(with = "http_serde::method", default)]
+    pub method: Method,
     #[serde(default)]
     pub version: HttpVersion,
 }
@@ -48,7 +49,7 @@ impl Schema {
         Self {
             http: Http {
                 url: "url".to_string(),
-                method: "GET".to_string(),
+                method: Method::GET,
                 version: HttpVersion::OnePointOne,
             },
             metadata: None,
@@ -65,11 +66,6 @@ impl FromStr for Schema {
         validate_types(&schema)?;
         Ok(schema)
     }
-}
-
-#[inline]
-fn default_method() -> String {
-    "GET".to_string()
 }
 
 #[cfg(test)]
@@ -99,7 +95,7 @@ mod test {
     fn deserialize_all() {
         let mut schema: Schema = toml::from_str(ALL).unwrap();
         assert_eq!(schema.http.url, "https://example.org/api");
-        assert_eq!(schema.http.method, "GET");
+        assert_eq!(schema.http.method, Method::GET);
         assert_eq!(schema.http.version, HttpVersion::OnePointOne);
         let metadata = schema.metadata.take().unwrap();
         assert_eq!(metadata.0.len(), 2);
@@ -150,8 +146,15 @@ mod test {
     fn default_values() {
         let toml = r#"http.url = "url""#;
         let schema = Schema::from_str(toml).unwrap();
-        assert_eq!(schema.http.method, "GET");
+        assert_eq!(schema.http.method, Method::GET);
         assert_eq!(schema.http.version, HttpVersion::OnePointOne);
+    }
+
+    #[test]
+    fn unknown_values() {
+        let toml = r#"http = { url = "url", version = "4" }"#;
+        let err = Schema::from_str(toml).err().unwrap();
+        assert!(err.to_string().contains("unknown variant `4`"));
     }
 
     #[test]
