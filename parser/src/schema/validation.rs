@@ -5,11 +5,9 @@ use toml::Value;
 macro_rules! validate_type {
     ($item:expr, $key:literal are not: $($type:ident),+) => {
         $(
-            if let Some(table) = $item {
-                if let Some(value) = table.has_value(|v| matches!(v, Value::$type(_))) {
-                    return Err(Error::invalid_type($key, value));
-                }
-            }
+        if let Some(value) = $item.has_value(|v| matches!(v, Value::$type(_))) {
+            return Err(Error::invalid_type($key, value));
+        }
         )+
     };
 }
@@ -36,8 +34,8 @@ mod test {
         query_params.insert("array".to_string(), Value::Array(vec![]));
 
         let mut schema = Schema::default();
-        schema.metadata = Some(StrStrTable::new(metadata));
-        schema.query_params = Some(QueryParams::new(query_params));
+        schema.metadata = StrStrTable::new(metadata);
+        schema.query_params = QueryParams::new(query_params);
         assert!(validate_types(&schema).is_ok())
     }
 
@@ -47,7 +45,7 @@ mod test {
         metadata.insert("array".to_string(), Value::Array(vec![]));
 
         let mut schema = Schema::default();
-        schema.metadata = Some(StrStrTable::new(metadata));
+        schema.metadata = StrStrTable::new(metadata);
         assert_eq!(
             validate_types(&schema).err().unwrap(),
             Error::InvalidType {
@@ -63,7 +61,7 @@ mod test {
         query_params.insert("table".to_string(), Value::Table(Map::new()));
 
         let mut schema = Schema::default();
-        schema.query_params = Some(QueryParams::new(query_params));
+        schema.query_params = QueryParams::new(query_params);
         assert_eq!(
             validate_types(&schema).err().unwrap(),
             Error::InvalidType {
