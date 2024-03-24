@@ -12,7 +12,6 @@ use std::str::FromStr;
 #[derive(Deserialize)]
 pub(crate) struct Schema {
     pub http: Http,
-    #[allow(dead_code)]
     pub metadata: Option<Metadata>,
     #[serde(alias = "queryparams", alias = "query-params")]
     pub query_params: Option<QueryParams>,

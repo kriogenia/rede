@@ -48,7 +48,7 @@ method = "string"
 
 [metadata]
 # rede uses some metadata keys like `name` or `description`
-_key = "string"
+_key = [ "string", "integer", "float", "boolean" ]
 
 ####### The headers table allows to set any header, it overrides any preconfigured one
 
