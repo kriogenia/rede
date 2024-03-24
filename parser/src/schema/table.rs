@@ -3,19 +3,34 @@ use serde::Deserialize;
 use toml::map::Map;
 use toml::Value;
 
+mod implementors {
+    pub(crate) const QUERY_PARAMS: u8 = 0x00;
+}
+
+/// Newtype implementation to wrap TOML tables where the set of keys can be free
 #[derive(Deserialize)]
-pub(crate) struct QueryParams(pub(crate) Map<String, Value>);
+pub(crate) struct Table<const T: u8>(pub(crate) Map<String, Value>);
+
+/// `query_params` table
+pub(crate) type QueryParams = Table<{ implementors::QUERY_PARAMS }>;
+
+impl<const T: u8> Table<T> {
+    pub fn has_value(&self, filter: TypeFilterFn) -> Option<&Value> {
+        self.0.values().find(filter)
+    }
+}
 
 impl QueryParams {
+    #[cfg(test)]
+    pub fn new(query_params: Map<String, Value>) -> Self {
+        Self(query_params)
+    }
+
     pub fn into_pairs(self) -> Vec<(String, String)> {
         self.0
             .into_iter()
             .map(|(key, val)| (key, flatten_value(val)))
             .collect()
-    }
-
-    pub fn has_value(&self, filter: TypeFilterFn) -> Option<&Value> {
-        self.0.values().find(filter)
     }
 }
 

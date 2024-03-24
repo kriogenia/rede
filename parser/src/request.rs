@@ -43,7 +43,7 @@ mod test {
                 url: "url".to_string(),
                 method: "get".to_string(),
             },
-            query_params: Some(QueryParams(query_params)),
+            query_params: Some(QueryParams::new(query_params)),
         };
         let request = Request::try_from(schema).unwrap();
         assert_eq!(request.url, "url");

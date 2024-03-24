@@ -37,7 +37,7 @@ mod test {
         query_params.insert("array".to_string(), Value::Array(vec![]));
 
         let mut schema = Schema::new();
-        schema.query_params = Some(QueryParams(query_params));
+        schema.query_params = Some(QueryParams::new(query_params));
         assert!(validate_types(&schema).is_ok())
     }
 
@@ -47,7 +47,7 @@ mod test {
         query_params.insert("table".to_string(), Value::Table(Map::new()));
 
         let mut schema = Schema::new();
-        schema.query_params = Some(QueryParams(query_params));
+        schema.query_params = Some(QueryParams::new(query_params));
         assert_eq!(
             validate_types(&schema).err().unwrap(),
             Error::InvalidType {
