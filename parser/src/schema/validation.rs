@@ -17,6 +17,7 @@ pub(crate) type TypeFilterFn = fn(&&Value) -> bool;
 pub(super) fn validate_types(schema: &Schema) -> Result<(), Error> {
     validate_type!(&schema.metadata, "values of [metadata]" are not: Datetime, Array, Table);
     validate_type!(&schema.query_params, "values of [query_params]" are not: Datetime, Table);
+    validate_type!(&schema.path_params, "values of [path_params]" are not: Datetime, Array, Table);
     Ok(())
 }
 
@@ -29,13 +30,14 @@ mod test {
     #[test]
     fn valid_schema_types() {
         let metadata = map_with_base_types();
-
+        let path_params = map_with_base_types();
         let mut query_params = map_with_base_types();
         query_params.insert("array".to_string(), Value::Array(vec![]));
 
         let mut schema = Schema::default();
         schema.metadata = StrStrTable::new(metadata);
         schema.query_params = QueryParams::new(query_params);
+        schema.path_params = StrStrTable::new(path_params);
         assert!(validate_types(&schema).is_ok())
     }
 
@@ -56,7 +58,7 @@ mod test {
     }
 
     #[test]
-    fn invalid_schema_type() {
+    fn invalid_query_param_type() {
         let mut query_params = Map::new();
         query_params.insert("table".to_string(), Value::Table(Map::new()));
 
@@ -67,6 +69,22 @@ mod test {
             Error::InvalidType {
                 field: "values of [query_params]".to_string(),
                 invalid_type: "table".to_string(),
+            }
+        )
+    }
+
+    #[test]
+    fn invalid_path_param_type() {
+        let mut path_params = Map::new();
+        path_params.insert("array".to_string(), Value::Array(vec![]));
+
+        let mut schema = Schema::default();
+        schema.path_params = StrStrTable::new(path_params);
+        assert_eq!(
+            validate_types(&schema).err().unwrap(),
+            Error::InvalidType {
+                field: "values of [path_params]".to_string(),
+                invalid_type: "array".to_string(),
             }
         )
     }
