@@ -12,21 +12,12 @@ macro_rules! validate_type {
             }
         )+
     };
-    ($item:expr, $key:literal are: $($type:ident),+) => {
-        $(
-            if let Some(table) = $item {
-                if let Some(value) = table.has_value(|v| !matches!(v, Value::$type(_))) {
-                    return Err(Error::invalid_type($key, value));
-                }
-            }
-        )+
-    };
 }
 
 pub(crate) type TypeFilterFn = fn(&&Value) -> bool;
 
 pub(super) fn validate_types(schema: &Schema) -> Result<(), Error> {
-    validate_type!(&schema.metadata, "values of [metadata]" are: String);
+    validate_type!(&schema.metadata, "values of [metadata]" are not: Datetime, Array, Table);
     validate_type!(&schema.query_params, "values of [query_params]" are not: Datetime, Table);
     Ok(())
 }
@@ -39,15 +30,9 @@ mod test {
 
     #[test]
     fn valid_schema_types() {
-        let mut metadata = Map::new();
-        metadata.insert("key".to_string(), Value::String("value".to_string()));
-        metadata.insert("other".to_string(), Value::String("string".to_string()));
+        let metadata = map_with_base_types();
 
-        let mut query_params = Map::new();
-        query_params.insert("string".to_string(), Value::String("valid".to_string()));
-        query_params.insert("integer".to_string(), Value::Integer(0));
-        query_params.insert("float".to_string(), Value::Float(0.1));
-        query_params.insert("boolean".to_string(), Value::Boolean(true));
+        let mut query_params = map_with_base_types();
         query_params.insert("array".to_string(), Value::Array(vec![]));
 
         let mut schema = Schema::new();
@@ -86,5 +71,14 @@ mod test {
                 invalid_type: "table".to_string(),
             }
         )
+    }
+
+    fn map_with_base_types() -> Map<String, Value> {
+        let mut map = Map::new();
+        map.insert("string".to_string(), Value::String("valid".to_string()));
+        map.insert("integer".to_string(), Value::Integer(0));
+        map.insert("float".to_string(), Value::Float(0.1));
+        map.insert("boolean".to_string(), Value::Boolean(true));
+        map
     }
 }

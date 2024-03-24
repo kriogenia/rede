@@ -1,5 +1,6 @@
 use crate::schema::validation::TypeFilterFn;
 use serde::Deserialize;
+use std::collections::HashMap;
 use toml::map::Map;
 use toml::Value;
 
@@ -22,14 +23,24 @@ impl<const T: u8> Table<T> {
     pub fn has_value(&self, filter: TypeFilterFn) -> Option<&Value> {
         self.0.values().find(filter)
     }
+
+    fn into_pairs<O>(self, map: fn(Value) -> O) -> Vec<(String, O)> {
+        self.0
+            .into_iter()
+            .map(|(key, val)| (key, map(val)))
+            .collect()
+    }
+}
+
+impl Metadata {
+    pub fn into_map(self) -> HashMap<String, String> {
+        self.into_pairs(flatten_value).into_iter().collect()
+    }
 }
 
 impl QueryParams {
-    pub fn into_pairs(self) -> Vec<(String, String)> {
-        self.0
-            .into_iter()
-            .map(|(key, val)| (key, flatten_value(val)))
-            .collect()
+    pub fn into_param_pairs(self) -> Vec<(String, String)> {
+        self.into_pairs(flatten_value)
     }
 }
 
@@ -72,7 +83,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn query_params_as_pairs() {
+    fn query_params_into_pairs() {
         let string = r#"
         string = "value"
         integer = 10
@@ -80,7 +91,9 @@ mod test {
         boolean = false
         array = [ "s", 10 ]
         "#;
-        let pairs = toml::from_str::<QueryParams>(string).unwrap().into_pairs();
+        let pairs = toml::from_str::<QueryParams>(string)
+            .unwrap()
+            .into_param_pairs();
 
         assert_eq!(pairs.len(), 5);
         assert_pair(&pairs, "string", "value");
