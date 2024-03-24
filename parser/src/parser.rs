@@ -39,7 +39,7 @@ use std::str::FromStr;
 /// assert!(result.is_err());
 /// assert_eq!(
 ///   result.err().unwrap().to_string(),
-///   "params of [query_params] can't be of type datetime");
+///   "values of [query_params] can't be of type datetime");
 /// # }
 /// ```
 pub fn parse_request(content: &str) -> Result<Request, Error> {

@@ -2,32 +2,32 @@ use crate::error::Error;
 use crate::schema::Schema;
 use toml::Value;
 
-pub(crate) type TypeFilterFn = fn(&&Value) -> bool;
-
 macro_rules! validate_type {
-    ($item:expr, $key:literal is not: $($type:ident),+) => {
+    ($item:expr, $key:literal are not: $($type:ident),+) => {
         $(
-            if let Some(value) = $item.has_value(|v| matches!(v, Value::$type(_))) {
-                return Err(Error::invalid_type($key, value));
+            if let Some(table) = $item {
+                if let Some(value) = table.has_value(|v| matches!(v, Value::$type(_))) {
+                    return Err(Error::invalid_type($key, value));
+                }
             }
         )+
     };
-    ($item:expr, $key:literal is: $($type:ident),+) => {
+    ($item:expr, $key:literal are: $($type:ident),+) => {
         $(
-            if let Some(value) = $item.has_value(|v| !matches!(v, Value::$type(_))) {
-                return Err(Error::invalid_type($key, value));
+            if let Some(table) = $item {
+                if let Some(value) = table.has_value(|v| !matches!(v, Value::$type(_))) {
+                    return Err(Error::invalid_type($key, value));
+                }
             }
         )+
     };
 }
 
+pub(crate) type TypeFilterFn = fn(&&Value) -> bool;
+
 pub(super) fn validate_types(schema: &Schema) -> Result<(), Error> {
-    if let Some(meta) = &schema.metadata {
-        validate_type!(meta, "values of [metadata]" is: String);
-    }
-    if let Some(qp) = &schema.query_params {
-        validate_type!(qp, "params of [query_params]" is not: Datetime, Table);
-    }
+    validate_type!(&schema.metadata, "values of [metadata]" are: String);
+    validate_type!(&schema.query_params, "values of [query_params]" are not: Datetime, Table);
     Ok(())
 }
 
@@ -82,7 +82,7 @@ mod test {
         assert_eq!(
             validate_types(&schema).err().unwrap(),
             Error::InvalidType {
-                field: "params of [query_params]".to_string(),
+                field: "values of [query_params]".to_string(),
                 invalid_type: "table".to_string(),
             }
         )
