@@ -4,12 +4,16 @@ use toml::map::Map;
 use toml::Value;
 
 mod implementors {
-    pub(crate) const QUERY_PARAMS: u8 = 0x00;
+    pub(crate) const METADATA: u8 = 0x00;
+    pub(crate) const QUERY_PARAMS: u8 = 0x01;
 }
 
 /// Newtype implementation to wrap TOML tables where the set of keys can be free
 #[derive(Deserialize)]
 pub(crate) struct Table<const T: u8>(pub(crate) Map<String, Value>);
+
+/// `metadata` table
+pub(crate) type Metadata = Table<{ implementors::METADATA }>;
 
 /// `query_params` table
 pub(crate) type QueryParams = Table<{ implementors::QUERY_PARAMS }>;
@@ -21,11 +25,6 @@ impl<const T: u8> Table<T> {
 }
 
 impl QueryParams {
-    #[cfg(test)]
-    pub fn new(query_params: Map<String, Value>) -> Self {
-        Self(query_params)
-    }
-
     pub fn into_pairs(self) -> Vec<(String, String)> {
         self.0
             .into_iter()
@@ -47,6 +46,25 @@ fn flatten_value(val: Value) -> String {
         }
         _ => val.to_string(),
     }
+}
+
+#[cfg(test)]
+mod constructors {
+    use super::*;
+    use toml::map::Map;
+
+    macro_rules! implement_new {
+        ($alias:ident) => {
+            impl $alias {
+                pub fn new(table: Map<String, Value>) -> Self {
+                    Self(table)
+                }
+            }
+        };
+    }
+
+    implement_new!(Metadata);
+    implement_new!(QueryParams);
 }
 
 #[cfg(test)]

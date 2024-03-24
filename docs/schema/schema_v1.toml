@@ -47,14 +47,8 @@ method = "string"
 ####### The metadata table allows developers to add extra information
 
 [metadata]
-# [optional]
-# Rede could use this key in case of opting to support names for requests
-name = "string"
-# [optional]
-# Rede could use this key in case of opting to support description for requests
-description = "string"
-# Every other metadata that the user wants to specify
-_key = [ "string", "integer", "float", "boolean", "datetime", "array", "table" ]
+# rede uses some metadata keys like `name` or `description`
+_key = "string"
 
 ####### The headers table allows to set any header, it overrides any preconfigured one
 

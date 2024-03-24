@@ -43,6 +43,7 @@ mod test {
                 url: "url".to_string(),
                 method: "get".to_string(),
             },
+            metadata: None,
             query_params: Some(QueryParams::new(query_params)),
         };
         let request = Request::try_from(schema).unwrap();
