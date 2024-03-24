@@ -1,7 +1,7 @@
-mod query_params;
+mod table;
 mod validation;
 
-pub(crate) use query_params::QueryParams;
+pub(crate) use table::QueryParams;
 
 use crate::error::Error;
 use crate::schema::validation::validate_types;
