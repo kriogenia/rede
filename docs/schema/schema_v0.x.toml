@@ -42,7 +42,7 @@
 url = "string"
 # HTTP version of the request in the form of "HTTP/<version>"
 # [ optional ] [ default = "HTTP/1.1" ]
-version = [ 'HTTP/0.9', 'HTTP/1.0', 'HTTP/1.1', 'HTTP/2.0', 'HTTP/3.0' ]
+version = ['HTTP/0.9', 'HTTP/1.0', 'HTTP/1.1', 'HTTP/2.0', 'HTTP/3.0']
 # HTTP method of the request
 # [ optional ] [ default = "GET" ]
 # The default could be different based on the request protocol.
@@ -53,7 +53,7 @@ method = "string"
 [metadata]
 # rede uses some metadata keys like `name` or `description`
 # note: In the Request parsed struct these values will all be converted to strings
-_key = [ "string", "integer", "float", "boolean" ]
+_key = ["string", "integer", "float", "boolean"]
 
 ####### The headers table allows to set any header, it overrides any preconfigured one
 
@@ -69,22 +69,22 @@ disabled = "boolean"
 ####### The query params table allows to define pairs of key and values to add to the url
 
 [query_params]
-_key = [ "string", "integer", "float", "boolean", "array" ]
+_key = ["string", "integer", "float", "boolean", "array"]
 
 [query_params._table]
 # Corresponds to the value that would be assigned with the shorthand version
-value = [ "string", "integer", "float", "boolean", "array" ]
+value = ["string", "integer", "float", "boolean", "array"]
 # [optiona] [ default = false ]
 disabled = "boolean"
 
 ####### The path params table defines the value for segment paths enclosed in `{{name}}`, overrides env values
 
 [path_params]
-_key = [ "string", "integer", "float", "boolean" ]
+_key = ["string", "integer", "float", "boolean"]
 
 [path_params._table]
 # Corresponds to the value that would be assigned with the shorthand version
-value = [ "string", "integer", "float", "boolean" ]
+value = ["string", "integer", "float", "boolean"]
 # [optiona] [ default = false ]
 disabled = "boolean"
 
@@ -93,45 +93,44 @@ disabled = "boolean"
 # Each key of body defines one optional type of body to use. Only one per body can be used.
 # As such you are encouraged to define a single key in the form of [body.<type>]
 
-[body]
 # [ optional ]
 # [ aliases = file ]
-binary = "string"   # representing a path to the binary
+body.binary = "string"   # representing a path to the binary
 # [ optional ]
 # [ aliases = text ]
-raw = "string"
+body.raw = "string"
 
 # Alternative and specific body types, they can provide additional features like validation or automatically setting the
 # `Content-Type` header
 
 # [ optional ]
+# [ aliases = graph_ql ]
+body.graphql = "string"
+# [ optional ]
+# Not coming until the support for HTTP/2, but defined as there's plans for it.
+body.grpc = "string"
+# [ optional ]
+body.html = "string"
+# [ optional ]
+# [ aliases = js ]
+body.javascript = "string"
+# [ optional ]
+body.json = "string"
+# [ optional ]
+body.plain = "string"
+# [ optional ]
+body.pdf = "string"  # representing a path to the binary
+# [ optional ]
+body.xml = "string"
+# [ optional ]
+body.zip = "string"  # representing a path to the binary
+# [ optional ]
 [body.form_data]
-_key = [ "string", "integer", "float", "boolean" ]
+_key = ["string", "integer", "float", "boolean", "array"]
 # [ optional ]
 # [ aliases = x_www_form_url_encoded, x_www_form_url_encoded ]
 [body.form_urlencoded]
-_key = [ "string", "integer", "float", "boolean" ]
-# [ optional ]
-# [ aliases = graph_ql ]
-graphql = "string"
-# [ optional ]
-# Not coming until the support for HTTP/2, but defined as there's plans for it.
-grpc = "string"
-# [ optional ]
-html = "string"
-# [ optional ]
-# [ aliases = js ]
-javascript = "string"
-# [ optional ]
-json = "string"
-# [ optional ]
-plain = "string"
-# [ optional ]
-pdf = "string"  # representing a path to the binary
-# [ optional ]
-xml = "string"
-# [ optional ]
-zip = "string"  # representing a path to the binary
+_key = ["string", "integer", "float", "boolean", "array"]
 
 # Additional specific types could be added but any request should be fulfillable with `raw`/`binary` and the
 # `Content-Type` header.
@@ -150,7 +149,7 @@ hint = "string"
 # [ optional ] [ default = None ]
 # Must match the type of the parameter. Allows the user to omit fulfilling the parameter and use the default.
 # If not provided and the user doesn't fulfill the input, the request is aborted
-default = [ "string", "integer", "float", "boolean" ]
+default = ["string", "integer", "float", "boolean"]
 # [ optional ] [ default = false ]
 # Reserved for future developments that could allow for fast disabling via interface
 disabled = "boolean"
