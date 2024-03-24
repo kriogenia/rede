@@ -5,9 +5,16 @@ use toml::Value;
 pub(crate) type TypeFilterFn = fn(&&Value) -> bool;
 
 macro_rules! validate_type {
-    ($key:literal, $item:expr, no: $($type:ident),+) => {
+    ($item:expr, $key:literal is not: $($type:ident),+) => {
         $(
             if let Some(value) = $item.has_value(|v| matches!(v, Value::$type(_))) {
+                return Err(Error::invalid_type($key, value));
+            }
+        )+
+    };
+    ($item:expr, $key:literal is: $($type:ident),+) => {
+        $(
+            if let Some(value) = $item.has_value(|v| !matches!(v, Value::$type(_))) {
                 return Err(Error::invalid_type($key, value));
             }
         )+
@@ -15,8 +22,11 @@ macro_rules! validate_type {
 }
 
 pub(super) fn validate_types(schema: &Schema) -> Result<(), Error> {
+    if let Some(meta) = &schema.metadata {
+        validate_type!(meta, "values of [metadata]" is: String);
+    }
     if let Some(qp) = &schema.query_params {
-        validate_type!("params of [query_params]", qp, no: Datetime, Table);
+        validate_type!(qp, "params of [query_params]" is not: Datetime, Table);
     }
     Ok(())
 }
@@ -24,11 +34,15 @@ pub(super) fn validate_types(schema: &Schema) -> Result<(), Error> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::schema::QueryParams;
+    use crate::schema::{Metadata, QueryParams};
     use toml::map::Map;
 
     #[test]
     fn valid_schema_types() {
+        let mut metadata = Map::new();
+        metadata.insert("key".to_string(), Value::String("value".to_string()));
+        metadata.insert("other".to_string(), Value::String("string".to_string()));
+
         let mut query_params = Map::new();
         query_params.insert("string".to_string(), Value::String("valid".to_string()));
         query_params.insert("integer".to_string(), Value::Integer(0));
@@ -37,8 +51,25 @@ mod test {
         query_params.insert("array".to_string(), Value::Array(vec![]));
 
         let mut schema = Schema::new();
+        schema.metadata = Some(Metadata::new(metadata));
         schema.query_params = Some(QueryParams::new(query_params));
         assert!(validate_types(&schema).is_ok())
+    }
+
+    #[test]
+    fn invalid_metadata_type() {
+        let mut metadata = Map::new();
+        metadata.insert("array".to_string(), Value::Array(vec![]));
+
+        let mut schema = Schema::new();
+        schema.metadata = Some(Metadata::new(metadata));
+        assert_eq!(
+            validate_types(&schema).err().unwrap(),
+            Error::InvalidType {
+                field: "values of [metadata]".to_string(),
+                invalid_type: "array".to_string(),
+            }
+        )
     }
 
     #[test]

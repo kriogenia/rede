@@ -1,6 +1,7 @@
 mod table;
 mod validation;
 
+pub(crate) use table::Metadata;
 pub(crate) use table::QueryParams;
 
 use crate::error::Error;
@@ -11,6 +12,8 @@ use std::str::FromStr;
 #[derive(Deserialize)]
 pub(crate) struct Schema {
     pub http: Http,
+    #[allow(dead_code)]
+    pub metadata: Option<Metadata>,
     #[serde(alias = "queryparams", alias = "query-params")]
     pub query_params: Option<QueryParams>,
 }
@@ -30,6 +33,7 @@ impl Schema {
                 url: "url".to_string(),
                 method: "GET".to_string(),
             },
+            metadata: None,
             query_params: None,
         }
     }
@@ -60,6 +64,10 @@ mod test {
     method = "GET"
     url = "https://example.org/api"
 
+    [metadata]
+    name = "Test request"
+    description = "Request with all supported options"
+
     [queryparams]
     string = "string"
     integer = 10
@@ -73,6 +81,16 @@ mod test {
         let mut schema: Schema = toml::from_str(ALL).unwrap();
         assert_eq!(schema.http.url, "https://example.org/api");
         assert_eq!(schema.http.method, "GET");
+        let metadata = schema.metadata.take().unwrap();
+        assert_eq!(metadata.0.len(), 2);
+        assert_eq!(
+            metadata.0["name"],
+            Value::String("Test request".to_string())
+        );
+        assert_eq!(
+            metadata.0["description"],
+            Value::String("Request with all supported options".to_string())
+        );
         let query_params = schema.query_params.take().unwrap();
         assert_eq!(query_params.0.len(), 5);
         assert_eq!(
