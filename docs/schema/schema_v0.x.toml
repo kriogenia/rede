@@ -1,4 +1,4 @@
-# This file represents the schema planned to be supported in the v1.0 of this project. It also includes some
+# This file represents the schema planned to be supported in the v0.1 of this project. It also includes some
 # projected parts that could be implemented later than that version but are still planned as an option and reserved.
 
 # The schema must follow TOML's full specification, see: https://toml.io/en/v1.0.0
@@ -7,8 +7,8 @@
 # The only mandatory table is `[http]`, all the others are optional. Inside each table, unless stated otherwise, each
 # key is mandatory.
 
-# Every key is followed by an array indicating the supported TOML types that will be accepted for their values.
-# If the values supported are a list of string those will be indicated with a string like "option1|option2|etc"
+# Every key is followed by an array of strings ("type") indicating the supported TOML types that will be accepted for their values.
+# If the string value is single-quoted then the value must be a string of those listed.
 
 # Every `_key` means that the table accepts a list of zero or more keys that can be defined by the user.
 # Those should be different that those outrightly stated. Each `_key` also indicates its supported types or options.
@@ -23,11 +23,17 @@
 
 # Keys can have additional aliases valid on top of the defined name. Only one can be used in each request.
 
-# The order in this schema is only optimized for reading purposes.
+# The order in this schema is only optimized for reading purposes. User can follow their own order.
 
-# [optional] indicates that the key is not required in the table
-# [default = <value>] indicates the value used by default if omitted
-# [aliases =
+# [ optional ] indicates that the key is not required in the table.
+# [ default = <value> ] indicates the value used by default if omitted.
+# [ aliases = ...keys ] indicates the alternative keys that can be used.
+
+###########################################
+
+# This file includes backwards-compatible changes for future versions. Differences.
+# - Headers, query_params and path_params can now have a table value with a new key `disabled` to provide the option
+#   for fast disabling the property without having to comment it out.
 
 ####### First line of every HTTP request
 
@@ -35,10 +41,10 @@
 # URL of the request
 url = "string"
 # HTTP version of the request in the form of "HTTP/<version>"
-# [optional] [ default = "HTTP/1.1" ]
-version = "string"
+# [ optional ] [ default = "HTTP/1.1" ]
+version = [ 'HTTP/0.9', 'HTTP/1.0', 'HTTP/1.1', 'HTTP/2.0', 'HTTP/3.0' ]
 # HTTP method of the request
-# [optional] [ default = "GET" ]
+# [ optional ] [ default = "GET" ]
 # The default could be different based on the request protocol.
 method = "string"
 
@@ -58,7 +64,6 @@ _key = "string"
 # Corresponds to the value that would be assigned with the shorthand version
 value = "string"
 # [optiona] [ default = false ]
-# Reserved for future developments that could allow for fast disabling via interface
 disabled = "boolean"
 
 ####### The query params table allows to define pairs of key and values to add to the url
@@ -70,7 +75,6 @@ _key = [ "string", "integer", "float", "boolean", "array" ]
 # Corresponds to the value that would be assigned with the shorthand version
 value = [ "string", "integer", "float", "boolean", "array" ]
 # [optiona] [ default = false ]
-# Reserved for future developments that could allow for fast disabling via interface
 disabled = "boolean"
 
 ####### The path params table defines the value for segment paths enclosed in `{{name}}`, overrides env values
@@ -82,7 +86,6 @@ _key = [ "string", "integer", "float", "boolean" ]
 # Corresponds to the value that would be assigned with the shorthand version
 value = [ "string", "integer", "float", "boolean" ]
 # [optiona] [ default = false ]
-# Reserved for future developments that could allow for fast disabling via interface
 disabled = "boolean"
 
 ####### Defines the body that will be sent with the request
@@ -91,43 +94,43 @@ disabled = "boolean"
 # As such you are encouraged to define a single key in the form of [body.<type>]
 
 [body]
-# [optional]
+# [ optional ]
 # [ aliases = file ]
 binary = "string"   # representing a path to the binary
-# [optional]
+# [ optional ]
 # [ aliases = text ]
 raw = "string"
 
 # Alternative and specific body types, they can provide additional features like validation or automatically setting the
 # `Content-Type` header
 
-# [optional]
+# [ optional ]
 [body.form_data]
 _key = [ "string", "integer", "float", "boolean" ]
-# [optional]
+# [ optional ]
 # [ aliases = x_www_form_url_encoded, x_www_form_url_encoded ]
 [body.form_urlencoded]
 _key = [ "string", "integer", "float", "boolean" ]
-# [optional]
+# [ optional ]
 # [ aliases = graph_ql ]
 graphql = "string"
-# [optional]
-# Not coming until the support for HHTP/2, but defined as there's plans for it.
+# [ optional ]
+# Not coming until the support for HTTP/2, but defined as there's plans for it.
 grpc = "string"
-# [optional]
+# [ optional ]
 html = "string"
-# [optional]
+# [ optional ]
 # [ aliases = js ]
 javascript = "string"
-# [optional]
+# [ optional ]
 json = "string"
-# [optional]
+# [ optional ]
 plain = "string"
-# [optional]
+# [ optional ]
 pdf = "string"  # representing a path to the binary
-# [optional]
+# [ optional ]
 xml = "string"
-# [optional]
+# [ optional ]
 zip = "string"  # representing a path to the binary
 
 # Additional specific types could be added but any request should be fulfillable with `raw`/`binary` and the
@@ -141,13 +144,13 @@ _key = "string|integer|float|boolean"              # representes the type to exp
 [input_params._table]
 # Corresponds to the value that would be assigned with the shorthand version
 type = "string|integer|float|boolean"
-# [optional] [ default = "" ]
+# [ optional ] [ default = "" ]
 # Specifies a hint to help user to input a valid value
 hint = "string"
-# [optional] [ default = None ]
+# [ optional ] [ default = None ]
 # Must match the type of the parameter. Allows the user to omit fulfilling the parameter and use the default.
 # If not provided and the user doesn't fulfill the input, the request is aborted
 default = [ "string", "integer", "float", "boolean" ]
-# [optional] [ default = false ]
+# [ optional ] [ default = false ]
 # Reserved for future developments that could allow for fast disabling via interface
 disabled = "boolean"

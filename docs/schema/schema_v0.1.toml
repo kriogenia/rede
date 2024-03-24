@@ -1,0 +1,129 @@
+# This file represents the schema planned to be supported in the v0.1 of this project. It also includes some
+# projected parts that could be implemented later than that version but are still planned as an option and reserved.
+
+# The schema must follow TOML's full specification, see: https://toml.io/en/v1.0.0
+# This also means that you can follow all its alternative ways of declaring the same. Style is not imposed.
+
+# The only mandatory table is `[http]`, all the others are optional. Inside each table, unless stated otherwise, each
+# key is mandatory.
+
+# Every key is followed by an array of strings ("type") indicating the supported TOML types that will be accepted for their values.
+# If the string value is single-quoted then the value must be a string of those listed.
+
+# Every `_key` means that the table accepts a list of zero or more keys that can be defined by the user.
+# Those should be different that those outrightly stated. Each `_key` also indicates its supported types or options.
+# Tables like `_table` follow the same principle, free keys but its value must be a table with the specified keys.
+
+# If a key (or `_key`) appears twice in the form of key/value (`key = options`) and key/table ([table.key]), then
+# the key accepts both a shorthand version with a single value or a more complex one composed of different keys and
+# values. They are mutually exclusive.
+# The table will specify the default values that will be used if omitted (as it's the case in the shorthand version).
+
+# Any multiword key supports lowercase, snake_case and kebab-case, eg: pathparams, path-params, path_params
+
+# Keys can have additional aliases valid on top of the defined name. Only one can be used in each request.
+
+# The order in this schema is only optimized for reading purposes. User can follow their own order.
+
+# [ optional ] indicates that the key is not required in the table.
+# [ default = <value> ] indicates the value used by default if omitted.
+# [ aliases = ...keys ] indicates the alternative keys that can be used.
+
+####### First line of every HTTP request
+
+[http]
+# URL of the request
+url = "string"
+# HTTP version of the request in the form of "HTTP/<version>"
+# [ optional ] [ default = "HTTP/1.1" ]
+version = [ 'HTTP/0.9', 'HTTP/1.0', 'HTTP/1.1', 'HTTP/2.0', 'HTTP/3.0' ]
+# HTTP method of the request
+# [ optional ] [ default = "GET" ]
+# The default could be different based on the request protocol.
+method = "string"
+
+####### The metadata table allows developers to add extra information
+
+[metadata]
+# rede uses some metadata keys like `name` or `description`
+# note: In the Request parsed struct these values will all be converted to strings
+_key = [ "string", "integer", "float", "boolean" ]
+
+####### The headers table allows to set any header, it overrides any preconfigured one
+
+[headers]
+_key = "string"
+
+####### The query params table allows to define pairs of key and values to add to the url
+
+[query_params]
+_key = [ "string", "integer", "float", "boolean", "array" ]
+
+####### The path params table defines the value for segment paths enclosed in `{{name}}`, overrides env values
+
+[path_params]
+_key = [ "string", "integer", "float", "boolean" ]
+
+####### Defines the body that will be sent with the request
+
+# Each key of body defines one optional type of body to use. Only one per body can be used.
+# As such you are encouraged to define a single key in the form of [body.<type>]
+
+[body]
+# [ optional ]
+# [ aliases = file ]
+binary = "string"   # representing a path to the binary
+# [ optional ]
+# [ aliases = text ]
+raw = "string"
+
+# Alternative and specific body types, they can provide additional features like validation or automatically setting the
+# `Content-Type` header
+
+# [ optional ]
+[body.form_data]
+_key = [ "string", "integer", "float", "boolean" ]
+# [ optional ]
+# [ aliases = x_www_form_url_encoded, x_www_form_url_encoded ]
+[body.form_urlencoded]
+_key = [ "string", "integer", "float", "boolean" ]
+# [ optional ]
+# [ aliases = graph_ql ]
+graphql = "string"
+# [ optional ]
+# Not coming until the support for HTTP/2, but defined as there's plans for it.
+grpc = "string"
+# [ optional ]
+html = "string"
+# [ optional ]
+# [ aliases = js ]
+javascript = "string"
+# [ optional ]
+json = "string"
+# [ optional ]
+plain = "string"
+# [ optional ]
+pdf = "string"  # representing a path to the binary
+# [ optional ]
+xml = "string"
+# [ optional ]
+zip = "string"  # representing a path to the binary
+
+# Additional specific types could be added but any request should be fulfillable with `raw`/`binary` and the
+# `Content-Type` header.
+
+####### The input params will request user input to fill {{placeholders}}
+
+[input_params]
+_key = [ 'string', 'integer', 'float', 'boolean' ]  # representes the type to expect for the input param
+
+[input_params._table]
+# Corresponds to the value that would be assigned with the shorthand version
+type = [ 'string', 'integer', 'float', 'boolean' ]
+# [ optional ] [ default = "" ]
+# Specifies a hint to help user to input a valid value
+hint = "string"
+# [ optional ] [ default = None ]
+# Must match the type of the parameter. Allows the user to omit fulfilling the parameter and use the default.
+# If not provided and the user doesn't fulfill the input, the request is aborted
+default = [ "string", "integer", "float", "boolean" ]
