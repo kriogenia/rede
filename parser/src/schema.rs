@@ -16,11 +16,12 @@ mod validation;
 #[cfg_attr(test, derive(Default))]
 pub(crate) struct Schema {
     pub http: Http,
-    pub metadata: Option<StrStrTable>,
+    #[serde(default)]
+    pub metadata: StrStrTable,
     #[serde(with = "http_serde::header_map", default)]
     pub headers: HeaderMap,
-    #[serde(alias = "queryparams", alias = "query-params")]
-    pub query_params: Option<QueryParams>,
+    #[serde(alias = "queryparams", alias = "query-params", default)]
+    pub query_params: QueryParams,
     #[serde(alias = "pathparams", alias = "path-params", default)]
     pub path_params: StrStrTable,
 }
@@ -81,37 +82,32 @@ mod test {
 
     #[test]
     fn deserialize_all() {
-        let mut schema: Schema = toml::from_str(ALL).unwrap();
+        let schema: Schema = toml::from_str(ALL).unwrap();
         assert_eq!(schema.http.url, "https://example.org/api");
         assert_eq!(schema.http.method, Method::GET);
         assert_eq!(schema.http.version, Version::HTTP_11);
-        let metadata = schema.metadata.take().unwrap();
-        assert_eq!(metadata.0.len(), 2);
+        assert_eq!(schema.metadata.0.len(), 2);
         assert_eq!(
-            metadata.0["name"],
+            schema.metadata.0["name"],
             Value::String("Test request".to_string())
         );
         assert_eq!(
-            metadata.0["description"],
+            schema.metadata.0["description"],
             Value::String("Request with all supported options".to_string())
         );
         assert_eq!(schema.headers.len(), 2);
         assert_eq!(schema.headers["Content-Type"], "application/toml");
         assert_eq!(schema.headers["Api-Version"], "v2");
-        let query_params = schema.query_params.take().unwrap();
-        assert_eq!(query_params.0.len(), 5);
+        assert_eq!(schema.query_params.0.len(), 5);
         assert_eq!(
-            *query_params.0.get("string").unwrap(),
+            schema.query_params.0["string"],
             Value::String("string".into())
         );
-        assert_eq!(*query_params.0.get("integer").unwrap(), Value::Integer(10));
-        assert_eq!(*query_params.0.get("float").unwrap(), Value::Float(0.1));
+        assert_eq!(schema.query_params.0["integer"], Value::Integer(10));
+        assert_eq!(schema.query_params.0["float"], Value::Float(0.1));
+        assert_eq!(schema.query_params.0["boolean"], Value::Boolean(true));
         assert_eq!(
-            *query_params.0.get("boolean").unwrap(),
-            Value::Boolean(true)
-        );
-        assert_eq!(
-            *query_params.0.get("array").unwrap(),
+            schema.query_params.0["array"],
             Value::Array(vec![
                 Value::String("first".into()),
                 Value::String("second".into()),
@@ -147,6 +143,10 @@ mod test {
         let schema = Schema::from_str(toml).unwrap();
         assert_eq!(schema.http.method, Method::GET);
         assert_eq!(schema.http.version, Version::HTTP_11);
+        assert!(schema.metadata.0.is_empty());
+        assert!(schema.headers.is_empty());
+        assert!(schema.query_params.0.is_empty());
+        assert!(schema.path_params.0.is_empty());
     }
 
     #[test]

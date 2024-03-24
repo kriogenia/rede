@@ -1,5 +1,5 @@
 use crate::error::Error;
-use crate::schema::{QueryParams, Schema, StrStrTable};
+use crate::schema::Schema;
 use http::{HeaderMap, Method, Version};
 use std::collections::HashMap;
 
@@ -17,21 +17,13 @@ impl TryFrom<Schema> for Request {
     type Error = Error;
 
     fn try_from(schema: Schema) -> Result<Self, Self::Error> {
-        let metadata = schema
-            .metadata
-            .map(StrStrTable::into_map)
-            .unwrap_or_default();
-        let query_params = schema
-            .query_params
-            .map(QueryParams::into_param_pairs)
-            .unwrap_or_default();
         Ok(Self {
             method: schema.http.method,
             url: schema.http.url,
             http_version: schema.http.version,
-            metadata,
+            metadata: schema.metadata.into_map(),
             headers: schema.headers,
-            query_params,
+            query_params: schema.query_params.into_param_pairs(),
             path_params: schema.path_params.into_map(),
         })
     }
@@ -40,7 +32,7 @@ impl TryFrom<Schema> for Request {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::schema::{Http, Schema};
+    use crate::schema::{Http, QueryParams, Schema, StrStrTable};
     use toml::map::Map;
     use toml::Value;
 
@@ -68,8 +60,8 @@ mod test {
                 version: Version::HTTP_11,
             },
             headers,
-            metadata: Some(StrStrTable::new(metadata)),
-            query_params: Some(QueryParams::new(query_params)),
+            metadata: StrStrTable::new(metadata),
+            query_params: QueryParams::new(query_params),
             path_params: StrStrTable::new(path_params),
         };
 
