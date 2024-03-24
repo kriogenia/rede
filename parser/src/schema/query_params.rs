@@ -1,3 +1,4 @@
+use crate::schema::validation::TypeFilterFn;
 use serde::Deserialize;
 use toml::map::Map;
 use toml::Value;
@@ -13,7 +14,7 @@ impl QueryParams {
             .collect()
     }
 
-    pub fn has_value(&self, filter: fn(&&Value) -> bool) -> Option<&Value> {
+    pub fn has_value(&self, filter: TypeFilterFn) -> Option<&Value> {
         self.0.values().find(filter)
     }
 }

@@ -2,8 +2,10 @@ use crate::error::Error;
 use crate::schema::Schema;
 use toml::Value;
 
-macro_rules! has_invalid_type {
-    ($key:literal, $item:expr, no $($type:ident),+) => {
+pub(crate) type TypeFilterFn = fn(&&Value) -> bool;
+
+macro_rules! validate_type {
+    ($key:literal, $item:expr, no: $($type:ident),+) => {
         $(
             if let Some(value) = $item.has_value(|v| matches!(v, Value::$type(_))) {
                 return Err(Error::invalid_type($key, value));
@@ -14,7 +16,7 @@ macro_rules! has_invalid_type {
 
 pub(super) fn validate_types(schema: &Schema) -> Result<(), Error> {
     if let Some(qp) = &schema.query_params {
-        has_invalid_type!("params of [query_params]", qp, no Datetime, Table);
+        validate_type!("params of [query_params]", qp, no: Datetime, Table);
     }
     Ok(())
 }
