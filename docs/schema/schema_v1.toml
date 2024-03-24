@@ -37,7 +37,7 @@ url = "string"
 # HTPP version of the request
 # [optional] [ default = "1.1" ]
 # (defined to provide future support to the HTTP versions)
-http_version = "1.1"
+version = "1.1"
 # HTTP method of the request
 # [optional] [ default = "GET" ]
 # The default could be different based on the request protocol.
@@ -48,6 +48,7 @@ method = "string"
 
 [metadata]
 # rede uses some metadata keys like `name` or `description`
+# note: In the Request parsed struct these values will all be converted to strings
 _key = [ "string", "integer", "float", "boolean" ]
 
 ####### The headers table allows to set any header, it overrides any preconfigured one
