@@ -36,7 +36,7 @@
 url = "string"
 # HTTP version of the request in the form of "HTTP/<version>"
 # [ optional ] [ default = "HTTP/1.1" ]
-version = [ 'HTTP/0.9', 'HTTP/1.0', 'HTTP/1.1', 'HTTP/2.0', 'HTTP/3.0' ]
+version = ['HTTP/0.9', 'HTTP/1.0', 'HTTP/1.1', 'HTTP/2.0', 'HTTP/3.0']
 # HTTP method of the request
 # [ optional ] [ default = "GET" ]
 # The default could be different based on the request protocol.
@@ -47,7 +47,7 @@ method = "string"
 [metadata]
 # rede uses some metadata keys like `name` or `description`
 # note: In the Request parsed struct these values will all be converted to strings
-_key = [ "string", "integer", "float", "boolean" ]
+_key = ["string", "integer", "float", "boolean"]
 
 ####### The headers table allows to set any header, it overrides any preconfigured one
 
@@ -57,73 +57,28 @@ _key = "string"
 ####### The query params table allows to define pairs of key and values to add to the url
 
 [query_params]
-_key = [ "string", "integer", "float", "boolean", "array" ]
+_key = ["string", "integer", "float", "boolean", "array"]
 
 ####### The path params table defines the value for segment paths enclosed in `{{name}}`, overrides env values
 
 [path_params]
-_key = [ "string", "integer", "float", "boolean" ]
+_key = ["string", "integer", "float", "boolean"]
 
 ####### Defines the body that will be sent with the request
 
 # Each key of body defines one optional type of body to use. Only one per body can be used.
 # As such you are encouraged to define a single key in the form of [body.<type>]
 
-[body]
 # [ optional ]
 # [ aliases = file ]
-binary = "string"   # representing a path to the binary
+body.binary = "string"   # representing a path to the binary
 # [ optional ]
 # [ aliases = text ]
-raw = "string"
-
-# Alternative and specific body types, they can provide additional features like validation or automatically setting the
-# `Content-Type` header
-
+body.raw = "string"
 # [ optional ]
 [body.form_data]
-_key = [ "string", "integer", "float", "boolean" ]
+_key = ["string", "integer", "float", "boolean", "array"]
 # [ optional ]
 # [ aliases = x_www_form_url_encoded, x_www_form_url_encoded ]
 [body.form_urlencoded]
-_key = [ "string", "integer", "float", "boolean" ]
-# [ optional ]
-# [ aliases = graph_ql ]
-graphql = "string"
-# [ optional ]
-# Not coming until the support for HTTP/2, but defined as there's plans for it.
-grpc = "string"
-# [ optional ]
-html = "string"
-# [ optional ]
-# [ aliases = js ]
-javascript = "string"
-# [ optional ]
-json = "string"
-# [ optional ]
-plain = "string"
-# [ optional ]
-pdf = "string"  # representing a path to the binary
-# [ optional ]
-xml = "string"
-# [ optional ]
-zip = "string"  # representing a path to the binary
-
-# Additional specific types could be added but any request should be fulfillable with `raw`/`binary` and the
-# `Content-Type` header.
-
-####### The input params will request user input to fill {{placeholders}}
-
-[input_params]
-_key = [ 'string', 'integer', 'float', 'boolean' ]  # representes the type to expect for the input param
-
-[input_params._table]
-# Corresponds to the value that would be assigned with the shorthand version
-type = [ 'string', 'integer', 'float', 'boolean' ]
-# [ optional ] [ default = "" ]
-# Specifies a hint to help user to input a valid value
-hint = "string"
-# [ optional ] [ default = None ]
-# Must match the type of the parameter. Allows the user to omit fulfilling the parameter and use the default.
-# If not provided and the user doesn't fulfill the input, the request is aborted
-default = [ "string", "integer", "float", "boolean" ]
+_key = ["string", "integer", "float", "boolean", "array"]
