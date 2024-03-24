@@ -1,6 +1,7 @@
 mod table;
 mod validation;
 
+use std::fmt::{Debug, Display, Formatter};
 pub(crate) use table::Metadata;
 pub(crate) use table::QueryParams;
 
@@ -22,6 +23,23 @@ pub(crate) struct Http {
     pub url: String,
     #[serde(default = "default_method")]
     pub method: String,
+    #[serde(default)]
+    pub version: HttpVersion,
+}
+
+#[derive(Default, Debug, Deserialize, PartialEq)]
+pub(crate) enum HttpVersion {
+    #[default]
+    #[serde(rename = "1.1", alias = "HTTP/1.1")]
+    OnePointOne,
+}
+
+impl Display for HttpVersion {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            HttpVersion::OnePointOne => f.write_str("HTTP/1.1"),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -31,6 +49,7 @@ impl Schema {
             http: Http {
                 url: "url".to_string(),
                 method: "GET".to_string(),
+                version: HttpVersion::OnePointOne,
             },
             metadata: None,
             query_params: None,
@@ -62,6 +81,7 @@ mod test {
     [http]
     method = "GET"
     url = "https://example.org/api"
+    version = "1.1"
 
     [metadata]
     name = "Test request"
@@ -80,6 +100,7 @@ mod test {
         let mut schema: Schema = toml::from_str(ALL).unwrap();
         assert_eq!(schema.http.url, "https://example.org/api");
         assert_eq!(schema.http.method, "GET");
+        assert_eq!(schema.http.version, HttpVersion::OnePointOne);
         let metadata = schema.metadata.take().unwrap();
         assert_eq!(metadata.0.len(), 2);
         assert_eq!(
@@ -130,6 +151,7 @@ mod test {
         let toml = r#"http.url = "url""#;
         let schema = Schema::from_str(toml).unwrap();
         assert_eq!(schema.http.method, "GET");
+        assert_eq!(schema.http.version, HttpVersion::OnePointOne);
     }
 
     #[test]

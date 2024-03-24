@@ -5,6 +5,7 @@ use std::collections::HashMap;
 pub struct Request {
     pub method: String,
     pub url: String,
+    pub http_version: String,
     pub metadata: HashMap<String, String>,
     pub query_params: Vec<(String, String)>,
 }
@@ -21,6 +22,7 @@ impl TryFrom<Schema> for Request {
         Ok(Self {
             method: schema.http.method.to_uppercase(),
             url: schema.http.url,
+            http_version: schema.http.version.to_string(),
             metadata,
             query_params,
         })
@@ -30,7 +32,7 @@ impl TryFrom<Schema> for Request {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::schema::{Http, Schema};
+    use crate::schema::{Http, HttpVersion, Schema};
     use toml::map::Map;
     use toml::Value;
 
@@ -49,6 +51,7 @@ mod test {
             http: Http {
                 url: "url".to_string(),
                 method: "get".to_string(),
+                version: HttpVersion::OnePointOne,
             },
             metadata: Some(Metadata::new(metadata)),
             query_params: Some(QueryParams::new(query_params)),
@@ -56,6 +59,7 @@ mod test {
         let request = Request::try_from(schema).unwrap();
         assert_eq!(request.url, "url");
         assert_eq!(request.method, "GET");
+        assert_eq!(request.http_version, "HTTP/1.1");
         assert_eq!(request.metadata["name"], "test");
         assert_eq!(
             request.query_params,
