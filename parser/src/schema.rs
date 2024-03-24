@@ -53,6 +53,7 @@ fn default_method() -> String {
 #[cfg(test)]
 mod test {
     use super::*;
+    use toml::Value;
 
     const ALL: &str = r#"
     [http]
@@ -127,7 +128,7 @@ mod test {
         assert_eq!(
             Schema::from_str(toml).err().unwrap(),
             Error::InvalidType {
-                field: "queryparams".to_string(),
+                field: "params of [query_params]".to_string(),
                 invalid_type: "datetime".to_string()
             }
         )

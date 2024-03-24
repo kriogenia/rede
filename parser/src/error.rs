@@ -35,11 +35,11 @@ mod test {
     fn display() {
         assert_eq!(
             Error::InvalidType {
-                field: "field".to_string(),
+                field: "`field`".to_string(),
                 invalid_type: "type".to_string()
             }
             .to_string(),
-            "field can't be of type type"
+            "`field` can't be of type type"
         )
     }
 }

@@ -14,7 +14,7 @@ macro_rules! has_invalid_type {
 
 pub(super) fn validate_types(schema: &Schema) -> Result<(), Error> {
     if let Some(qp) = &schema.query_params {
-        has_invalid_type!("query_params", qp, no Datetime, Table);
+        has_invalid_type!("params of [query_params]", qp, no Datetime, Table);
     }
     Ok(())
 }
@@ -22,6 +22,7 @@ pub(super) fn validate_types(schema: &Schema) -> Result<(), Error> {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::schema::QueryParams;
     use toml::map::Map;
 
     #[test]
@@ -48,7 +49,7 @@ mod test {
         assert_eq!(
             validate_types(&schema).err().unwrap(),
             Error::InvalidType {
-                field: "query_params".to_string(),
+                field: "params of [query_params]".to_string(),
                 invalid_type: "table".to_string(),
             }
         )
