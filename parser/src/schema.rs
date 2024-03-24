@@ -1,15 +1,16 @@
-mod table;
-mod validation;
+use std::str::FromStr;
 
-use std::fmt::{Debug, Display, Formatter};
+use http::{Method, Version};
+use serde::Deserialize;
+
 pub(crate) use table::Metadata;
 pub(crate) use table::QueryParams;
 
 use crate::error::Error;
 use crate::schema::validation::validate_types;
-use http::Method;
-use serde::Deserialize;
-use std::str::FromStr;
+
+mod table;
+mod validation;
 
 #[derive(Deserialize)]
 pub(crate) struct Schema {
@@ -24,23 +25,8 @@ pub(crate) struct Http {
     pub url: String,
     #[serde(with = "http_serde::method", default)]
     pub method: Method,
-    #[serde(default)]
-    pub version: HttpVersion,
-}
-
-#[derive(Default, Debug, Deserialize, PartialEq)]
-pub(crate) enum HttpVersion {
-    #[default]
-    #[serde(rename = "1.1", alias = "HTTP/1.1")]
-    OnePointOne,
-}
-
-impl Display for HttpVersion {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            HttpVersion::OnePointOne => f.write_str("HTTP/1.1"),
-        }
-    }
+    #[serde(with = "http_serde::version", default)]
+    pub version: Version,
 }
 
 #[cfg(test)]
@@ -50,7 +36,7 @@ impl Schema {
             http: Http {
                 url: "url".to_string(),
                 method: Method::GET,
-                version: HttpVersion::OnePointOne,
+                version: Version::HTTP_11,
             },
             metadata: None,
             query_params: None,
@@ -70,14 +56,15 @@ impl FromStr for Schema {
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use toml::Value;
+
+    use super::*;
 
     const ALL: &str = r#"
     [http]
     method = "GET"
     url = "https://example.org/api"
-    version = "1.1"
+    version = "HTTP/1.1"
 
     [metadata]
     name = "Test request"
@@ -96,7 +83,7 @@ mod test {
         let mut schema: Schema = toml::from_str(ALL).unwrap();
         assert_eq!(schema.http.url, "https://example.org/api");
         assert_eq!(schema.http.method, Method::GET);
-        assert_eq!(schema.http.version, HttpVersion::OnePointOne);
+        assert_eq!(schema.http.version, Version::HTTP_11);
         let metadata = schema.metadata.take().unwrap();
         assert_eq!(metadata.0.len(), 2);
         assert_eq!(
@@ -147,14 +134,7 @@ mod test {
         let toml = r#"http.url = "url""#;
         let schema = Schema::from_str(toml).unwrap();
         assert_eq!(schema.http.method, Method::GET);
-        assert_eq!(schema.http.version, HttpVersion::OnePointOne);
-    }
-
-    #[test]
-    fn unknown_values() {
-        let toml = r#"http = { url = "url", version = "4" }"#;
-        let err = Schema::from_str(toml).err().unwrap();
-        assert!(err.to_string().contains("unknown variant `4`"));
+        assert_eq!(schema.http.version, Version::HTTP_11);
     }
 
     #[test]

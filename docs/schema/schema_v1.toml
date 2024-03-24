@@ -34,10 +34,9 @@
 [http]
 # URL of the request
 url = "string"
-# HTPP version of the request
-# [optional] [ default = "1.1" ]
-# (defined to provide future support to the HTTP versions)
-version = "1.1"
+# HTTP version of the request in the form of "HTTP/<version>"
+# [optional] [ default = "HTTP/1.1" ]
+version = "string"
 # HTTP method of the request
 # [optional] [ default = "GET" ]
 # The default could be different based on the request protocol.

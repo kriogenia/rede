@@ -1,12 +1,12 @@
 use crate::error::Error;
 use crate::schema::{Metadata, QueryParams, Schema};
-use http::Method;
+use http::{Method, Version};
 use std::collections::HashMap;
 
 pub struct Request {
     pub method: Method,
     pub url: String,
-    pub http_version: String,
+    pub http_version: Version,
     pub metadata: HashMap<String, String>,
     pub query_params: Vec<(String, String)>,
 }
@@ -23,7 +23,7 @@ impl TryFrom<Schema> for Request {
         Ok(Self {
             method: schema.http.method,
             url: schema.http.url,
-            http_version: schema.http.version.to_string(),
+            http_version: schema.http.version,
             metadata,
             query_params,
         })
@@ -33,7 +33,7 @@ impl TryFrom<Schema> for Request {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::schema::{Http, HttpVersion, Schema};
+    use crate::schema::{Http, Schema};
     use toml::map::Map;
     use toml::Value;
 
@@ -52,7 +52,7 @@ mod test {
             http: Http {
                 url: "url".to_string(),
                 method: Method::GET,
-                version: HttpVersion::OnePointOne,
+                version: Version::HTTP_11,
             },
             metadata: Some(Metadata::new(metadata)),
             query_params: Some(QueryParams::new(query_params)),
@@ -60,7 +60,7 @@ mod test {
         let request = Request::try_from(schema).unwrap();
         assert_eq!(request.url, "url");
         assert_eq!(request.method, Method::GET);
-        assert_eq!(request.http_version, "HTTP/1.1");
+        assert_eq!(request.http_version, Version::HTTP_11);
         assert_eq!(request.metadata["name"], "test");
         assert_eq!(
             request.query_params,
