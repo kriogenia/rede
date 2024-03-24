@@ -146,7 +146,7 @@ mod test {
         assert_eq!(
             Schema::from_str(toml).err().unwrap(),
             Error::InvalidType {
-                field: "params of [query_params]".to_string(),
+                field: "values of [query_params]".to_string(),
                 invalid_type: "datetime".to_string()
             }
         )
