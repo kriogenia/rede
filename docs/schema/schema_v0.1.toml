@@ -79,6 +79,6 @@ body.raw = "string"
 [body.form_data]
 _key = ["string", "integer", "float", "boolean", "array"]
 # [ optional ]
-# [ aliases = x_www_form_url_encoded, x_www_form_url_encoded ]
-[body.form_urlencoded]
+# [ aliases = form_url_encoded ]
+[body.x_www_form_urlencoded]
 _key = ["string", "integer", "float", "boolean", "array"]
