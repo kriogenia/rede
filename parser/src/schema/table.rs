@@ -1,4 +1,3 @@
-use crate::schema::validation::TypeFilterFn;
 use serde::Deserialize;
 use std::collections::HashMap;
 use toml::map::Map;
@@ -20,10 +19,6 @@ pub(crate) type StrStrTable = Table<{ variant::STRING_STRING }>;
 pub(crate) type QueryParams = Table<{ variant::QUERY_PARAMS }>;
 
 impl<const T: u8> Table<T> {
-    pub fn has_value(&self, filter: TypeFilterFn) -> Option<&Value> {
-        self.0.values().find(filter)
-    }
-
     fn into_pairs<O>(self, map: fn(Value) -> O) -> Vec<(String, O)> {
         self.0
             .into_iter()

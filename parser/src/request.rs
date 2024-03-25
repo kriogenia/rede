@@ -1,3 +1,4 @@
+use crate::body::Body;
 use crate::error::Error;
 use crate::schema::Schema;
 use http::{HeaderMap, Method, Version};
@@ -11,6 +12,7 @@ pub struct Request {
     pub headers: HeaderMap,
     pub query_params: Vec<(String, String)>,
     pub path_params: HashMap<String, String>,
+    pub body: Body,
 }
 
 impl TryFrom<Schema> for Request {
@@ -25,6 +27,7 @@ impl TryFrom<Schema> for Request {
             headers: schema.headers,
             query_params: schema.query_params.into_param_pairs(),
             path_params: schema.path_params.into_map(),
+            body: schema.body,
         })
     }
 }
@@ -32,6 +35,7 @@ impl TryFrom<Schema> for Request {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::body::Body;
     use crate::schema::{Http, QueryParams, Schema, StrStrTable};
     use toml::map::Map;
     use toml::Value;
@@ -53,6 +57,8 @@ mod test {
         let mut path_params = Map::new();
         path_params.insert("pp".to_string(), Value::String("value".to_string()));
 
+        let body = Body::Binary("path".to_string());
+
         let schema = Schema {
             http: Http {
                 url: "url".to_string(),
@@ -63,6 +69,7 @@ mod test {
             metadata: StrStrTable::new(metadata),
             query_params: QueryParams::new(query_params),
             path_params: StrStrTable::new(path_params),
+            body,
         };
 
         let request = Request::try_from(schema).unwrap();
@@ -76,5 +83,6 @@ mod test {
             vec![("qp".to_string(), "s,1".to_string())]
         );
         assert_eq!(request.path_params["pp"], "value");
+        assert_eq!(request.body, Body::Binary("path".to_string()));
     }
 }
