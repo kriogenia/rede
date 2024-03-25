@@ -3,6 +3,7 @@ use std::str::FromStr;
 use http::{HeaderMap, Method, Version};
 use serde::Deserialize;
 
+use crate::body::Body;
 pub(crate) use table::QueryParams;
 pub(crate) use table::StrStrTable;
 
@@ -24,6 +25,8 @@ pub(crate) struct Schema {
     pub query_params: QueryParams,
     #[serde(alias = "pathparams", alias = "path-params", default)]
     pub path_params: StrStrTable,
+    #[serde(default)]
+    pub body: Body,
 }
 
 #[derive(Deserialize)]
@@ -48,6 +51,7 @@ impl FromStr for Schema {
 
 #[cfg(test)]
 mod test {
+    use crate::body::Body;
     use toml::Value;
 
     use super::*;
@@ -78,6 +82,13 @@ mod test {
     integer = 5
     float = 1.2
     boolean = false
+
+    [body]
+    raw = """
+    {
+        "key": "value"
+    }
+    """
     "#;
 
     #[test]
@@ -121,6 +132,8 @@ mod test {
         assert_eq!(schema.path_params.0["integer"], Value::Integer(5));
         assert_eq!(schema.path_params.0["float"], Value::Float(1.2));
         assert_eq!(schema.path_params.0["boolean"], Value::Boolean(false));
+        let body: Body = schema.body.into();
+        assert!(matches!(body, Body::Raw(content) if content.contains(r#""key": "value""#)));
     }
 
     #[test]
@@ -147,6 +160,7 @@ mod test {
         assert!(schema.headers.is_empty());
         assert!(schema.query_params.0.is_empty());
         assert!(schema.path_params.0.is_empty());
+        assert_eq!(schema.body, Body::None);
     }
 
     #[test]
