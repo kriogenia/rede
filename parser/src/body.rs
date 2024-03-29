@@ -1,24 +1,45 @@
 use serde::Deserialize;
+use std::fmt::{Display, Formatter};
 use toml::map::Map;
 use toml::Value;
 
+/// Body of the request, it contains all the currently supported options
 #[derive(Debug, Default, Deserialize, PartialEq)]
 #[serde(rename_all = "snake_case")]
 pub enum Body {
+    /// The request does not have body (common for GET requests)
     #[default]
     None,
+    /// The body of the request is in text format. This body can be bundled with a Content-Type
+    /// like application/json to send JSONs with full meaning.
     #[serde(alias = "text")]
     Raw(String),
+    /// The body of the request contains a file located at the given path.
+    /// This body can be bundled with Content-Type headers like application/pdf.
     #[serde(alias = "file")]
     Binary(String),
+    /// The body is an HTTP form. // TODO check this for better message
     #[serde(alias = "form-data", alias = "formdata")]
     FormData(Map<String, Value>),
+    /// The body of the request is an HTTP form encoded in the URL.
     #[serde(
         alias = "x-www-form-urlencoded",
         alias = "form_urlencoded",
         alias = "form-urlencoded"
     )]
     XFormUrlEncoded(Map<String, Value>),
+}
+
+impl Display for Body {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        use Body::{Binary, FormData, None, Raw, XFormUrlEncoded};
+        match self {
+            None => Ok(()),
+            Raw(content) => f.write_str(content),
+            Binary(path) => write!(f, "@{path}"),
+            FormData(map) | XFormUrlEncoded(map) => writeln!(f, "{map}"),
+        }
+    }
 }
 
 #[cfg(test)]

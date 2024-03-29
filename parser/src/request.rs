@@ -4,6 +4,8 @@ use crate::schema::Schema;
 use http::{HeaderMap, Method, Version};
 use std::collections::HashMap;
 
+/// Representation of a rede HTTP request. Contains all the supported content by the current schema
+/// to allow the creation and dispatching of the HTTP request with the command-line interface.
 pub struct Request {
     pub method: Method,
     pub url: String,

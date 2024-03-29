@@ -13,6 +13,7 @@ use crate::schema::validation::validate_types;
 mod table;
 mod validation;
 
+/// Model of the supported request schema contents.
 #[derive(Deserialize)]
 #[cfg_attr(test, derive(Default))]
 pub(crate) struct Schema {
