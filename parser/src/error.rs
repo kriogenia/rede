@@ -1,10 +1,16 @@
 use thiserror::Error;
 use toml::Value;
 
+/// Errors that can happen during the parsing
 #[derive(Error, Debug, PartialEq)]
 pub enum Error {
+    /// Error triggered by submitting a key with a non-allowed TOML type.
     #[error("{field} can't be of type {invalid_type}")]
     InvalidType { field: String, invalid_type: String },
+    /// Error triggered while parsing the TOML file. Some common errors bundled on this one are:
+    /// - Missing required keys
+    /// - Duplicated keys
+    /// - Bad formatting...
     #[error("{0}")]
     InvalidFile(#[from] toml::de::Error),
 }

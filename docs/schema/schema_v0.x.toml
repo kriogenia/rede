@@ -79,12 +79,13 @@ disabled = "boolean"
 
 ####### The path params table defines the value for segment paths enclosed in `{{name}}`, overrides env values
 
+# The array type represents a list of options for future pick one implementation
 [path_params]
-_key = ["string", "integer", "float", "boolean"]
+_key = ["string", "integer", "float", "boolean", "array"]
 
 [path_params._table]
 # Corresponds to the value that would be assigned with the shorthand version
-value = ["string", "integer", "float", "boolean"]
+value = ["string", "integer", "float", "boolean", "array"]
 # [optiona] [ default = false ]
 disabled = "boolean"
 
@@ -148,8 +149,12 @@ type = "string|integer|float|boolean"
 hint = "string"
 # [ optional ] [ default = None ]
 # Must match the type of the parameter. Allows the user to omit fulfilling the parameter and use the default.
-# If not provided and the user doesn't fulfill the input, the request is aborted
+# If not provided and the user doesn't fulfill the input, the request is aborted.
+# Placeholder are supported as valid default values, this will resolve the value with the env (fails if it's none).
 default = ["string", "integer", "float", "boolean"]
 # [ optional ] [ default = false ]
 # Reserved for future developments that could allow for fast disabling via interface
 disabled = "boolean"
+# [ optional ] [ default = [] ]
+# Contains a list of options for the
+options = "array"
