@@ -91,6 +91,12 @@ mod test {
             vec![("qp".to_string(), "s,1".to_string())]
         );
         assert_eq!(request.path_params["pp"], "value");
-        assert_eq!(request.body, Body::Binary("path".to_string()));
+        assert_eq!(
+            request.body,
+            Body::Binary {
+                path: "path".to_string(),
+                mime: mime::APPLICATION_OCTET_STREAM,
+            }
+        );
     }
 }

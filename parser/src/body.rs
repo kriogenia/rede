@@ -1,3 +1,4 @@
+use mime::Mime;
 use std::collections::HashMap;
 
 /// Body of the request, it contains all the currently supported options
@@ -8,10 +9,10 @@ pub enum Body {
     None,
     /// The body of the request is in text format. This body can be bundled with a Content-Type
     /// like application/json to send JSONs with full meaning.
-    Raw(String),
+    Raw { content: String, mime: Mime },
     /// The body of the request contains a file located at the given path.
     /// This body can be bundled with Content-Type headers like application/pdf.
-    Binary(String),
+    Binary { path: String, mime: Mime },
     /// The body is an HTTP form.
     FormData(HashMap<String, FormDataValue>),
     /// The body of the request is an HTTP form encoded in the URL.
@@ -22,6 +23,29 @@ pub enum Body {
 pub enum FormDataValue {
     Text(String),
     File(String),
+}
+
+impl Body {
+    /// Returns the MIME type associated with the body
+    ///
+    /// ```
+    /// # fn main() {
+    /// # use thiserror::__private::AsDisplay;
+    /// # use rede_parser::body::Body;
+    /// # let body = Body::Binary { path: "path".to_string(), mime: mime::APPLICATION_OCTET_STREAM};
+    /// assert_eq!(body.mime().map(|m| m.to_string()), Some("application/octet-stream".to_string()));
+    /// # }
+    /// ```
+    ///
+    #[must_use]
+    pub fn mime(&self) -> Option<&Mime> {
+        match self {
+            Body::None => None,
+            Body::Raw { mime, .. } | Body::Binary { mime, .. } => Some(mime),
+            Body::FormData(_) => Some(&mime::MULTIPART_FORM_DATA),
+            Body::XFormUrlEncoded(_) => Some(&mime::APPLICATION_WWW_FORM_URLENCODED),
+        }
+    }
 }
 
 // todo implement display for Body

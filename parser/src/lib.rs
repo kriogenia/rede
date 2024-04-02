@@ -8,11 +8,11 @@
 //! Pass the correct request TOML to the parser functions to get the parsed request:
 //!
 //! ```
-//! use http::Method;
-//! use rede_parser::body::Body;
-//! use std::error::Error;
+//! # use http::Method;
+//! # use rede_parser::body::Body;
+//! # use std::error::Error;
 //!
-//! fn main() -> Result<(), Box<dyn Error>> {
+//! # fn main() -> Result<(), Box<dyn Error>> {
 //! let toml = r#"
 //!     [http]
 //!     method = "POST"
@@ -33,11 +33,12 @@
 //!  assert_eq!(request.method, Method::POST);
 //!  assert_eq!(request.url, "http://localhost:8080/note");
 //!  assert_eq!(request.headers["Content-Type"], "application/json");
-//!  if let Body::Raw(content) = request.body {
+//!  if let Body::Raw { content, mime } = request.body {
+//!     assert_eq!(mime, "text/plain; charset=utf-8");
 //!     println!("{content}");
 //!  }
-//!  Ok(())
-//! }
+//!  # Ok(())
+//! # }
 //!
 //! ```
 
