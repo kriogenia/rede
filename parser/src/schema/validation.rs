@@ -30,8 +30,8 @@ pub(super) fn validate_types(schema: &Schema) -> Result<(), Error> {
             }).collect::<HashMap<&String, &Value>>(),
             "values of [form_data]" are not: Datetime, Table);
     }
-    if let Body::XFormUrlEncoded(map) = &schema.body {
-        validate_type!(map, "valus of [x-www-form-urlencoded" are not: Datetime, Table);
+    if let Body::XFormUrlEncoded(table) = &schema.body {
+        validate_type!(table.0, "valus of [x-www-form-urlencoded" are not: Datetime, Table);
     }
     Ok(())
 }

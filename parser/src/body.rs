@@ -1,8 +1,5 @@
 use std::collections::HashMap;
 
-use toml::map::Map;
-use toml::Value;
-
 /// Body of the request, it contains all the currently supported options
 #[derive(Debug, Default, PartialEq)]
 pub enum Body {
@@ -18,7 +15,7 @@ pub enum Body {
     /// The body is an HTTP form.
     FormData(HashMap<String, FormDataValue>),
     /// The body of the request is an HTTP form encoded in the URL.
-    XFormUrlEncoded(Map<String, Value>),
+    XFormUrlEncoded(HashMap<String, String>),
 }
 
 #[derive(Debug, PartialEq)]
