@@ -1,7 +1,6 @@
 use crate::body::Body as PublicBody;
-use crate::schema::table::Table;
+use crate::schema::table::{Table, Transform};
 use serde::Deserialize;
-use toml::map::Map;
 use toml::Value;
 
 #[derive(Debug, Default, Deserialize, PartialEq)]
@@ -25,7 +24,7 @@ pub(crate) enum Body {
         alias = "form_urlencoded",
         alias = "form-urlencoded"
     )]
-    XFormUrlEncoded(Map<String, Value>),
+    XFormUrlEncoded(Table<Value>),
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -41,7 +40,8 @@ impl From<Body> for PublicBody {
             Body::None => PublicBody::None,
             Body::Raw(content) => PublicBody::Raw(content),
             Body::Binary(path) => PublicBody::Binary(path),
-            _ => unimplemented!(),
+            Body::FormData(table) => PublicBody::FormData(table.into_map()),
+            Body::XFormUrlEncoded(table) => PublicBody::XFormUrlEncoded(table.into_map()),
         }
     }
 }
