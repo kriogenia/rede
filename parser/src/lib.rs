@@ -1,5 +1,3 @@
-#![warn(clippy::pedantic)]
-
 //! Library to handle the parsing of requests in TOML format used by the crate `rede`.
 //!
 //! The library offers the function [`rede_parser::parse_request`] to convert a given string into
@@ -10,11 +8,12 @@
 //! Pass the correct request TOML to the parser functions to get the parsed request:
 //!
 //! ```
-//! use std::error::Error;
 //! use http::Method;
+//! use rede_parser::body::Body;
+//! use std::error::Error;
 //!
 //! fn main() -> Result<(), Box<dyn Error>> {
-//!  let toml = r#"
+//! let toml = r#"
 //!     [http]
 //!     method = "POST"
 //!     url = "http://localhost:8080/note"
@@ -34,12 +33,15 @@
 //!  assert_eq!(request.method, Method::POST);
 //!  assert_eq!(request.url, "http://localhost:8080/note");
 //!  assert_eq!(request.headers["Content-Type"], "application/json");
-//!  println!("{}", request.body);
+//!  if let Body::Raw(content) = request.body {
+//!     println!("{content}");
+//!  }
 //!  Ok(())
 //! }
 //!
 //! ```
-//!
+
+#![warn(clippy::pedantic)]
 
 pub mod body;
 pub mod error;
