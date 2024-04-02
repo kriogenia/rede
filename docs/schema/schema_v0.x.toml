@@ -126,8 +126,9 @@ body.xml = "string"
 # [ optional ]
 body.zip = "string"  # representing a path to the binary
 # [ optional ]
-[body.form_data]
-_key = ["string", "integer", "float", "boolean", "array"]
+[body.form_data]    # each key can only be of type text or file, they're mutually exclusive
+_key.text = ["string", "integer", "float", "boolean", "array"]
+_key.file = "string"
 # [ optional ]
 # [ aliases = x_www_form_url_encoded, x_www_form_url_encoded ]
 [body.form_urlencoded]

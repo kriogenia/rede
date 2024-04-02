@@ -1,41 +1,68 @@
-use serde::Deserialize;
+use std::collections::hash_map::IntoIter;
 use std::collections::HashMap;
-use toml::map::Map;
+use std::ops::Index;
+
+use crate::body::FormDataValue as PublicFDValue;
+use crate::schema::body::FormDataValue;
+use serde::Deserialize;
 use toml::Value;
 
-mod variant {
-    pub(crate) const STRING_STRING: u8 = 0x00;
-    pub(crate) const QUERY_PARAMS: u8 = 0x01;
+/// Newtype implementation to wrap TOML tables where the set of keys can be free
+#[derive(Debug, Deserialize, PartialEq)]
+pub(crate) struct Table<V>(pub(crate) HashMap<String, V>);
+
+impl<V> Index<&str> for Table<V> {
+    type Output = V;
+
+    fn index(&self, index: &str) -> &Self::Output {
+        &self.0[index]
+    }
 }
 
-/// Newtype implementation to wrap TOML tables where the set of keys can be free
-#[derive(Default, Deserialize)]
-pub(crate) struct Table<const T: u8>(pub(crate) Map<String, Value>);
+impl<V> IntoIterator for Table<V> {
+    type Item = (String, V);
+    type IntoIter = IntoIter<String, V>;
 
-/// Type for tables that will be converted into `HashMap<String, String>` like the `metadata`
-/// or `path_params` tables.
-pub(crate) type StrStrTable = Table<{ variant::STRING_STRING }>;
-/// `query_params` table
-pub(crate) type QueryParams = Table<{ variant::QUERY_PARAMS }>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
 
-impl<const T: u8> Table<T> {
-    fn into_pairs<O>(self, map: fn(Value) -> O) -> Vec<(String, O)> {
-        self.0
-            .into_iter()
-            .map(|(key, val)| (key, map(val)))
+impl<V> Default for Table<V> {
+    fn default() -> Self {
+        Self(HashMap::new())
+    }
+}
+
+pub trait Transform<V, O>: IntoIterator<Item = (String, V)>
+where
+    Self: Sized,
+{
+    fn map_value(value: V) -> O;
+
+    fn into_pairs(self) -> Vec<(String, O)> {
+        self.into_iter()
+            .map(|(k, v)| (k, Self::map_value(v)))
             .collect()
     }
-}
 
-impl StrStrTable {
-    pub fn into_map(self) -> HashMap<String, String> {
-        self.into_pairs(flatten_value).into_iter().collect()
+    fn into_map(self) -> HashMap<String, O> {
+        self.into_pairs().into_iter().collect()
     }
 }
 
-impl QueryParams {
-    pub fn into_param_pairs(self) -> Vec<(String, String)> {
-        self.into_pairs(flatten_value)
+impl Transform<Value, String> for Table<Value> {
+    fn map_value(value: Value) -> String {
+        flatten_value(value)
+    }
+}
+
+impl Transform<FormDataValue, PublicFDValue> for Table<FormDataValue> {
+    fn map_value(value: FormDataValue) -> PublicFDValue {
+        match value {
+            FormDataValue::Text(value) => PublicFDValue::Text(flatten_value(value)),
+            FormDataValue::File(path) => PublicFDValue::File(path),
+        }
     }
 }
 
@@ -55,22 +82,14 @@ fn flatten_value(val: Value) -> String {
 }
 
 #[cfg(test)]
-mod constructors {
-    use super::*;
-    use toml::map::Map;
-
-    macro_rules! implement_new {
-        ($alias:ident) => {
-            impl $alias {
-                pub fn new(table: Map<String, Value>) -> Self {
-                    Self(table)
-                }
-            }
-        };
+impl<V> Table<V> {
+    pub fn new(table: HashMap<String, V>) -> Self {
+        Self(table)
     }
 
-    implement_new!(StrStrTable);
-    implement_new!(QueryParams);
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
 }
 
 #[cfg(test)]
@@ -78,17 +97,8 @@ mod test {
     use super::*;
 
     #[test]
-    fn query_params_into_pairs() {
-        let string = r#"
-        string = "value"
-        integer = 10
-        float = 2.0
-        boolean = false
-        array = [ "s", 10 ]
-        "#;
-        let pairs = toml::from_str::<QueryParams>(string)
-            .unwrap()
-            .into_param_pairs();
+    fn into_pairs() {
+        let pairs = new_test_table().into_pairs();
 
         assert_eq!(pairs.len(), 5);
         assert_pair(&pairs, "string", "value");
@@ -96,6 +106,29 @@ mod test {
         assert_pair(&pairs, "float", "2.0");
         assert_pair(&pairs, "boolean", "false");
         assert_pair(&pairs, "array", "s,10");
+    }
+
+    #[test]
+    fn into_map() {
+        let map = new_test_table().into_map();
+
+        assert_eq!(map.len(), 5);
+        assert_eq!(map["string"], "value");
+        assert_eq!(map["integer"], "10");
+        assert_eq!(map["float"], "2.0");
+        assert_eq!(map["boolean"], "false");
+        assert_eq!(map["array"], "s,10");
+    }
+
+    fn new_test_table() -> Table<Value> {
+        let string = r#"
+        string = "value"
+        integer = 10
+        float = 2.0
+        boolean = false
+        array = [ "s", 10 ]
+        "#;
+        toml::from_str(string).unwrap()
     }
 
     fn assert_pair(pairs: &Vec<(String, String)>, key: &str, val: &str) {

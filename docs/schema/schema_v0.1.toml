@@ -76,8 +76,10 @@ body.binary = "string"   # representing a path to the binary
 # [ aliases = text ]
 body.raw = "string"
 # [ optional ]
-[body.form_data]
-_key = ["string", "integer", "float", "boolean", "array"]
+# [ aliases = multipart_form_data ]
+[body.form_data]    # each key can be only be of type text or file, they're mutually exclusive
+_key.text = ["string", "integer", "float", "boolean", "array"]
+_key.file = "string"
 # [ optional ]
 # [ aliases = form_url_encoded ]
 [body.x_www_form_urlencoded]

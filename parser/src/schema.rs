@@ -2,15 +2,16 @@ use std::str::FromStr;
 
 use http::{HeaderMap, Method, Version};
 use serde::Deserialize;
+use toml::Value;
 
-use crate::body::Body;
-pub(crate) use table::QueryParams;
-pub(crate) use table::StrStrTable;
+pub(crate) use body::Body;
 
 use crate::error::Error;
+use crate::schema::table::Table;
 use crate::schema::validation::validate_types;
 
-mod table;
+mod body;
+pub(crate) mod table;
 mod validation;
 
 /// Model of the supported request schema contents.
@@ -19,13 +20,13 @@ mod validation;
 pub(crate) struct Schema {
     pub http: Http,
     #[serde(default)]
-    pub metadata: StrStrTable,
+    pub metadata: Table<Value>,
     #[serde(with = "http_serde::header_map", default)]
     pub headers: HeaderMap,
     #[serde(alias = "queryparams", alias = "query-params", default)]
-    pub query_params: QueryParams,
+    pub query_params: Table<Value>,
     #[serde(alias = "pathparams", alias = "path-params", default)]
-    pub path_params: StrStrTable,
+    pub path_params: Table<Value>,
     #[serde(default)]
     pub body: Body,
 }
@@ -52,7 +53,6 @@ impl FromStr for Schema {
 
 #[cfg(test)]
 mod test {
-    use crate::body::Body;
     use toml::Value;
 
     use super::*;
