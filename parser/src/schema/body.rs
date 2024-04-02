@@ -38,8 +38,14 @@ impl From<Body> for PublicBody {
     fn from(value: Body) -> Self {
         match value {
             Body::None => PublicBody::None,
-            Body::Raw(content) => PublicBody::Raw(content),
-            Body::Binary(path) => PublicBody::Binary(path),
+            Body::Raw(content) => PublicBody::Raw {
+                content,
+                mime: mime::TEXT_PLAIN_UTF_8,
+            },
+            Body::Binary(path) => PublicBody::Binary {
+                path,
+                mime: mime::APPLICATION_OCTET_STREAM,
+            },
             Body::FormData(table) => PublicBody::FormData(table.into_map()),
             Body::XFormUrlEncoded(table) => PublicBody::XFormUrlEncoded(table.into_map()),
         }
