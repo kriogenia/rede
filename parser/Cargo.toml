@@ -10,7 +10,7 @@ license.workspace = true
 
 categories = [ "parser-implementations", "development-tools" ]
 description = "Parser in charge of modeling Rede's files"
-documentation = "TODO"
+documentation = "https://docs.rs/rede_parser"
 keywords = [ "parser", "rede", "toml", "http" ]
 readme = "./README.md"
 
