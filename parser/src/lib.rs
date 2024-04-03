@@ -33,9 +33,9 @@
 //!  assert_eq!(request.method, Method::POST);
 //!  assert_eq!(request.url, "http://localhost:8080/note");
 //!  assert_eq!(request.headers["Content-Type"], "application/json");
-//!  if let Body::Raw { content, mime } = request.body {
-//!     assert_eq!(mime, "text/plain; charset=utf-8");
-//!     println!("{content}");
+//!  if let Body::Raw { content, mime } = &request.body {
+//!     assert_eq!(mime, &"text/plain; charset=utf-8");
+//!     println!("{}", &request.body);
 //!  }
 //!  # Ok(())
 //! # }
