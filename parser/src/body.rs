@@ -20,6 +20,7 @@ pub enum Body {
     XFormUrlEncoded(HashMap<String, String>),
 }
 
+/// Types of values for form data, can be text or binaries
 #[derive(Debug, PartialEq)]
 pub enum FormDataValue {
     Text(String),
