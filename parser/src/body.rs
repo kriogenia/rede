@@ -1,5 +1,6 @@
 use mime::Mime;
 use std::collections::HashMap;
+use std::fmt::{Display, Formatter};
 
 /// Body of the request, it contains all the currently supported options
 #[derive(Debug, Default, PartialEq)]
@@ -48,18 +49,25 @@ impl Body {
     }
 }
 
-// todo implement display for Body
-
-/*
 impl Display for Body {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         use Body::{Binary, FormData, None, Raw, XFormUrlEncoded};
         match self {
             None => Ok(()),
-            Raw(content) => f.write_str(content),
-            Binary(path) => write!(f, "@{path}"),
-            FormData(map) => writeln!(f, "{map}"),
-            XFormUrlEncoded(map) => writeln!(f, "{map}"),
+            Raw { content, .. } => f.write_str(content),
+            Binary { path, .. } => writeln!(f, "@{path}"),
+            FormData(map) => {
+                for (k, v) in map {
+                    writeln!(f, "{k}: {v}")?;
+                }
+                Ok(())
+            }
+            XFormUrlEncoded(map) => {
+                for (k, v) in map {
+                    writeln!(f, "{k}: {v}")?;
+                }
+                Ok(())
+            }
         }
     }
 }
@@ -72,4 +80,42 @@ impl Display for FormDataValue {
         }
     }
 }
-*/
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    #[ignore]
+    fn display() {
+        let content = r#"
+        {
+          "key": "value"
+        }
+        "#
+        .to_string();
+        let body = Body::Raw {
+            content,
+            mime: mime::TEXT_PLAIN,
+        };
+        println!("{body}");
+
+        let body = Body::Binary {
+            path: "path/to/file".to_string(),
+            mime: mime::STAR_STAR,
+        };
+        println!("{body}");
+
+        let mut map = HashMap::new();
+        map.insert("text".to_string(), FormDataValue::Text("value".to_string()));
+        map.insert("file".to_string(), FormDataValue::File("path".to_string()));
+        let body = Body::FormData(map);
+        println!("{body}");
+
+        let mut map = HashMap::new();
+        map.insert("key".to_string(), "val".to_string());
+        map.insert("other".to_string(), "val".to_string());
+        let body = Body::XFormUrlEncoded(map);
+        println!("{body}");
+    }
+}
