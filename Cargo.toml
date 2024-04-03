@@ -9,7 +9,7 @@ resolver = "2"
 edition = "2021"
 
 authors = [ "SotoEstevez <ricardo@sotoestevez.dev"]
-homepage = "TODO"
+homepage = "https://github.com/kriogenia/rede"
 repository = "https://github.com/kriogenia/rede"
 license = "Apache-2.0 OR MIT"
 
