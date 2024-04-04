@@ -14,3 +14,5 @@ repository = "https://github.com/kriogenia/rede"
 license = "Apache-2.0 OR MIT"
 
 [workspace.dependencies]
+log = "0.4"
+thiserror = "1.0"
