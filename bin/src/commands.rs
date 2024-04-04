@@ -10,7 +10,7 @@ pub(crate) struct Cli {
 }
 
 impl Cli {
-    pub fn run(self) {
+    pub fn run(self) -> miette::Result<()> {
         self.command.run()
     }
 }
@@ -21,7 +21,7 @@ enum Command {
 }
 
 impl Command {
-    pub fn run(self) {
+    pub fn run(self) -> miette::Result<()> {
         match self {
             Command::Run(c) => c.run(),
         }
