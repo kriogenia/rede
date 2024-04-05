@@ -3,7 +3,8 @@ use clap::Parser;
 use crate::commands::Cli;
 
 mod commands;
-mod file;
+mod errors;
+mod util;
 
 fn main() -> miette::Result<()> {
     Cli::parse().run()
