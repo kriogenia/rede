@@ -11,7 +11,11 @@ pub(crate) struct Cli {
 
 impl Cli {
     pub fn run(self) -> miette::Result<()> {
-        self.command.run()
+        tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap()
+            .block_on(async { self.command.run().await })
     }
 }
 
@@ -21,9 +25,10 @@ enum Command {
 }
 
 impl Command {
-    pub fn run(self) -> miette::Result<()> {
+    pub async fn run(self) -> miette::Result<()> {
         match self {
             Command::Run(c) => c.run(),
         }
+        .await
     }
 }
