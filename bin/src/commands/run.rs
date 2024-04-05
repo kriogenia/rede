@@ -1,6 +1,8 @@
+use crate::errors::InnerError;
 use crate::util::read_to_string;
 use clap::Args;
 use log::info;
+use rede_parser::parse_request;
 
 /// Executes the provided HTTP request
 #[derive(Debug, Args)]
@@ -15,8 +17,9 @@ impl Command {
         info!("Run request {}", self.request);
 
         let content = read_to_string(&self.request)?;
+        let request = parse_request(&content).map_err(|e| InnerError::parsing(content, e))?;
 
-        info!("{content}");
+        info!("{}", request.body);
         Ok(())
     }
 }

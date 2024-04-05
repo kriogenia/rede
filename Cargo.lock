@@ -391,12 +391,27 @@ dependencies = [
  "env_logger",
  "log",
  "miette",
+ "rede_parser 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "thiserror",
 ]
 
 [[package]]
 name = "rede_parser"
 version = "0.1.1"
+dependencies = [
+ "http",
+ "http-serde",
+ "mime",
+ "serde",
+ "thiserror",
+ "toml",
+]
+
+[[package]]
+name = "rede_parser"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb285e928bdb8a6968e3b1aa6584f25c390f19d19f60fa4ecfff0ffec8f49474"
 dependencies = [
  "http",
  "http-serde",
