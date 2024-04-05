@@ -1,5 +1,6 @@
 use crate::util::read_to_string;
 use clap::Args;
+use log::info;
 
 /// Executes the provided HTTP request
 #[derive(Debug, Args)]
@@ -11,11 +12,11 @@ pub struct Command {
 
 impl Command {
     pub fn run(self) -> miette::Result<()> {
-        println!("Run request {}", self.request);
+        info!("Run request {}", self.request);
 
         let content = read_to_string(&self.request)?;
 
-        println!("{content}");
+        info!("{content}");
         Ok(())
     }
 }

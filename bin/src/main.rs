@@ -7,5 +7,6 @@ mod errors;
 mod util;
 
 fn main() -> miette::Result<()> {
+    env_logger::init();
     Cli::parse().run()
 }
