@@ -1,4 +1,4 @@
-use crate::errors::InnerError;
+use crate::errors::ParsingError;
 use miette::Result;
 use std::borrow::Cow;
 use std::fs::File;
@@ -12,7 +12,7 @@ pub fn read_to_string(source: &str) -> Result<String> {
     let mut buffer = String::new();
     reader
         .read_to_string(&mut buffer)
-        .map_err(|e| InnerError::io(file, e))?;
+        .map_err(|e| ParsingError::io(file, e))?;
     Ok(buffer)
 }
 
@@ -22,7 +22,7 @@ fn open_file_or_stdin(filename: &str) -> Result<(Cow<str>, Box<dyn BufRead>)> {
     }
 
     let filename = add_extension(filename);
-    let file = File::open(&*filename).map_err(|e| InnerError::io(filename.clone(), e))?;
+    let file = File::open(&*filename).map_err(|e| ParsingError::io(filename.clone(), e))?;
     Ok((filename, Box::new(BufReader::new(file))))
 }
 

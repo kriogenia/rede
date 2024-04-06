@@ -1,21 +1,41 @@
 use assert_cmd::Command;
-use predicates::prelude::*;
+use predicates::prelude::predicate::str::contains;
 
 macro_rules! test_request {
-    ($name:ident, $file:expr, $assert:expr) => {
+    ($name:ident, $assert:expr) => {
         #[test]
         #[ignore]
         fn $name() {
-            let file = format!("tests/inputs/{}", $file);
+            let file = format!("tests/inputs/{}", stringify!($name));
             Command::cargo_bin("rede")
                 .unwrap()
                 .arg("run")
                 .arg(file)
                 .assert()
                 .success()
-                .stdout(predicate::str::contains($assert));
+                .stdout($assert);
         }
     };
 }
 
-test_request!(get, "get_simple", "world");
+macro_rules! test_error {
+    ($name:ident, $assert:expr) => {
+        #[test]
+        #[ignore]
+        fn $name() {
+            let file = format!("tests/inputs/{}", stringify!($name));
+            Command::cargo_bin("rede")
+                .unwrap()
+                .arg("run")
+                .arg(file)
+                .assert()
+                .failure()
+                .stderr($assert);
+        }
+    };
+}
+
+test_request!(get_simple, contains(r#"{"hello":"world"}"#));
+test_request!(http_version, contains(r#"{"http_version":"HTTP/1.0"}"#));
+
+test_error!(unsupported_http_version, contains("wrong http version"));
