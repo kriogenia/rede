@@ -1,6 +1,7 @@
 use crate::errors::InnerError;
 use crate::util::read_to_string;
 use clap::Args;
+use colored::Colorize;
 use log::info;
 use rede_parser::{parse_request, Request};
 use reqwest::{Client, Request as Reqwest, RequestBuilder, Response, Url};
@@ -22,7 +23,7 @@ impl Command {
 
         let response = send(request).await.unwrap().text().await.unwrap();
 
-        info!("{response:?}");
+        println!("{}", response.bold());
         Ok(())
     }
 }

@@ -1,11 +1,12 @@
+use colored::Colorize;
 use miette::{Diagnostic, SourceSpan};
 use thiserror::Error;
 
 #[derive(Error, Debug, Diagnostic)]
 pub enum InnerError {
-    #[error("Failed to read {filename}")]
+    #[error("Failed to read {}", filename.bold())]
     #[diagnostic(
-        code(io),
+        code("invalid request"),
         help("check if the file name is correct or you're in the correct path")
     )]
     IO {
@@ -14,7 +15,7 @@ pub enum InnerError {
     },
     #[error("{message}")]
     #[diagnostic(
-        code(parsing),
+        code("spec violation"),
         url("https://toml.io/en/v1.0.0"),
         help("check the TOML specification and rede schema if you don't know what is wrong")
     )]
@@ -27,7 +28,7 @@ pub enum InnerError {
     },
     #[error(transparent)]
     #[diagnostic(
-        code(typing),
+        code("spec violation: types"),
         help("usually keys accept only strings or everything except datetimes and tables")
     )] // todo: url to schema specification
     WrongType { source: rede_parser::Error },
