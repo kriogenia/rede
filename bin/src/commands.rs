@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 
+mod reqwest;
 mod run;
 
 #[derive(Debug, Parser)]
