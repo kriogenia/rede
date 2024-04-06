@@ -1,9 +1,23 @@
 use colored::Colorize;
 use miette::{Diagnostic, SourceSpan};
+use std::error::{Error as StdError, Error};
 use thiserror::Error;
 
-#[derive(Error, Debug, Diagnostic)]
-pub enum InnerError {
+#[derive(Debug, Diagnostic, Error)]
+pub enum ParsingError {
+    #[error("{message}")]
+    #[diagnostic(
+        code("spec violation"),
+        url("https://toml.io/en/v1.0.0"),
+        help("check the TOML specification and rede schema if you don't know what is wrong")
+    )]
+    Deserialization {
+        message: String,
+        #[source_code]
+        code: String,
+        #[label("here")]
+        span: Option<SourceSpan>,
+    },
     #[error("Failed to read {}", filename.bold())]
     #[diagnostic(
         code("invalid request"),
@@ -13,19 +27,6 @@ pub enum InnerError {
         filename: String,
         source: std::io::Error,
     },
-    #[error("{message}")]
-    #[diagnostic(
-        code("spec violation"),
-        url("https://toml.io/en/v1.0.0"),
-        help("check the TOML specification and rede schema if you don't know what is wrong")
-    )]
-    Parsing {
-        message: String,
-        #[source_code]
-        code: String,
-        #[label("here")]
-        span: Option<SourceSpan>,
-    },
     #[error(transparent)]
     #[diagnostic(
         code("spec violation: types"),
@@ -34,7 +35,27 @@ pub enum InnerError {
     WrongType { source: rede_parser::Error },
 }
 
-impl InnerError {
+#[derive(Debug, Diagnostic, Error)]
+pub enum RequestError<E: Error> {
+    #[error(transparent)]
+    #[diagnostic(code("timeout"))]
+    Timeout(E),
+    #[error(transparent)]
+    #[diagnostic(
+        code("wrong http version"),
+        help("maybe that port or endpoint does not support that protocol")
+    )]
+    WrongVersion(reqwest::Error),
+    #[error(transparent)]
+    #[diagnostic(
+        code("unknown request error"),
+        url("https://github.com/kriogenia/rede/issues"),
+        help("if you contact with the development team with the error we could start tracking it")
+    )]
+    Unknown(reqwest::Error),
+}
+
+impl ParsingError {
     pub fn io<T: Into<String>>(filename: T, source: std::io::Error) -> Self {
         Self::IO {
             filename: filename.into(),
@@ -44,12 +65,27 @@ impl InnerError {
 
     pub fn parsing<T: Into<String>>(code: T, source: rede_parser::Error) -> Self {
         match source {
-            rede_parser::Error::InvalidFile(e) => InnerError::Parsing {
+            rede_parser::Error::InvalidFile(e) => ParsingError::Deserialization {
                 message: e.message().to_owned(),
                 code: code.into(),
                 span: e.span().map(SourceSpan::from),
             },
-            rede_parser::Error::InvalidType { .. } => InnerError::WrongType { source },
+            rede_parser::Error::InvalidType { .. } => ParsingError::WrongType { source },
+        }
+    }
+}
+
+impl From<reqwest::Error> for RequestError<reqwest::Error> {
+    fn from(value: reqwest::Error) -> Self {
+        if value
+            .source()
+            .is_some_and(|s| s.to_string().contains("UserUnsupportedVersion"))
+        {
+            RequestError::WrongVersion(value)
+        } else if value.is_timeout() {
+            RequestError::Timeout(value)
+        } else {
+            RequestError::Unknown(value)
         }
     }
 }
