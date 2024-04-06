@@ -36,7 +36,7 @@ pub enum ParsingError {
 }
 
 #[derive(Debug, Diagnostic, Error)]
-pub enum RequestError<E: Error> {
+pub enum RequestError<E: Error + Into<RequestError<E>>> {
     #[error(transparent)]
     #[diagnostic(code("timeout"))]
     Timeout(E),
@@ -45,14 +45,14 @@ pub enum RequestError<E: Error> {
         code("wrong http version"),
         help("maybe that port or endpoint does not support that protocol")
     )]
-    WrongVersion(reqwest::Error),
+    WrongVersion(E),
     #[error(transparent)]
     #[diagnostic(
         code("unknown request error"),
         url("https://github.com/kriogenia/rede/issues"),
         help("if you contact with the development team with the error we could start tracking it")
     )]
-    Unknown(reqwest::Error),
+    Unknown(E),
 }
 
 impl ParsingError {
