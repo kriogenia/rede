@@ -39,9 +39,11 @@ pub enum ParsingError {
 #[derive(Debug, Diagnostic, Error)]
 pub enum RequestError<E: Error> {
     // todo BadScheme: builder error, URL scheme not allowed
-    // todo FailedConnection: client error (Connect)
-    #[error("resulting url is not correct: {}", url.underline().magenta())]
-    #[diagnostic(code("invalid url"), url("{url}"))]
+    #[error(transparent)]
+    #[diagnostic(code = "failed connection")]
+    FailedConnection(E),
+    #[error("resulting url is not correct ({})", url.underline().blue())]
+    #[diagnostic(code("invalid url"))]
     InvalidUrl {
         url: String,
         source: url::ParseError,
@@ -52,7 +54,7 @@ pub enum RequestError<E: Error> {
     #[error(transparent)]
     #[diagnostic(
         code("wrong http version"),
-        help("maybe that port or endpoint does not support that protocol")
+        help("maybe that port or endpoint does not support this protocol version")
     )]
     WrongVersion(E),
     #[error(transparent)]
@@ -102,6 +104,8 @@ impl From<reqwest::Error> for RequestError<reqwest::Error> {
             RequestError::WrongVersion(value)
         } else if value.is_timeout() {
             RequestError::Timeout(value)
+        } else if value.is_connect() {
+            RequestError::FailedConnection(value)
         } else {
             RequestError::Unknown(value)
         }
