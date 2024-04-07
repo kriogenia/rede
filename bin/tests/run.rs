@@ -1,6 +1,9 @@
 use assert_cmd::Command;
 use predicates::prelude::predicate::str::contains;
 
+// Set of integration tests for `rede run`, they are all ignored to run them only manually.
+// The majority of these tests are built against a custom test API
+
 macro_rules! test_request {
     ($name:ident -> $assert:expr) => {
         #[test]
@@ -49,5 +52,6 @@ test_request!(get_simple -> contains(r#"{"hello":"world"}"#));
 test_request!(http_version -> contains(r#"{"http_version":"HTTP/1.0"}"#));
 
 test_error!(invalid_url -> contains("invalid url"));
+test_error!(failed_connection -> contains("failed connection"));
 test_error!(unsupported_http_version -> contains("wrong http version"));
 test_error!(timeout<>, "--timeout", "0s" -> contains("timeout"));
