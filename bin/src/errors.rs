@@ -2,6 +2,7 @@ use colored::Colorize;
 use miette::{Diagnostic, SourceSpan};
 use std::error::{Error as StdError, Error};
 use thiserror::Error;
+use url::ParseError as UrlParseError;
 
 #[derive(Debug, Diagnostic, Error)]
 pub enum ParsingError {
@@ -36,7 +37,15 @@ pub enum ParsingError {
 }
 
 #[derive(Debug, Diagnostic, Error)]
-pub enum RequestError<E: Error + Into<RequestError<E>>> {
+pub enum RequestError<E: Error> {
+    // todo BadScheme: builder error, URL scheme not allowed
+    // todo FailedConnection: client error (Connect)
+    #[error("resulting url is not correct: {}", url.underline().magenta())]
+    #[diagnostic(code("invalid url"), url("{url}"))]
+    InvalidUrl {
+        url: String,
+        source: url::ParseError,
+    },
     #[error(transparent)]
     #[diagnostic(code("timeout"))]
     Timeout(E),
@@ -71,6 +80,15 @@ impl ParsingError {
                 span: e.span().map(SourceSpan::from),
             },
             rede_parser::Error::InvalidType { .. } => ParsingError::WrongType { source },
+        }
+    }
+}
+
+impl<E: Error> RequestError<E> {
+    pub fn invalid_url(url: &str, source: UrlParseError) -> Self {
+        Self::InvalidUrl {
+            url: url.to_string(),
+            source,
         }
     }
 }

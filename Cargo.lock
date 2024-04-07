@@ -910,6 +910,7 @@ dependencies = [
  "reqwest",
  "thiserror",
  "tokio",
+ "url",
 ]
 
 [[package]]

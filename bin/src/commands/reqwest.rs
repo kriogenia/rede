@@ -5,8 +5,7 @@ use reqwest::{ClientBuilder, Request as Reqwest, RequestBuilder, Url};
 use crate::errors::RequestError;
 
 pub async fn send(req: Request, args: RequestArgs) -> Result<String, RequestError<reqwest::Error>> {
-    // todo relocate, impl ParseError for RequestError::Url?
-    let url = Url::parse(&req.url).expect("valid url");
+    let url = Url::parse(&req.url).map_err(|e| RequestError::invalid_url(&req.url, e))?;
 
     let mut client = ClientBuilder::new();
     if let Some(timeout) = args.timeout {
