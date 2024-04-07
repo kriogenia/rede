@@ -51,6 +51,9 @@ pub enum RequestError<E: Error> {
         source: url::ParseError,
     },
     #[error(transparent)]
+    #[diagnostic(code("redirect"))]
+    Redirect(E),
+    #[error(transparent)]
     #[diagnostic(code("timeout"))]
     Timeout(E),
     #[error(transparent)]
@@ -99,18 +102,20 @@ impl<E: Error> RequestError<E> {
 
 impl From<reqwest::Error> for RequestError<reqwest::Error> {
     fn from(value: reqwest::Error) -> Self {
-        if value.is_request()
-            && value
-                .source()
-                .is_some_and(|s| s.to_string().contains("UserUnsupportedVersion"))
-        {
-            RequestError::WrongVersion(value)
+        if value.is_redirect() {
+            RequestError::Redirect(value)
         } else if value.is_timeout() {
             RequestError::Timeout(value)
         } else if value.is_connect() {
             RequestError::FailedConnection(value)
         } else if value.is_builder() {
             RequestError::Building(value)
+        } else if value.is_request()
+            && value
+                .source()
+                .is_some_and(|s| s.to_string().contains("UserUnsupportedVersion"))
+        {
+            RequestError::WrongVersion(value)
         } else {
             RequestError::Unknown(value)
         }
