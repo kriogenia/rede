@@ -38,7 +38,9 @@ pub enum ParsingError {
 
 #[derive(Debug, Diagnostic, Error)]
 pub enum RequestError<E: Error> {
-    // todo BadScheme: builder error, URL scheme not allowed
+    #[error(transparent)]
+    #[diagnostic(code = "failed request building")]
+    Building(E),
     #[error(transparent)]
     #[diagnostic(code = "failed connection")]
     FailedConnection(E),
@@ -97,15 +99,18 @@ impl<E: Error> RequestError<E> {
 
 impl From<reqwest::Error> for RequestError<reqwest::Error> {
     fn from(value: reqwest::Error) -> Self {
-        if value
-            .source()
-            .is_some_and(|s| s.to_string().contains("UserUnsupportedVersion"))
+        if value.is_request()
+            && value
+                .source()
+                .is_some_and(|s| s.to_string().contains("UserUnsupportedVersion"))
         {
             RequestError::WrongVersion(value)
         } else if value.is_timeout() {
             RequestError::Timeout(value)
         } else if value.is_connect() {
             RequestError::FailedConnection(value)
+        } else if value.is_builder() {
+            RequestError::Building(value)
         } else {
             RequestError::Unknown(value)
         }
