@@ -14,9 +14,15 @@ pub struct Command {
     /// Request file to execute
     #[arg(default_value = "-")]
     request: String,
-    /// Timeout, in a string like \[0-9]+(ns|us|ms|\[smhdwy], for example "3m"
-    #[arg(short, long)]
+    /// Timeout, in a string like [0-9]+(ns|us|ms|[smhdwy], for example "3m"
+    #[arg(long)]
     timeout: Option<String>,
+    /// Disallows auto-redirection
+    #[arg(long)]
+    no_redirect: bool,
+    /// Maximum number of redirects allowed, by default 10.
+    #[arg(long)]
+    max_redirects: Option<usize>,
 }
 
 impl Command {
@@ -36,6 +42,8 @@ impl Command {
 
 pub struct RequestArgs {
     pub timeout: Option<Duration>,
+    pub no_redirect: bool,
+    pub max_redirects: Option<usize>,
 }
 
 impl TryFrom<&Command> for RequestArgs {
@@ -59,6 +67,10 @@ impl TryFrom<&Command> for RequestArgs {
                 .with_source_code(t.to_owned())
             })?;
 
-        Ok(RequestArgs { timeout })
+        Ok(RequestArgs {
+            timeout,
+            no_redirect: value.no_redirect,
+            max_redirects: value.max_redirects,
+        })
     }
 }
