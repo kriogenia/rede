@@ -1,13 +1,19 @@
-use crate::errors::RequestError;
+use crate::commands::run::RequestArgs;
 use rede_parser::Request;
-use reqwest::{Client, Request as Reqwest, RequestBuilder, Url};
+use reqwest::{ClientBuilder, Request as Reqwest, RequestBuilder, Url};
 
-// Wrapping all the reqwest logic into this signature should allow to easily change clients in the
-// future or enable/disable them via featuers
-pub async fn send(request: Request) -> Result<String, RequestError<reqwest::Error>> {
-    let url = Url::parse(&request.url).expect("valid url");
-    let client = Client::new();
-    let reqwest = Reqwest::new(request.method, url);
-    let builder = RequestBuilder::from_parts(client, reqwest).version(request.http_version);
+use crate::errors::RequestError;
+
+pub async fn send(req: Request, args: RequestArgs) -> Result<String, RequestError<reqwest::Error>> {
+    // todo relocate, impl ParseError for RequestError::Url?
+    let url = Url::parse(&req.url).expect("valid url");
+
+    let mut client = ClientBuilder::new();
+    if let Some(timeout) = args.timeout {
+        client = client.timeout(timeout);
+    }
+
+    let reqwest = Reqwest::new(req.method, url);
+    let builder = RequestBuilder::from_parts(client.build()?, reqwest).version(req.http_version);
     Ok(builder.send().await?.text().await?)
 }

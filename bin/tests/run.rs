@@ -2,7 +2,7 @@ use assert_cmd::Command;
 use predicates::prelude::predicate::str::contains;
 
 macro_rules! test_request {
-    ($name:ident, $assert:expr) => {
+    ($name:ident -> $assert:expr) => {
         #[test]
         #[ignore]
         fn $name() {
@@ -19,14 +19,21 @@ macro_rules! test_request {
 }
 
 macro_rules! test_error {
-    ($name:ident, $assert:expr) => {
+    ($name:ident $(, $arg:literal)* -> $assert:expr) => {
+        test_error!($name <$name>, $($arg),* -> $assert);
+    };
+    ($name:ident <>, $($arg:literal),* -> $assert:expr) => {
+        test_error!($name <get_simple>, $($arg),* -> $assert);
+    };
+    ($name:ident <$file:ident>, $($arg:literal),* -> $assert:expr) => {
         #[test]
         #[ignore]
         fn $name() {
-            let file = format!("tests/inputs/{}", stringify!($name));
+            let file = format!("tests/inputs/{}", stringify!($file));
             Command::cargo_bin("rede")
                 .unwrap()
                 .arg("run")
+                $(.arg($arg))*
                 .arg(file)
                 .assert()
                 .failure()
@@ -35,7 +42,8 @@ macro_rules! test_error {
     };
 }
 
-test_request!(get_simple, contains(r#"{"hello":"world"}"#));
-test_request!(http_version, contains(r#"{"http_version":"HTTP/1.0"}"#));
+test_request!(get_simple -> contains(r#"{"hello":"world"}"#));
+test_request!(http_version -> contains(r#"{"http_version":"HTTP/1.0"}"#));
 
-test_error!(unsupported_http_version, contains("wrong http version"));
+test_error!(unsupported_http_version -> contains("wrong http version"));
+test_error!(timeout <>, "--timeout", "0s" -> contains("timeout"));

@@ -4,10 +4,11 @@ use std::borrow::Cow;
 use std::fs::File;
 use std::io;
 use std::io::{BufRead, BufReader, Read};
+use std::path::Path;
 
 pub const STDIN_ARG: &str = "-";
 
-pub fn read_to_string(source: &str) -> Result<String> {
+pub fn input_to_string(source: &str) -> Result<String> {
     let (file, mut reader) = open_file_or_stdin(source)?;
     let mut buffer = String::new();
     reader
@@ -28,7 +29,10 @@ fn open_file_or_stdin(filename: &str) -> Result<(Cow<str>, Box<dyn BufRead>)> {
 
 #[inline]
 fn add_extension(filename: &str) -> Cow<str> {
-    if filename.ends_with(".toml") {
+    if Path::new(filename)
+        .extension()
+        .map_or(false, |ext| ext.eq_ignore_ascii_case("toml"))
+    {
         filename.into()
     } else {
         format!("{filename}.toml").into()
