@@ -19,12 +19,15 @@ macro_rules! test_request {
 }
 
 macro_rules! test_error {
+    // Runs the test using the file matching the test name
     ($name:ident $(, $arg:literal)* -> $assert:expr) => {
         test_error!($name <$name>, $($arg),* -> $assert);
     };
+    // Runs the test using the `get_simple` file, for test not dependent on the request file
     ($name:ident <>, $($arg:literal),* -> $assert:expr) => {
         test_error!($name <get_simple>, $($arg),* -> $assert);
     };
+    // Runs the test using the given file
     ($name:ident <$file:ident>, $($arg:literal),* -> $assert:expr) => {
         #[test]
         #[ignore]
@@ -45,5 +48,6 @@ macro_rules! test_error {
 test_request!(get_simple -> contains(r#"{"hello":"world"}"#));
 test_request!(http_version -> contains(r#"{"http_version":"HTTP/1.0"}"#));
 
+test_error!(invalid_url -> contains("invalid url"));
 test_error!(unsupported_http_version -> contains("wrong http version"));
-test_error!(timeout <>, "--timeout", "0s" -> contains("timeout"));
+test_error!(timeout<>, "--timeout", "0s" -> contains("timeout"));
