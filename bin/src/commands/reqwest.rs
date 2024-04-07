@@ -10,7 +10,9 @@ pub async fn send(req: Request, args: RequestArgs) -> Result<String, RequestErro
 
     let client = build_client(&args)?;
     let reqwest = Reqwest::new(req.method, url);
-    let builder = RequestBuilder::from_parts(client, reqwest).version(req.http_version);
+    let builder = RequestBuilder::from_parts(client, reqwest)
+        .version(req.http_version)
+        .headers(req.headers);
     // todo handle send errors
     // todo handle text errors
     Ok(builder.send().await?.text().await?)
