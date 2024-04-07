@@ -1,4 +1,5 @@
 use assert_cmd::Command;
+use predicates::boolean::PredicateBooleanExt;
 use predicates::prelude::predicate::str::contains;
 
 // Set of integration tests for `rede run`, they are all ignored to run them only manually.
@@ -49,7 +50,8 @@ macro_rules! test_error {
 }
 
 test_request!(get_simple -> contains(r#"{"hello":"world"}"#));
-test_request!(http_version -> contains(r#"{"http_version":"HTTP/1.0"}"#));
+test_request!(http_version -> contains(r#""http_version":"HTTP/1.0""#));
+// todo -no-redirect, requires --verbose
 
 test_error!(invalid_url -> contains("invalid url"));
 test_error!(failed_connection -> contains("failed connection"));
@@ -57,3 +59,4 @@ test_error!(bad_url_scheme -> contains("failed request building"));
 test_error!(timeout<>, "--timeout", "0s" -> contains("timeout"));
 
 test_error!(#[ignore] unsupported_http_version -> contains("wrong http version"));
+test_error!(#[ignore] redirect_loop, "--max-redirects", "5" -> contains("redirect"));
