@@ -1,3 +1,3 @@
 mod read;
 
-pub use read::read_to_string;
+pub use read::input_to_string;
