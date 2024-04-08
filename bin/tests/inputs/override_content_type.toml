@@ -1,0 +1,15 @@
+[http]
+method = "POST"
+url = "http://localhost:8080/api/json"
+
+[headers]
+Content-Type = "application/json"
+
+[body]
+raw = """
+{
+  "name": "John",
+  "surname": 117,
+  "master_chief": true
+}
+"""
