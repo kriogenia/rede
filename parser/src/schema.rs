@@ -2,18 +2,15 @@ use std::str::FromStr;
 
 use http::{HeaderMap, Method, Version};
 use serde::Deserialize;
-use toml::Value;
 
 pub(crate) use body::Body;
 
 use crate::error::Error;
-use crate::schema::table::Table;
-use crate::schema::validation::validate_types;
+use crate::schema::table::{PrimitiveArrTable, PrimitiveTable};
 
 mod body;
 pub(crate) mod table;
-mod types;
-mod validation;
+pub(crate) mod types;
 
 /// Model of the supported request schema contents.
 #[derive(Deserialize)]
@@ -21,13 +18,13 @@ mod validation;
 pub(crate) struct Schema {
     pub http: Http,
     #[serde(default)]
-    pub metadata: Table<Value>,
+    pub metadata: PrimitiveArrTable,
     #[serde(with = "http_serde::header_map", default)]
     pub headers: HeaderMap,
     #[serde(alias = "queryparams", alias = "query-params", default)]
-    pub query_params: Table<Value>,
+    pub query_params: PrimitiveArrTable,
     #[serde(alias = "pathparams", alias = "path-params", default)]
-    pub path_params: Table<Value>,
+    pub path_params: PrimitiveTable,
     #[serde(default)]
     pub body: Body,
 }
@@ -47,14 +44,13 @@ impl FromStr for Schema {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let schema: Schema = toml::from_str(s)?;
-        validate_types(&schema)?;
         Ok(schema)
     }
 }
 
 #[cfg(test)]
 mod test {
-    use toml::Value;
+    use crate::schema::types::{Primitive, PrimitiveArray};
 
     use super::*;
 
@@ -102,11 +98,13 @@ mod test {
         assert_eq!(schema.metadata.0.len(), 2);
         assert_eq!(
             schema.metadata.0["name"],
-            Value::String("Test request".to_string())
+            PrimitiveArray::Single(Primitive::Str("Test request".to_string()))
         );
         assert_eq!(
             schema.metadata.0["description"],
-            Value::String("Request with all supported options".to_string())
+            PrimitiveArray::Single(Primitive::Str(
+                "Request with all supported options".to_string()
+            ))
         );
         assert_eq!(schema.headers.len(), 2);
         assert_eq!(schema.headers["Content-Type"], "application/toml");
@@ -114,26 +112,35 @@ mod test {
         assert_eq!(schema.query_params.0.len(), 5);
         assert_eq!(
             schema.query_params.0["string"],
-            Value::String("string".into())
+            PrimitiveArray::Single(Primitive::Str("string".into()))
         );
-        assert_eq!(schema.query_params.0["integer"], Value::Integer(10));
-        assert_eq!(schema.query_params.0["float"], Value::Float(0.1));
-        assert_eq!(schema.query_params.0["boolean"], Value::Boolean(true));
+        assert_eq!(
+            schema.query_params.0["integer"],
+            PrimitiveArray::Single(Primitive::Int(10))
+        );
+        assert_eq!(
+            schema.query_params.0["float"],
+            PrimitiveArray::Single(Primitive::Float(0.1))
+        );
+        assert_eq!(
+            schema.query_params.0["boolean"],
+            PrimitiveArray::Single(Primitive::Bool(true))
+        );
         assert_eq!(
             schema.query_params.0["array"],
-            Value::Array(vec![
-                Value::String("first".into()),
-                Value::String("second".into()),
+            PrimitiveArray::Multiple(vec![
+                Primitive::Str("first".into()),
+                Primitive::Str("second".into()),
             ])
         );
         assert_eq!(schema.path_params.0.len(), 4);
         assert_eq!(
             schema.path_params.0["string"],
-            Value::String("string".to_string())
+            Primitive::Str("string".to_string())
         );
-        assert_eq!(schema.path_params.0["integer"], Value::Integer(5));
-        assert_eq!(schema.path_params.0["float"], Value::Float(1.2));
-        assert_eq!(schema.path_params.0["boolean"], Value::Boolean(false));
+        assert_eq!(schema.path_params.0["integer"], Primitive::Int(5));
+        assert_eq!(schema.path_params.0["float"], Primitive::Float(1.2));
+        assert_eq!(schema.path_params.0["boolean"], Primitive::Bool(false));
         let body: Body = schema.body.into();
         assert!(matches!(body, Body::Raw(content) if content.contains(r#""key": "value""#)));
     }
@@ -163,24 +170,5 @@ mod test {
         assert!(schema.query_params.0.is_empty());
         assert!(schema.path_params.0.is_empty());
         assert_eq!(schema.body, Body::None);
-    }
-
-    #[test]
-    fn invalid_type() {
-        let toml = r#"
-        [http]
-        method = "GET"
-        url = "url"
-
-        [queryparams]
-        date = 1970-01-01
-        "#;
-        assert_eq!(
-            Schema::from_str(toml).err().unwrap(),
-            Error::InvalidType {
-                field: "values of [query_params]".to_string(),
-                invalid_type: "datetime".to_string()
-            }
-        )
     }
 }

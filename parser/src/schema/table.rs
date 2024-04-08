@@ -4,9 +4,8 @@ use std::ops::Index;
 
 use crate::body::FormDataValue as PublicFDValue;
 use crate::schema::body::FormDataValue;
+use crate::schema::types::{Primitive, PrimitiveArray};
 use serde::Deserialize;
-use toml::Value;
-//use crate::schema::types::Primitive;
 
 /// Newtype implementation to wrap TOML tables where the set of keys can be free
 #[derive(Debug, Deserialize, PartialEq)]
@@ -51,7 +50,7 @@ where
         self.into_pairs().into_iter().collect()
     }
 }
-/*
+
 impl<V, O> Transform<V, O> for Table<V>
 where
     V: Into<O>,
@@ -59,39 +58,18 @@ where
     fn map_value(value: V) -> O {
         value.into()
     }
-}*/
-
-//pub type PrimitiveTable = Table<Primitive>;
-#[allow(clippy::module_name_repetitions)]
-pub type FormDataTable = Table<FormDataValue>;
-
-impl Transform<Value, String> for Table<Value> {
-    fn map_value(value: Value) -> String {
-        flatten_value(value)
-    }
 }
+
+pub type PrimitiveTable = Table<Primitive>;
+pub type PrimitiveArrTable = Table<PrimitiveArray>;
+pub type FormDataTable = Table<FormDataValue>;
 
 impl Transform<FormDataValue, PublicFDValue> for FormDataTable {
     fn map_value(value: FormDataValue) -> PublicFDValue {
         match value {
-            FormDataValue::Text(value) => PublicFDValue::Text(flatten_value(value)),
+            FormDataValue::Text(value) => PublicFDValue::Text(value.into()),
             FormDataValue::File(path) => PublicFDValue::File(path),
         }
-    }
-}
-
-fn flatten_value(val: Value) -> String {
-    match val {
-        Value::String(s) => s,
-        Value::Array(a) => a
-            .into_iter()
-            .map(flatten_value)
-            .collect::<Vec<String>>()
-            .join(","),
-        Value::Datetime(_) | Value::Table(_) => {
-            unreachable!("these types are rejected in from_str")
-        }
-        _ => val.to_string(),
     }
 }
 
@@ -114,33 +92,30 @@ mod test {
     fn into_pairs() {
         let pairs = new_test_table().into_pairs();
 
-        assert_eq!(pairs.len(), 5);
+        assert_eq!(pairs.len(), 4);
         assert_pair(&pairs, "string", "value");
         assert_pair(&pairs, "integer", "10");
-        assert_pair(&pairs, "float", "2.0");
+        assert_pair(&pairs, "float", "2.1");
         assert_pair(&pairs, "boolean", "false");
-        assert_pair(&pairs, "array", "s,10");
     }
 
     #[test]
     fn into_map() {
-        let map = new_test_table().into_map();
+        let map: HashMap<String, String> = new_test_table().into_map();
 
-        assert_eq!(map.len(), 5);
+        assert_eq!(map.len(), 4);
         assert_eq!(map["string"], "value");
         assert_eq!(map["integer"], "10");
-        assert_eq!(map["float"], "2.0");
+        assert_eq!(map["float"], "2.1");
         assert_eq!(map["boolean"], "false");
-        assert_eq!(map["array"], "s,10");
     }
 
-    fn new_test_table() -> Table<Value> {
+    fn new_test_table() -> PrimitiveTable {
         let string = r#"
         string = "value"
         integer = 10
-        float = 2.0
+        float = 2.1
         boolean = false
-        array = [ "s", 10 ]
         "#;
         toml::from_str(string).unwrap()
     }

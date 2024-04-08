@@ -39,11 +39,10 @@ impl TryFrom<Schema> for Request {
 
 #[cfg(test)]
 mod test {
-    use toml::Value;
-
     use crate::body::Body;
     use crate::schema;
     use crate::schema::table::Table;
+    use crate::schema::types::{Primitive, PrimitiveArray};
     use crate::schema::{Http, Schema};
 
     use super::*;
@@ -51,7 +50,10 @@ mod test {
     #[test]
     fn from_schema() {
         let mut metadata = HashMap::new();
-        metadata.insert("name".to_string(), Value::String("test".to_string()));
+        metadata.insert(
+            "name".to_string(),
+            PrimitiveArray::Single(Primitive::Str("test".to_string())),
+        );
 
         let mut headers = HeaderMap::new();
         headers.insert("Header", "Value".parse().unwrap());
@@ -59,11 +61,11 @@ mod test {
         let mut query_params = HashMap::new();
         query_params.insert(
             "qp".to_string(),
-            Value::Array(vec![Value::String("s".to_string()), Value::Integer(1)]),
+            PrimitiveArray::Multiple(vec![Primitive::Str("s".to_string()), Primitive::Int(1)]),
         );
 
         let mut path_params = HashMap::new();
-        path_params.insert("pp".to_string(), Value::String("value".to_string()));
+        path_params.insert("pp".to_string(), Primitive::Str("value".to_string()));
 
         let body = schema::Body::Binary("path".to_string());
 

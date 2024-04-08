@@ -42,6 +42,7 @@
 //! ```
 
 #![warn(clippy::pedantic)]
+#![allow(clippy::module_name_repetitions)]
 
 /// Contains all the specific types used in the body
 pub mod body;
@@ -94,9 +95,6 @@ pub use request::Request;
 /// "#;
 /// let result = rede_parser::parse_request(toml);
 /// assert!(result.is_err());
-/// assert_eq!(
-///   result.err().unwrap().to_string(),
-///   "values of [query_params] can't be of type datetime");
 /// # }
 /// ```
 pub fn parse_request(content: &str) -> Result<Request, Error> {
