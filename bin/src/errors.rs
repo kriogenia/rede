@@ -28,12 +28,6 @@ pub enum ParsingError {
         filename: String,
         source: std::io::Error,
     },
-    #[error(transparent)]
-    #[diagnostic(
-        code("spec violation: types"),
-        help("usually keys accept only strings or everything except datetimes and tables")
-    )] // todo: url to schema specification
-    WrongType { source: rede_parser::Error },
 }
 
 #[derive(Debug, Diagnostic, Error)]
@@ -81,12 +75,11 @@ impl ParsingError {
 
     pub fn parsing<T: Into<String>>(code: T, source: rede_parser::Error) -> Self {
         match source {
-            rede_parser::Error::InvalidFile(e) => ParsingError::Deserialization {
+            rede_parser::Error::ParsingToml(e) => ParsingError::Deserialization {
                 message: e.message().to_owned(),
                 code: code.into(),
                 span: e.span().map(SourceSpan::from),
             },
-            rede_parser::Error::InvalidType { .. } => ParsingError::WrongType { source },
         }
     }
 }

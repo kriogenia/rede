@@ -16,13 +16,15 @@ keywords = [ "cli", "http", "api", "request" ]
 readme = "../README.md"
 
 [dependencies]
-rede_parser = "0.1.1"
+rede_parser = "0.1.2"
+
 log.workspace = true
 thiserror.workspace = true
-env_logger = "0.11.3"
+
 clap = { version = "4.5.4", features = ["derive"] }
 colored = "2.1.0"
 duration-str = { version = "0.7.1", default-features = false }
+env_logger = "0.11.3"
 miette = { version = "7.2.0", features = ["fancy"] }
 reqwest = "0.12"
 tokio = { version = "1.37.0", features = ["tokio-macros"] }
