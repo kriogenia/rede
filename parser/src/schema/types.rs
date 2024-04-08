@@ -7,8 +7,8 @@ use serde::Deserialize;
 #[serde(untagged)]
 pub(crate) enum Primitive {
     Bool(bool),
-    Float(f64),
     Int(i64),
+    Float(f64),
     Str(String),
 }
 

@@ -1,7 +1,7 @@
 use crate::body::Body as PublicBody;
-use crate::schema::table::{FormDataTable, Table, Transform};
+use crate::schema::table::{FormDataTable, PrimitiveArrTable, Transform};
+use crate::schema::types::PrimitiveArray;
 use serde::Deserialize;
-use toml::Value;
 
 #[derive(Debug, Default, Deserialize, PartialEq)]
 #[serde(rename_all = "snake_case")]
@@ -24,13 +24,13 @@ pub(crate) enum Body {
         alias = "form_urlencoded",
         alias = "form-urlencoded"
     )]
-    XFormUrlEncoded(Table<Value>),
+    XFormUrlEncoded(PrimitiveArrTable),
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub(crate) enum FormDataValue {
-    Text(Value),
+    Text(PrimitiveArray),
     File(String),
 }
 
@@ -55,6 +55,7 @@ impl From<Body> for PublicBody {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::schema::types::{Primitive, PrimitiveArray};
 
     #[derive(Debug, Deserialize)]
     struct Parent {
@@ -74,8 +75,11 @@ mod test {
         let body = toml::from_str::<Parent>(toml).unwrap().body;
         assert!(matches!(&body, Body::XFormUrlEncoded(map) if map.len() == 2));
         if let Body::XFormUrlEncoded(map) = &body {
-            assert_eq!(map["type"], Value::String("integer".to_string()));
-            assert_eq!(map["value"], Value::Integer(1));
+            assert_eq!(
+                map["type"],
+                PrimitiveArray::Single(Primitive::Str("integer".to_string()))
+            );
+            assert_eq!(map["value"], PrimitiveArray::Single(Primitive::Int(1)));
         }
 
         let toml = r#"
@@ -88,7 +92,7 @@ mod test {
         if let Body::FormData(map) = &body {
             assert_eq!(
                 map["raw"],
-                FormDataValue::Text(Value::String("raw".to_string()))
+                FormDataValue::Text(PrimitiveArray::Single(Primitive::Str("raw".to_string())))
             );
             assert_eq!(map["binary"], FormDataValue::File("path".to_string()));
         }
