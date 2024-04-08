@@ -1,5 +1,7 @@
 //! This module holds a subset of TOML types to limit supported types of the scema
 
+use std::vec::IntoIter;
+
 use serde::Deserialize;
 
 /// Subset with the four primitive types
@@ -44,11 +46,24 @@ impl From<PrimitiveArray> for String {
     }
 }
 
+impl IntoIterator for PrimitiveArray {
+    type Item = Primitive;
+    type IntoIter = IntoIter<Primitive>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        match self {
+            PrimitiveArray::Single(v) => vec![v],
+            PrimitiveArray::Multiple(vec) => vec,
+        }
+        .into_iter()
+    }
+}
+
 #[cfg(test)]
 mod test {
-    use super::*;
-
     use std::collections::HashMap;
+
+    use super::*;
 
     #[derive(Deserialize)]
     struct Parent<T>(HashMap<String, T>);

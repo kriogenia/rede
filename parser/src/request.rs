@@ -90,7 +90,10 @@ mod test {
         assert_eq!(request.headers["Header"], "Value");
         assert_eq!(
             request.query_params,
-            vec![("qp".to_string(), "s,1".to_string())]
+            vec![
+                ("qp".to_string(), "s".to_string()),
+                ("qp".to_string(), "1".to_string())
+            ]
         );
         assert_eq!(request.path_params["pp"], "value");
         assert_eq!(
