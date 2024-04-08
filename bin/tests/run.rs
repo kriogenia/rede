@@ -58,7 +58,7 @@ test_request!(query_params -> contains(r#""name":["Robert","Edward"]"#).and(cont
 test_error!(invalid_url -> contains("invalid url"));
 test_error!(failed_connection -> contains("failed connection"));
 test_error!(bad_url_scheme -> contains("failed request building"));
-test_error!(timeout<>, "--timeout", "0s" -> contains("timeout"));
+test_error!(timeout<>, "--timeout", "0ms" -> contains("timeout"));
 
 test_error!(#[ignore] unsupported_http_version -> contains("wrong http version"));
 test_error!(#[ignore] redirect_loop, "--max-redirects", "5" -> contains("redirect"));
