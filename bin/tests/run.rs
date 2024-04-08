@@ -53,6 +53,8 @@ test_request!(get_simple -> contains(r#"{"hello":"world"}"#));
 test_request!(http_version -> contains(r#""http_version":"HTTP/1.0""#));
 test_request!(headers -> contains(r#""content-type":"application/json""#).and(contains(r#""num_headers":4"#)));
 test_request!(query_params -> contains(r#""name":["Robert","Edward"]"#).and(contains(r#""num_query_params":3"#)));
+test_request!(body_raw -> contains("rede,request").and(contains(r#""content-type":"text/plain"#)));
+test_request!(override_content_type -> contains(r#""content-type":"application/json""#));
 // todo -no-redirect, requires --verbose
 
 test_error!(invalid_url -> contains("invalid url"));
