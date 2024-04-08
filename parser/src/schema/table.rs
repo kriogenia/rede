@@ -6,6 +6,7 @@ use crate::body::FormDataValue as PublicFDValue;
 use crate::schema::body::FormDataValue;
 use serde::Deserialize;
 use toml::Value;
+//use crate::schema::types::Primitive;
 
 /// Newtype implementation to wrap TOML tables where the set of keys can be free
 #[derive(Debug, Deserialize, PartialEq)]
@@ -50,6 +51,19 @@ where
         self.into_pairs().into_iter().collect()
     }
 }
+/*
+impl<V, O> Transform<V, O> for Table<V>
+where
+    V: Into<O>,
+{
+    fn map_value(value: V) -> O {
+        value.into()
+    }
+}*/
+
+//pub type PrimitiveTable = Table<Primitive>;
+#[allow(clippy::module_name_repetitions)]
+pub type FormDataTable = Table<FormDataValue>;
 
 impl Transform<Value, String> for Table<Value> {
     fn map_value(value: Value) -> String {
@@ -57,7 +71,7 @@ impl Transform<Value, String> for Table<Value> {
     }
 }
 
-impl Transform<FormDataValue, PublicFDValue> for Table<FormDataValue> {
+impl Transform<FormDataValue, PublicFDValue> for FormDataTable {
     fn map_value(value: FormDataValue) -> PublicFDValue {
         match value {
             FormDataValue::Text(value) => PublicFDValue::Text(flatten_value(value)),
