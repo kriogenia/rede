@@ -12,6 +12,7 @@ use crate::schema::validation::validate_types;
 
 mod body;
 pub(crate) mod table;
+mod types;
 mod validation;
 
 /// Model of the supported request schema contents.

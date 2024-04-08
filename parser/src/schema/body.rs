@@ -1,5 +1,5 @@
 use crate::body::Body as PublicBody;
-use crate::schema::table::{Table, Transform};
+use crate::schema::table::{FormDataTable, Table, Transform};
 use serde::Deserialize;
 use toml::Value;
 
@@ -18,7 +18,7 @@ pub(crate) enum Body {
         alias = "multipart_form_data",
         alias = "multipart-form-data"
     )]
-    FormData(Table<FormDataValue>),
+    FormData(FormDataTable),
     #[serde(
         alias = "x-www-form-urlencoded",
         alias = "form_urlencoded",
