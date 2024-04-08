@@ -52,6 +52,16 @@ impl From<Body> for PublicBody {
     }
 }
 
+use crate::body::FormDataValue as PublicFDV;
+impl Transform<FormDataValue, PublicFDV> for FormDataTable {
+    fn map_value(value: FormDataValue) -> PublicFDV {
+        match value {
+            FormDataValue::Text(value) => PublicFDV::Text(value.into()),
+            FormDataValue::File(path) => PublicFDV::File(path),
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

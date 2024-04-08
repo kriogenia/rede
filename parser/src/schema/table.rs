@@ -2,7 +2,6 @@ use std::collections::hash_map::IntoIter;
 use std::collections::HashMap;
 use std::ops::Index;
 
-use crate::body::FormDataValue as PublicFDValue;
 use crate::schema::body::FormDataValue;
 use crate::schema::types::{Primitive, PrimitiveArray};
 use serde::Deserialize;
@@ -10,6 +9,10 @@ use serde::Deserialize;
 /// Newtype implementation to wrap TOML tables where the set of keys can be free
 #[derive(Debug, Deserialize, PartialEq)]
 pub(crate) struct Table<V>(pub(crate) HashMap<String, V>);
+
+pub type PrimitiveTable = Table<Primitive>;
+pub type PrimitiveArrTable = Table<PrimitiveArray>;
+pub type FormDataTable = Table<FormDataValue>;
 
 impl<V> Index<&str> for Table<V> {
     type Output = V;
@@ -40,14 +43,10 @@ where
 {
     fn map_value(value: V) -> O;
 
-    fn into_pairs(self) -> Vec<(String, O)> {
+    fn into_map(self) -> HashMap<String, O> {
         self.into_iter()
             .map(|(k, v)| (k, Self::map_value(v)))
             .collect()
-    }
-
-    fn into_map(self) -> HashMap<String, O> {
-        self.into_pairs().into_iter().collect()
     }
 }
 
@@ -60,16 +59,15 @@ where
     }
 }
 
-pub type PrimitiveTable = Table<Primitive>;
-pub type PrimitiveArrTable = Table<PrimitiveArray>;
-pub type FormDataTable = Table<FormDataValue>;
-
-impl Transform<FormDataValue, PublicFDValue> for FormDataTable {
-    fn map_value(value: FormDataValue) -> PublicFDValue {
-        match value {
-            FormDataValue::Text(value) => PublicFDValue::Text(value.into()),
-            FormDataValue::File(path) => PublicFDValue::File(path),
+impl PrimitiveArrTable {
+    pub(crate) fn into_pairs(self) -> Vec<(String, String)> {
+        let mut vec = Vec::new();
+        for (key, val) in self {
+            val.into_iter()
+                .map(String::from)
+                .for_each(|v| vec.push((key.clone(), v)));
         }
+        vec
     }
 }
 
@@ -92,7 +90,7 @@ mod test {
     fn into_pairs() {
         let pairs = new_test_table().into_pairs();
 
-        assert_eq!(pairs.len(), 4);
+        assert_eq!(pairs.len(), 6);
         assert_pair(&pairs, "string", "value");
         assert_pair(&pairs, "integer", "10");
         assert_pair(&pairs, "float", "2.1");
@@ -103,19 +101,21 @@ mod test {
     fn into_map() {
         let map: HashMap<String, String> = new_test_table().into_map();
 
-        assert_eq!(map.len(), 4);
+        assert_eq!(map.len(), 5);
         assert_eq!(map["string"], "value");
         assert_eq!(map["integer"], "10");
         assert_eq!(map["float"], "2.1");
         assert_eq!(map["boolean"], "false");
+        assert_eq!(map["array"], "one,2");
     }
 
-    fn new_test_table() -> PrimitiveTable {
+    fn new_test_table() -> PrimitiveArrTable {
         let string = r#"
         string = "value"
         integer = 10
         float = 2.1
         boolean = false
+        array = [ "one", 2 ]
         "#;
         toml::from_str(string).unwrap()
     }
