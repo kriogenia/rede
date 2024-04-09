@@ -3,9 +3,10 @@ use http::header::CONTENT_TYPE;
 use http::HeaderMap;
 use log::debug;
 use mime::Mime;
+use rede_parser::body::FormDataValue;
 use rede_parser::{Body, Request};
 use reqwest::redirect::Policy;
-use reqwest::{Client, ClientBuilder, Request as Reqwest, RequestBuilder, Url};
+use reqwest::{multipart, Client, ClientBuilder, Request as Reqwest, RequestBuilder, Url};
 use tokio::fs::File;
 use tokio_util::codec::{BytesCodec, FramedRead};
 
@@ -35,8 +36,21 @@ pub async fn send(req: Request, args: RequestArgs) -> Result<String, Error> {
             let body = file_to_body(&path).await?;
             builder.body(body)
         }
+        Body::FormData(map) => {
+            let mut form = multipart::Form::new();
+            for (k, v) in map {
+                form = match v {
+                    FormDataValue::Text(content) => form.text(k, content),
+                    FormDataValue::File(path) => {
+                        let body = file_to_body(&path).await?;
+                        form.part(k, multipart::Part::stream(body))
+                    }
+                }
+            }
+            builder.multipart(form)
+        }
+        Body::XFormUrlEncoded(_) => unimplemented!(),
         Body::None => builder,
-        _ => unimplemented!(),
     }
     .headers(headers);
 
