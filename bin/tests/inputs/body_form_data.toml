@@ -1,0 +1,7 @@
+[http]
+method = "POST"
+url = "http://localhost:8080/api/multipart"
+
+[body.form_data]
+raw.text = "agarimo"
+binary.file = "./tests/util/bin_file_for_test"

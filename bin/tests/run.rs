@@ -55,6 +55,7 @@ test_request!(headers -> contains(r#""content-type":"application/json""#).and(co
 test_request!(query_params -> contains(r#""name":["Robert","Edward"]"#).and(contains(r#""num_query_params":3"#)));
 test_request!(body_raw -> contains("rede,request").and(contains(r#""content-type":"text/plain"#)));
 test_request!(body_binary -> contains(r#""size":8"#).and(contains(r#""content-type":"application/octet-stream""#)));
+test_request!(body_form_data -> contains(r#""text":"agarimo""#).and(contains(r#""binary_size":8"#).and(contains("multipart/form-data; boundary="))));
 test_request!(override_content_type -> contains(r#""content-type":"application/json""#));
 // todo -no-redirect, requires --verbose
 
