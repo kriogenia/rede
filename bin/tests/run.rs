@@ -51,15 +51,18 @@ macro_rules! test_error {
 
 test_request!(get_simple -> contains(r#"{"hello":"world"}"#));
 test_request!(http_version -> contains(r#""http_version":"HTTP/1.0""#));
-test_request!(headers -> contains(r#""content-type":"application/json""#).and(contains(r#""num_headers":4"#)));
+test_request!(headers -> contains(r#""content-type":"application/json""#).and(contains(r#""num_headers":5"#)));
 test_request!(query_params -> contains(r#""name":["Robert","Edward"]"#).and(contains(r#""num_query_params":3"#)));
 test_request!(body_raw -> contains("rede,request").and(contains(r#""content-type":"text/plain"#)));
+test_request!(body_binary -> contains(r#""size":8"#).and(contains(r#""content-type":"application/octet-stream""#)));
 test_request!(override_content_type -> contains(r#""content-type":"application/json""#));
 // todo -no-redirect, requires --verbose
 
-test_error!(invalid_url -> contains("invalid url"));
-test_error!(failed_connection -> contains("failed connection"));
-test_error!(bad_url_scheme -> contains("failed request building"));
+test_error!(missing_file -> contains("invalid [REQUEST]").and(contains("No such file or directory")));
+test_error!(invalid_url -> contains("invalid url").and(contains("http://128.0.0.256")));
+test_error!(failed_connection -> contains("failed connection").and(contains("completelymadeupurl")));
+test_error!(bad_url_scheme -> contains("failed request building").and(contains("htt:/www.url.com")));
+test_error!(wrong_binary -> contains("invalid file").and(contains("no_exists.zip")));
 test_error!(timeout<>, "--timeout", "0ms" -> contains("timeout"));
 
 test_error!(#[ignore] unsupported_http_version -> contains("wrong http version"));

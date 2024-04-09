@@ -1,6 +1,7 @@
 use colored::Colorize;
 use miette::{Diagnostic, SourceSpan};
 use std::error::{Error as StdError, Error};
+use std::io::Error as IOError;
 use thiserror::Error;
 use url::ParseError as UrlParseError;
 
@@ -19,15 +20,12 @@ pub enum ParsingError {
         #[label("here")]
         span: Option<SourceSpan>,
     },
-    #[error("Failed to read {}", filename.bold())]
+    #[error("Failed to read {}", filename.yellow())]
     #[diagnostic(
-        code("invalid request"),
+        code("invalid [REQUEST]"),
         help("check if the file name is correct or you're in the correct path")
     )]
-    IO {
-        filename: String,
-        source: std::io::Error,
-    },
+    IO { filename: String, source: IOError },
 }
 
 #[derive(Debug, Diagnostic, Error)]
@@ -44,6 +42,14 @@ pub enum RequestError<E: Error> {
         url: String,
         source: url::ParseError,
     },
+    #[error("a file defined on the request could not be loaded: {}", filename.yellow())]
+    #[diagnostic(
+        code("invalid file"),
+        help(
+            "request file paths must be relative to the directory where `rede` is being executed"
+        )
+    )]
+    IO { filename: String, source: IOError },
     #[error(transparent)]
     #[diagnostic(code("redirect"))]
     Redirect(E),
@@ -66,7 +72,7 @@ pub enum RequestError<E: Error> {
 }
 
 impl ParsingError {
-    pub fn io<T: Into<String>>(filename: T, source: std::io::Error) -> Self {
+    pub fn io<T: Into<String>>(filename: T, source: IOError) -> Self {
         Self::IO {
             filename: filename.into(),
             source,
@@ -88,6 +94,13 @@ impl<E: Error> RequestError<E> {
     pub fn invalid_url(url: &str, source: UrlParseError) -> Self {
         Self::InvalidUrl {
             url: url.to_string(),
+            source,
+        }
+    }
+
+    pub fn io<T: Into<String>>(filename: T, source: IOError) -> Self {
+        Self::IO {
+            filename: filename.into(),
             source,
         }
     }

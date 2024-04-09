@@ -3,7 +3,7 @@ use crate::errors::ParsingError;
 use crate::util::input_to_string;
 use clap::Args;
 use colored::Colorize;
-use log::info;
+use log::{debug, info};
 use miette::{miette, LabeledSpan, Report};
 use rede_parser::parse_request;
 use std::time::Duration;
@@ -31,6 +31,8 @@ impl Command {
 
         let content = input_to_string(&self.request)?;
         let request = parse_request(&content).map_err(|e| ParsingError::parsing(content, e))?;
+
+        debug!("{request:?}");
 
         let args = RequestArgs::try_from(&self)?;
         let response = send(request, args).await?;
