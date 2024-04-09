@@ -1,0 +1,7 @@
+[http]
+method = "POST"
+url = "http://localhost:8080/api/urlencoded"
+
+[body.form_urlencoded]
+anime = "Evangelion"
+rating = 10
