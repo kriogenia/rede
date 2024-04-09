@@ -6,10 +6,14 @@ use mime::Mime;
 use rede_parser::{Body, Request};
 use reqwest::redirect::Policy;
 use reqwest::{Client, ClientBuilder, Request as Reqwest, RequestBuilder, Url};
+use tokio::fs::File;
+use tokio_util::codec::{BytesCodec, FramedRead};
 
 use crate::errors::RequestError;
 
-pub async fn send(req: Request, args: RequestArgs) -> Result<String, RequestError<reqwest::Error>> {
+type Error = RequestError<reqwest::Error>;
+
+pub async fn send(req: Request, args: RequestArgs) -> Result<String, Error> {
     let url = Url::parse(&req.url).map_err(|e| RequestError::invalid_url(&req.url, e))?;
 
     let client = build_client(&args)?;
@@ -25,6 +29,11 @@ pub async fn send(req: Request, args: RequestArgs) -> Result<String, RequestErro
         Body::Raw { mime, content } => {
             set_content_type(&mut headers, &mime);
             builder.body(content)
+        }
+        Body::Binary { mime, path } => {
+            set_content_type(&mut headers, &mime);
+            let body = file_to_body(&path).await?;
+            builder.body(body)
         }
         Body::None => builder,
         _ => unimplemented!(),
@@ -52,4 +61,13 @@ fn set_content_type(headers: &mut HeaderMap, mime: &Mime) {
         debug!("adding key from body: {mime}");
         headers.insert(CONTENT_TYPE, mime.to_string().parse().unwrap());
     }
+}
+
+async fn file_to_body(path: &str) -> Result<reqwest::Body, Error> {
+    let file = File::open(path)
+        .await
+        .map_err(|e| RequestError::io(path, e))?;
+    let stream = FramedRead::new(file, BytesCodec::new());
+    let body = reqwest::Body::wrap_stream(stream);
+    Ok(body)
 }
