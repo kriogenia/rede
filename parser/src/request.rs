@@ -9,6 +9,7 @@ use crate::schema::Schema;
 
 /// Representation of a rede HTTP request. Contains all the supported content by the current schema
 /// to allow the creation and dispatching of the HTTP request with the command-line interface.
+#[derive(Debug)]
 pub struct Request {
     pub method: Method,
     pub url: String,
