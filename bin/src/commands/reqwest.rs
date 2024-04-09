@@ -49,7 +49,7 @@ pub async fn send(req: Request, args: RequestArgs) -> Result<String, Error> {
             }
             builder.multipart(form)
         }
-        Body::XFormUrlEncoded(_) => unimplemented!(),
+        Body::XFormUrlEncoded(form) => builder.form(&form),
         Body::None => builder,
     }
     .headers(headers);
