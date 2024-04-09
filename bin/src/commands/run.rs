@@ -1,4 +1,4 @@
-use crate::commands::reqwest::send;
+use crate::commands::reqwest::Client;
 use crate::errors::ParsingError;
 use crate::util::input_to_string;
 use clap::Args;
@@ -34,21 +34,21 @@ impl Command {
 
         debug!("{request:?}");
 
-        let args = RequestArgs::try_from(&self)?;
-        let response = send(request, args).await?;
+        let client = Client::new((&self).try_into()?);
+        let response = client.send(request).await?;
 
-        println!("{}", response.bold());
+        println!("{}", response.italic());
         Ok(())
     }
 }
 
-pub struct RequestArgs {
+pub struct ClientProperties {
     pub timeout: Option<Duration>,
     pub no_redirect: bool,
     pub max_redirects: Option<usize>,
 }
 
-impl TryFrom<&Command> for RequestArgs {
+impl TryFrom<&Command> for ClientProperties {
     type Error = Report;
 
     fn try_from(value: &Command) -> Result<Self, Self::Error> {
@@ -69,7 +69,7 @@ impl TryFrom<&Command> for RequestArgs {
                 .with_source_code(t.to_owned())
             })?;
 
-        Ok(RequestArgs {
+        Ok(ClientProperties {
             timeout,
             no_redirect: value.no_redirect,
             max_redirects: value.max_redirects,
