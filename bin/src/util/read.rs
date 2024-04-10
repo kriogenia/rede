@@ -1,9 +1,10 @@
 use crate::errors::ParsingError;
+use log::debug;
 use miette::Result;
 use std::borrow::Cow;
 use std::fs::File;
 use std::io;
-use std::io::{BufRead, BufReader, Read};
+use std::io::{BufRead, BufReader, Cursor, IsTerminal, Read};
 use std::path::Path;
 
 pub const STDIN_ARG: &str = "-";
@@ -19,7 +20,15 @@ pub fn input_to_string(source: &str) -> Result<String> {
 
 fn open_file_or_stdin(filename: &str) -> Result<(Cow<str>, Box<dyn BufRead>)> {
     if filename == STDIN_ARG {
-        return Ok((filename.into(), Box::new(BufReader::new(io::stdin()))));
+        debug!("Reading request from [STDIN]");
+        let input = io::stdin();
+        let bufread: Box<dyn BufRead> = if input.is_terminal() {
+            debug!("[STDIN] is empty");
+            Box::new(BufReader::new(Cursor::new(Vec::new())))
+        } else {
+            Box::new(BufReader::new(input))
+        };
+        return Ok(("[STDIN]".into(), bufread));
     }
 
     let filename = add_extension(filename);
