@@ -8,6 +8,12 @@ mod run;
 pub(crate) struct Cli {
     #[command(subcommand)]
     command: Command,
+    /// Enables all printing messages
+    #[arg(long, conflicts_with = "quiet")]
+    verbose: bool,
+    /// Disables all printing messages
+    #[arg(long)]
+    quiet: bool,
 }
 
 impl Cli {
