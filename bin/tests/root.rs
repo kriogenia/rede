@@ -1,35 +1,22 @@
 use assert_cmd::Command;
 use predicates::str::contains;
 
-#[test]
-fn help_by_default() {
-    Command::cargo_bin("rede")
-        .unwrap()
-        .assert()
-        .failure()
-        .stderr(contains("--help"));
+macro_rules! test_failure {
+    ($(#[$m:meta])*$name:ident: $($arg:literal),* -> $assert:expr) => {
+        $(#[$m])*
+        #[test]
+        fn $name() {
+            Command::cargo_bin("rede")
+                .unwrap()
+                $(.arg($arg))*
+                .assert()
+                .failure()
+                .stderr($assert);
+        }
+    };
 }
 
-#[test]
-fn subcommand_required() {
-    Command::cargo_bin("rede")
-        .unwrap()
-        .arg("--quiet")
-        .assert()
-        .failure()
-        .stderr(contains("requires a subcommand"));
-}
-
-#[test]
-fn quiet_and_verbose_exclusive() {
-    Command::cargo_bin("rede")
-        .unwrap()
-        .arg("--quiet")
-        .arg("--verbose")
-        .arg("run")
-        .assert()
-        .failure()
-        .stderr(contains(
-            "the argument '--quiet' cannot be used with '--verbose'",
-        ));
-}
+test_failure!(help_by_default: -> contains("--help"));
+test_failure!(subcommand_required: "--quiet" -> contains("requires a subcommand"));
+test_failure!(quiet_and_verbose_mutually_exclusive: "--quiet", "--verbose", "run" ->
+   contains("the argument '--quiet' cannot be used with '--verbose'"));
