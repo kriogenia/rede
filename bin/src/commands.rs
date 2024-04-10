@@ -1,3 +1,4 @@
+use crate::terminal::{Terminal, TERM_LOCK};
 use clap::{Parser, Subcommand};
 
 mod reqwest;
@@ -18,6 +19,10 @@ pub(crate) struct Cli {
 
 impl Cli {
     pub fn run(self) -> miette::Result<()> {
+        TERM_LOCK
+            .set(Terminal::new(self.quiet, self.verbose))
+            .expect("terminal to be created");
+
         tokio::runtime::Builder::new_current_thread()
             .enable_all()
             .build()

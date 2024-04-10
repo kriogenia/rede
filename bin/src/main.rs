@@ -6,6 +6,7 @@ use crate::commands::Cli;
 
 mod commands;
 mod errors;
+mod terminal;
 mod util;
 
 fn main() -> miette::Result<()> {
