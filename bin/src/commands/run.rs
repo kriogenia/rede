@@ -1,4 +1,5 @@
 use crate::commands::reqwest::Client;
+use crate::commands::RedeCommand;
 use crate::errors::ParsingError;
 use crate::util::input_to_string;
 use crate::{standard, verbose};
@@ -26,8 +27,8 @@ pub struct Command {
     max_redirects: Option<usize>,
 }
 
-impl Command {
-    pub async fn run(self) -> miette::Result<()> {
+impl RedeCommand for Command {
+    async fn run(self) -> miette::Result<()> {
         info!("Launched rede run with {}", self.request);
 
         let content = input_to_string(&self.request)?;
@@ -42,7 +43,9 @@ impl Command {
         standard!("{}", response.italic());
         Ok(())
     }
+}
 
+impl Command {
     fn print_request(&self, request: &Request) {
         debug!("{request:?}");
 

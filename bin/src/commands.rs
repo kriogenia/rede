@@ -36,11 +36,14 @@ enum Command {
     Run(run::Command),
 }
 
-impl Command {
-    pub async fn run(self) -> miette::Result<()> {
+trait RedeCommand {
+    async fn run(self) -> miette::Result<()>;
+}
+
+impl RedeCommand for Command {
+    async fn run(self) -> miette::Result<()> {
         match self {
-            Command::Run(c) => c.run(),
+            Command::Run(c) => c.run().await,
         }
-        .await
     }
 }
