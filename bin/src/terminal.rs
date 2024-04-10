@@ -5,6 +5,7 @@ pub static TERM_LOCK: OnceLock<Terminal> = OnceLock::new();
 #[macro_export]
 macro_rules! standard {
     ($($arg:tt)*) => {{
+        use $crate::terminal::TERM_LOCK;
         TERM_LOCK.get().unwrap().print_standard(format!($($arg)*));
     }}
 }
@@ -12,6 +13,7 @@ macro_rules! standard {
 #[macro_export]
 macro_rules! verbose {
     ($($arg:tt)*) => {{
+        use $crate::terminal::TERM_LOCK;
         TERM_LOCK.get().unwrap().print_verbose(format!($($arg)*));
     }}
 }
@@ -32,7 +34,6 @@ impl Terminal {
         Self { mode }
     }
 
-    #[allow(dead_code)]
     #[inline]
     pub fn print_standard(&self, msg: impl AsRef<str>) {
         match self.mode {
@@ -41,7 +42,6 @@ impl Terminal {
         }
     }
 
-    #[allow(dead_code)]
     #[inline]
     pub fn print_verbose(&self, msg: impl AsRef<str>) {
         if self.mode == Mode::Verbose {

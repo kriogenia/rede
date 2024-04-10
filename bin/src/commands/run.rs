@@ -1,11 +1,12 @@
 use crate::commands::reqwest::Client;
 use crate::errors::ParsingError;
 use crate::util::input_to_string;
+use crate::{standard, verbose};
 use clap::Args;
 use colored::Colorize;
 use log::{debug, info, trace};
 use miette::{miette, LabeledSpan, Report};
-use rede_parser::parse_request;
+use rede_parser::{parse_request, Request};
 use std::time::Duration;
 
 /// Executes the provided HTTP request
@@ -27,19 +28,65 @@ pub struct Command {
 
 impl Command {
     pub async fn run(self) -> miette::Result<()> {
-        info!("Run request {}", self.request);
+        info!("Launched rede run with {}", self.request);
 
         let content = input_to_string(&self.request)?;
         trace!("Content: {content}");
 
         let request = parse_request(&content).map_err(|e| ParsingError::parsing(content, e))?;
-        debug!("{request:?}");
+        self.print_request(&request);
 
         let client = Client::new((&self).try_into()?);
         let response = client.send(request).await?;
 
-        println!("{}", response.italic());
+        standard!("{}", response.italic());
         Ok(())
+    }
+
+    fn print_request(&self, request: &Request) {
+        debug!("{request:?}");
+
+        standard!(
+            "{} Executing request {}\n",
+            ">".bold().cyan(),
+            request
+                .metadata
+                .get("name")
+                .unwrap_or(&self.request)
+                .yellow()
+        );
+
+        let query = if request.query_params.is_empty() {
+            String::new()
+        } else {
+            let query = request
+                .query_params
+                .iter()
+                .map(|(k, v)| format!("{k}={v}"))
+                .collect::<Vec<String>>()
+                .join("&");
+            format!("?{query}")
+        };
+
+        let url = format!("{}{}", request.url, query);
+
+        // TODO print each method in a different color
+        verbose!(
+            "{} {}",
+            request.method.as_str().yellow(),
+            url.underline().cyan()
+        );
+
+        // TODO use if_verbose! to omit this loop
+        for (header_key, header_value) in &request.headers {
+            verbose!(
+                "  - {} : {}",
+                header_key,
+                header_value.to_str().unwrap_or("<no ascii>")
+            );
+        }
+
+        verbose!("");
     }
 }
 
