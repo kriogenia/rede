@@ -15,12 +15,15 @@ pub(crate) struct Cli {
     /// Disables all printing messages
     #[arg(long)]
     quiet: bool,
+    /// Disables output coloring
+    #[arg(long)]
+    no_color: bool,
 }
 
 impl Cli {
     pub fn run(self) -> miette::Result<()> {
         TERM_LOCK
-            .set(Terminal::new(self.quiet, self.verbose))
+            .set(Terminal::new(self.quiet, self.verbose, self.no_color))
             .expect("terminal to be created");
 
         tokio::runtime::Builder::new_current_thread()
