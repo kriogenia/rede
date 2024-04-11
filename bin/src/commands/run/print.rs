@@ -39,8 +39,9 @@ impl super::Command {
         verbose!(
             "{} {}",
             style(request.method.as_str()).bold().yellow(),
-            style(url).underlined().cyan()
+            style(url).underlined().cyan(),
         );
+        verbose!("{:?}", request.http_version);
 
         // TODO use if_verbose! to omit this loop
         for (header_key, header_value) in &request.headers {
