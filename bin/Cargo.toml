@@ -16,7 +16,7 @@ keywords = [ "cli", "http", "api", "request" ]
 readme = "../README.md"
 
 [dependencies]
-rede_parser = "0.1.3"
+rede_parser = "0.1.4"
 #rede_parser = { path = "../parser" }
 
 http.workspace = true
