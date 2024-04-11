@@ -4,7 +4,7 @@ use crate::errors::ParsingError;
 use crate::util::input_to_string;
 use crate::{standard, verbose};
 use clap::Args;
-use colored::Colorize;
+use console::style;
 use log::{debug, info, trace};
 use miette::{miette, LabeledSpan, Report};
 use rede_parser::{parse_request, Request};
@@ -40,7 +40,7 @@ impl RedeCommand for Command {
         let client = Client::new((&self).try_into()?);
         let response = client.send(request).await?;
 
-        standard!("{}", response.italic());
+        standard!("{}", style(response).italic());
         Ok(())
     }
 }
@@ -51,12 +51,8 @@ impl Command {
 
         standard!(
             "{} Executing request {}\n",
-            ">".bold().cyan(),
-            request
-                .metadata
-                .get("name")
-                .unwrap_or(&self.request)
-                .yellow()
+            style(">").bold().cyan(),
+            style(request.metadata.get("name").unwrap_or(&self.request)).yellow()
         );
 
         let query = if request.query_params.is_empty() {
@@ -76,8 +72,8 @@ impl Command {
         // TODO print each method in a different color
         verbose!(
             "{} {}",
-            request.method.as_str().yellow(),
-            url.underline().cyan()
+            style(request.method.as_str()).yellow(),
+            style(url).underlined().cyan()
         );
 
         // TODO use if_verbose! to omit this loop
@@ -115,7 +111,7 @@ impl TryFrom<&Command> for ClientProperties {
                     help = "duration is usually represented like: [0-9]+(ns|us|ms|[smhdwy])",
                     labels = vec![LabeledSpan::at(0..t.len(), "wrong value")],
                     "Failed to convert the {} into a valid duration",
-                    "--timeout".italic().yellow()
+                    style("--timeout").italic().yellow()
                 )
                 .with_source_code(t.to_owned())
             })?;

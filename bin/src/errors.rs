@@ -1,4 +1,4 @@
-use colored::Colorize;
+use console::style;
 use miette::{Diagnostic, SourceSpan};
 use std::error::{Error as StdError, Error};
 use std::io::Error as IOError;
@@ -20,7 +20,7 @@ pub enum ParsingError {
         #[label("here")]
         span: Option<SourceSpan>,
     },
-    #[error("Failed to read {}", filename.yellow())]
+    #[error("Failed to read {}", style(filename).yellow())]
     #[diagnostic(
         code("invalid [REQUEST]"),
         help("check if the file name is correct or you're in the correct path")
@@ -36,13 +36,13 @@ pub enum RequestError<E: Error> {
     #[error(transparent)]
     #[diagnostic(code = "failed connection")]
     FailedConnection(E),
-    #[error("resulting url is not correct ({})", url.underline().blue())]
+    #[error("resulting url is not correct ({})", style(url).underlined().blue())]
     #[diagnostic(code("invalid url"))]
     InvalidUrl {
         url: String,
         source: url::ParseError,
     },
-    #[error("a file defined on the request could not be loaded: {}", filename.yellow())]
+    #[error("a file defined on the request could not be loaded: {}", style(filename).yellow())]
     #[diagnostic(
         code("invalid file"),
         help(

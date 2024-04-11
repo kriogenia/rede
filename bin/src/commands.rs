@@ -1,5 +1,9 @@
-use crate::terminal::{Terminal, TERM_LOCK};
+use std::ops::Not;
+use std::sync::OnceLock;
+
 use clap::{Parser, Subcommand};
+
+use crate::terminal::{Terminal, TERM_LOCK};
 
 mod reqwest;
 mod run;
@@ -20,11 +24,25 @@ pub(crate) struct Cli {
     no_color: bool,
 }
 
+static COLOR: OnceLock<bool> = OnceLock::new();
+
 impl Cli {
     pub fn run(self) -> miette::Result<()> {
         TERM_LOCK
-            .set(Terminal::new(self.quiet, self.verbose, self.no_color))
+            .set(Terminal::new(self.quiet, self.verbose))
             .expect("terminal to be created");
+
+        console::set_colors_enabled(self.no_color.not());
+        COLOR.set(self.no_color.not()).unwrap();
+        miette::set_hook(Box::new(|_| {
+            Box::new(
+                miette::MietteHandlerOpts::new()
+                    .color(*COLOR.get().unwrap())
+                    .tab_width(4)
+                    .build(),
+            )
+        }))
+        .unwrap();
 
         tokio::runtime::Builder::new_current_thread()
             .enable_all()
