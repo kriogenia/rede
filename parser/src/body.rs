@@ -55,17 +55,17 @@ impl Display for Body {
         use Body::{Binary, FormData, None, Raw, XFormUrlEncoded};
         match self {
             None => Ok(()),
-            Raw { content, .. } => f.write_str(content),
-            Binary { path, .. } => writeln!(f, "@{path}"),
+            Raw { content, .. } => write!(f, "{content}"),
+            Binary { path, .. } => write!(f, "@{path}"),
             FormData(map) => {
                 for (k, v) in map {
-                    writeln!(f, "{k}: {v}")?;
+                    write!(f, "{k}: {v}")?;
                 }
                 Ok(())
             }
             XFormUrlEncoded(map) => {
                 for (k, v) in map {
-                    writeln!(f, "{k}: {v}")?;
+                    write!(f, "{k}: {v}")?;
                 }
                 Ok(())
             }
@@ -77,7 +77,7 @@ impl Display for FormDataValue {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             FormDataValue::Text(value) => f.write_str(value),
-            FormDataValue::File(path) => writeln!(f, "@{path}"),
+            FormDataValue::File(path) => write!(f, "@{path}"),
         }
     }
 }
