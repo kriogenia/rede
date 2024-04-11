@@ -1,7 +1,9 @@
 use crate::{standard, verbose};
-use console::style;
+use console::{style, Style};
+use http::StatusCode;
 use log::debug;
 use rede_parser::{Body, Request};
+use reqwest::Response;
 
 impl super::Command {
     pub(crate) fn print_request(&self, request: &Request) {
@@ -77,4 +79,30 @@ impl super::Command {
             Body::None => {}
         }
     }
+}
+
+pub(crate) fn print_response(response: &Response) {
+    let status_color = status_color(response.status());
+
+    let output_arrows = status_color.apply_to("<<<");
+    verbose!(
+        "{} {} {}\n",
+        &output_arrows,
+        style("HTTP Response").bold(),
+        &output_arrows
+    );
+
+    verbose!("{}", status_color.apply_to(response.status()));
+}
+
+fn status_color(status_code: StatusCode) -> Style {
+    match status_code.as_u16() {
+        100..=199 => Style::new().blue(),
+        200..=299 => Style::new().green(),
+        300..=399 => Style::new().magenta(),
+        400..=499 => Style::new().yellow(),
+        500..=599 => Style::new().red(),
+        _ => Style::new(),
+    }
+    .bold()
 }

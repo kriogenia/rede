@@ -3,7 +3,6 @@ mod print;
 use crate::commands::reqwest::Client;
 use crate::commands::RedeCommand;
 use crate::errors::ParsingError;
-use crate::standard;
 use crate::util::input_to_string;
 use clap::Args;
 use console::style;
@@ -41,8 +40,8 @@ impl RedeCommand for Command {
 
         let client = Client::new((&self).try_into()?);
         let response = client.send(request).await?;
+        print::print_response(&response);
 
-        standard!("{}", style(response).italic());
         Ok(())
     }
 }
