@@ -1,7 +1,7 @@
 use crate::{standard, verbose};
 use console::{style, Style};
 use http::{HeaderMap, StatusCode};
-use log::debug;
+use log::{debug, error};
 use rede_parser::{Body, Request};
 use reqwest::Response;
 
@@ -9,7 +9,7 @@ impl super::Command {
     pub(crate) fn print_request(&self, request: &Request) {
         debug!("{request:?}");
 
-        standard!(
+        verbose!(
             "{} Executing request {}\n",
             style(">").bold().cyan(),
             style(request.metadata.get("name").unwrap_or(&self.request)).yellow()
@@ -72,7 +72,7 @@ impl super::Command {
     }
 }
 
-pub(crate) fn print_response(response: &Response) {
+pub(crate) async fn print_response(response: Response) {
     let status_color = status_color(response.status());
 
     let output_arrows = status_color.apply_to("<<<");
@@ -91,6 +91,22 @@ pub(crate) fn print_response(response: &Response) {
     verbose!("{:?}", response.version());
 
     print_headers(response.headers());
+
+    match response.text().await {
+        Ok(content) => {
+            //if let Ok(json) = serde_json::from_str::<serde_json::Value>(&content) {
+            //standard!("{}", serde_json::to_string_pretty(&json).unwrap()),
+            //} else {
+            standard!("{content}");
+        }
+        Err(err) => {
+            error!("{err}");
+            standard!(
+                " {} The response body seems to not be printable",
+                style("x").red().bold()
+            );
+        }
+    }
 }
 
 fn print_headers(headers: &HeaderMap) {
@@ -109,9 +125,8 @@ fn status_color(status_code: StatusCode) -> Style {
     match status_code.as_u16() {
         100..=199 => Style::new().cyan(),
         200..=299 => Style::new().green(),
-        300..=399 => Style::new().magenta(),
-        400..=499 => Style::new().yellow(),
-        500..=599 => Style::new().red(),
+        300..=399 => Style::new().yellow(),
+        400..=599 => Style::new().red(),
         _ => Style::new(),
     }
     .bold()

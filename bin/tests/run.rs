@@ -13,6 +13,7 @@ macro_rules! test_req {
             let file = format!("tests/inputs/{}", stringify!($file));
             Command::cargo_bin("rede")
                 .unwrap()
+                .arg("--no-color")
                 .arg("run")
                 $(.arg($arg))*
                 .arg(file)
