@@ -40,7 +40,7 @@ impl RedeCommand for Command {
 
         let client = Client::new((&self).try_into()?);
         let response = client.send(request).await?;
-        print::print_response(&response);
+        print::print_response(response).await;
 
         Ok(())
     }
