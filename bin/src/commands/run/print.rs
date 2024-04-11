@@ -15,7 +15,7 @@ impl super::Command {
             style(request.metadata.get("name").unwrap_or(&self.request)).yellow()
         );
 
-        let output_arrows = style(">>>").bold().cyan();
+        let output_arrows = style(">>>").bold().blue();
         verbose!(
             "{} {} {}\n",
             &output_arrows,
@@ -41,7 +41,7 @@ impl super::Command {
         verbose!(
             "{} {}",
             style(request.method.as_str()).bold().yellow(),
-            style(url).underlined().cyan(),
+            style(url).underlined().blue(),
         );
         verbose!("{:?}", request.http_version);
 
@@ -57,7 +57,7 @@ impl super::Command {
         verbose!("");
 
         if let Some(mime) = request.body.mime() {
-            verbose!("[{}]", style(mime).blue());
+            verbose!("[{}]", style(mime).cyan());
         }
         match &request.body {
             Body::Raw { content, .. } => verbose!("{content}\n"),
@@ -92,12 +92,17 @@ pub(crate) fn print_response(response: &Response) {
         &output_arrows
     );
 
-    verbose!("{}", status_color.apply_to(response.status()));
+    verbose!(
+        "{} - {}",
+        status_color.apply_to(response.status()),
+        style(response.url()).underlined().blue()
+    );
+    verbose!("{:?}", response.version());
 }
 
 fn status_color(status_code: StatusCode) -> Style {
     match status_code.as_u16() {
-        100..=199 => Style::new().blue(),
+        100..=199 => Style::new().cyan(),
         200..=299 => Style::new().green(),
         300..=399 => Style::new().magenta(),
         400..=499 => Style::new().yellow(),
