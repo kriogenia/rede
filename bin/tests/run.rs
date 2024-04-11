@@ -15,6 +15,7 @@ macro_rules! test_req {
                 .unwrap()
                 .arg("--no-color")
                 .arg("run")
+                .arg("--pretty-print=false")
                 $(.arg($arg))*
                 .arg(file)
                 .assert()
