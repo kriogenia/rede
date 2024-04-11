@@ -1,13 +1,15 @@
+mod print;
+
 use crate::commands::reqwest::Client;
 use crate::commands::RedeCommand;
 use crate::errors::ParsingError;
+use crate::standard;
 use crate::util::input_to_string;
-use crate::{standard, verbose};
 use clap::Args;
 use console::style;
-use log::{debug, info, trace};
+use log::{info, trace};
 use miette::{miette, LabeledSpan, Report};
-use rede_parser::{parse_request, Request};
+use rede_parser::parse_request;
 use std::time::Duration;
 
 /// Executes the provided HTTP request
@@ -42,50 +44,6 @@ impl RedeCommand for Command {
 
         standard!("{}", style(response).italic());
         Ok(())
-    }
-}
-
-impl Command {
-    fn print_request(&self, request: &Request) {
-        debug!("{request:?}");
-
-        standard!(
-            "{} Executing request {}\n",
-            style(">").bold().cyan(),
-            style(request.metadata.get("name").unwrap_or(&self.request)).yellow()
-        );
-
-        let query = if request.query_params.is_empty() {
-            String::new()
-        } else {
-            let query = request
-                .query_params
-                .iter()
-                .map(|(k, v)| format!("{k}={v}"))
-                .collect::<Vec<String>>()
-                .join("&");
-            format!("?{query}")
-        };
-
-        let url = format!("{}{}", request.url, query);
-
-        // TODO print each method in a different color
-        verbose!(
-            "{} {}",
-            style(request.method.as_str()).yellow(),
-            style(url).underlined().cyan()
-        );
-
-        // TODO use if_verbose! to omit this loop
-        for (header_key, header_value) in &request.headers {
-            verbose!(
-                "  - {} : {}",
-                header_key,
-                header_value.to_str().unwrap_or("<no ascii>")
-            );
-        }
-
-        verbose!("");
     }
 }
 
