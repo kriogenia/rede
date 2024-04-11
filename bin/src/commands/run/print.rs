@@ -1,6 +1,6 @@
 use crate::{standard, verbose};
 use console::{style, Style};
-use http::StatusCode;
+use http::{HeaderMap, StatusCode};
 use log::debug;
 use rede_parser::{Body, Request};
 use reqwest::Response;
@@ -45,16 +45,7 @@ impl super::Command {
         );
         verbose!("{:?}", request.http_version);
 
-        // TODO use if_verbose! to omit this loop
-        for (header_key, header_value) in &request.headers {
-            verbose!(
-                "  - {} : {}",
-                header_key,
-                header_value.to_str().unwrap_or("<no ascii>")
-            );
-        }
-
-        verbose!("");
+        print_headers(&request.headers);
 
         if let Some(mime) = request.body.mime() {
             verbose!("[{}]", style(mime).cyan());
@@ -98,6 +89,20 @@ pub(crate) fn print_response(response: &Response) {
         style(response.url()).underlined().blue()
     );
     verbose!("{:?}", response.version());
+
+    print_headers(response.headers());
+}
+
+fn print_headers(headers: &HeaderMap) {
+    // TODO use if_verbose! to omit this loop
+    for (header_key, header_value) in headers {
+        verbose!(
+            "  - {} : {}",
+            header_key,
+            header_value.to_str().unwrap_or("<no ascii>")
+        );
+    }
+    verbose!("");
 }
 
 fn status_color(status_code: StatusCode) -> Style {
