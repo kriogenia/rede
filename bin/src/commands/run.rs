@@ -4,7 +4,7 @@ use crate::commands::reqwest::Client;
 use crate::commands::RedeCommand;
 use crate::errors::ParsingError;
 use crate::util::input_to_string;
-use clap::Args;
+use clap::{ArgAction, Args};
 use console::style;
 use log::{info, trace};
 use miette::{miette, LabeledSpan, Report};
@@ -17,6 +17,16 @@ pub struct Command {
     /// Request file to execute
     #[arg(default_value = "-")]
     request: String,
+    /// Specifies if formatting applied should be applied to response body, by default is true
+    #[arg(
+        long,
+        default_missing_value("true"),
+        default_value("true"),
+        num_args(0..=1),
+        require_equals(true),
+        action = ArgAction::Set,
+    )]
+    pretty_print: bool,
     /// Timeout, in a string like [0-9]+(ns|us|ms|[smhdwy], for example "3m"
     #[arg(long)]
     timeout: Option<String>,
@@ -40,7 +50,7 @@ impl RedeCommand for Command {
 
         let client = Client::new((&self).try_into()?);
         let response = client.send(request).await?;
-        print::print_response(response).await;
+        self.print_response(response).await;
 
         Ok(())
     }

@@ -4,6 +4,7 @@ use http::{HeaderMap, StatusCode};
 use log::{debug, error};
 use rede_parser::{Body, Request};
 use reqwest::Response;
+use serde_json::{from_str, to_string_pretty};
 
 impl super::Command {
     pub(crate) fn print_request(&self, request: &Request) {
@@ -70,42 +71,45 @@ impl super::Command {
             Body::None => {}
         }
     }
-}
 
-pub(crate) async fn print_response(response: Response) {
-    let status_color = status_color(response.status());
+    pub(crate) async fn print_response(&self, response: Response) {
+        let status_color = status_color(response.status());
 
-    let output_arrows = status_color.apply_to("<<<");
-    verbose!(
-        "{} {} {}\n",
-        &output_arrows,
-        style("HTTP Response").bold(),
-        &output_arrows
-    );
+        let output_arrows = status_color.apply_to("<<<");
+        verbose!(
+            "{} {} {}\n",
+            &output_arrows,
+            style("HTTP Response").bold(),
+            &output_arrows
+        );
 
-    verbose!(
-        "{} - {}",
-        status_color.apply_to(response.status()),
-        style(response.url()).underlined().blue()
-    );
-    verbose!("{:?}", response.version());
+        verbose!(
+            "{} - {}",
+            status_color.apply_to(response.status()),
+            style(response.url()).underlined().blue()
+        );
+        verbose!("{:?}", response.version());
 
-    print_headers(response.headers());
+        print_headers(response.headers());
 
-    match response.text().await {
-        Ok(content) => {
-            //if let Ok(json) = serde_json::from_str::<serde_json::Value>(&content) {
-            //standard!("{}", serde_json::to_string_pretty(&json).unwrap()),
-            //} else {
-            standard!("{content}");
-        }
-        Err(err) => {
-            error!("{err}");
+        let body = response.text().await;
+        if body.is_err() {
+            error!("{}", body.unwrap_err());
             standard!(
                 " {} The response body seems to not be printable",
                 style("x").red().bold()
             );
+            return;
         }
+        let body = body.unwrap();
+
+        if self.pretty_print {
+            if let Ok(json) = from_str::<serde_json::Value>(&body) {
+                standard!("{}", to_string_pretty(&json).unwrap());
+                return;
+            }
+        }
+        standard!("{body}");
     }
 }
 
