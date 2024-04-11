@@ -36,7 +36,7 @@ pub enum RequestError<E: Error> {
     #[error(transparent)]
     #[diagnostic(code = "failed connection")]
     FailedConnection(E),
-    #[error("resulting url is not correct ({})", style(url).underlined().blue())]
+    #[error("resulting url is not correct ({})", style(url).underlined().cyan())]
     #[diagnostic(code("invalid url"))]
     InvalidUrl {
         url: String,
