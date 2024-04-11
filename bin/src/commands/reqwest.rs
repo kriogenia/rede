@@ -6,7 +6,7 @@ use mime::Mime;
 use rede_parser::body::FormDataValue;
 use rede_parser::{Body, Request};
 use reqwest::redirect::Policy;
-use reqwest::{multipart, ClientBuilder, Request as Reqwest, RequestBuilder, Url};
+use reqwest::{multipart, ClientBuilder, Request as Reqwest, RequestBuilder, Response, Url};
 use tokio::fs::File;
 use tokio_util::codec::{BytesCodec, FramedRead};
 
@@ -23,7 +23,7 @@ impl Client {
         Self { properties }
     }
 
-    pub async fn send(self, req: Request) -> Result<String, Error> {
+    pub async fn send(self, req: Request) -> Result<Response, Error> {
         let url = Url::parse(&req.url).map_err(|e| RequestError::invalid_url(&req.url, e))?;
 
         let client = self.build_client()?;
@@ -63,7 +63,7 @@ impl Client {
         }
         .headers(headers);
 
-        Ok(builder.send().await?.text().await?)
+        Ok(builder.send().await?)
     }
 
     fn build_client(&self) -> Result<reqwest::Client, reqwest::Error> {
