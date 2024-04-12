@@ -35,15 +35,12 @@ macro_rules! test_request {
 }
 
 macro_rules! test_error {
-    // Runs the test using the file matching the test name
     ($(#[$m:meta])*$name:ident $(, $arg:literal)* -> $assert:expr) => {
         test_req!($(#[$m])*$name, failure, stderr, <$name> $($arg),* -> $assert);
     };
-    // Runs the test using the `get_simple` file, for test not dependent on the request file
     ($(#[$m:meta])*$name:ident <> $($arg:literal),* -> $assert:expr) => {
         test_req!($(#[$m])*$name, failure, stderr, <get_simple> $($arg),* -> $assert);
     };
-    // Runs the test using the given file
     ($(#[$m:meta])*$name:ident <$file:ident> $($arg:literal),* -> $assert:expr) => {
         test_req!($(#[$m])*$name, failure, stderr, <$file> $($arg),* -> $assert);
     };
@@ -58,6 +55,7 @@ test_request!(body_binary -> contains(r#""size":8"#).and(contains(r#""content-ty
 test_request!(body_form_data -> contains(r#""text":"agarimo""#).and(contains(r#""binary_size":8"#).and(contains("multipart/form-data; boundary="))));
 test_request!(body_form_url_encoded -> contains(r#""anime":"Evangelion""#).and(contains(r#""content-type":"application/x-www-form-urlencoded""#)));
 test_request!(override_content_type -> contains(r#""content-type":"application/json""#));
+test_request!(status_if_no_body<not_found> -> contains("404"));
 // todo -no-redirect, requires --verbose
 
 test_error!(missing_file -> contains("invalid [REQUEST]").and(contains("No such file or directory")));

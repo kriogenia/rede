@@ -4,17 +4,21 @@ pub static TERM_LOCK: OnceLock<Terminal> = OnceLock::new();
 
 #[macro_export]
 macro_rules! standard {
-    ($($arg:tt)*) => {{
-        use $crate::terminal::TERM_LOCK;
-        TERM_LOCK.get().unwrap().print_standard(format!($($arg)*));
-    }}
+    (below[$mode:ident] $($arg:tt)*) => {{
+        use $crate::terminal::{TERM_LOCK, Mode};
+        TERM_LOCK.get().unwrap().print_between(Mode::Standard, Mode::$mode, format!($($arg)*));
+    }};
+    ($($arg:tt)*) => {
+        use $crate::terminal::{TERM_LOCK, Mode};
+        TERM_LOCK.get().unwrap().print_above(Mode::Standard, format!($($arg)*));{
+    }};
 }
 
 #[macro_export]
 macro_rules! verbose {
     ($($arg:tt)*) => {{
-        use $crate::terminal::TERM_LOCK;
-        TERM_LOCK.get().unwrap().print_verbose(format!($($arg)*));
+        use $crate::terminal::{TERM_LOCK, Mode};
+        TERM_LOCK.get().unwrap().print_above(Mode::Verbose, format!($($arg)*));
     }}
 }
 
@@ -35,24 +39,28 @@ impl Terminal {
     }
 
     #[inline]
-    pub fn print_standard(&self, msg: impl AsRef<str>) {
-        match self.mode {
-            Mode::Standard | Mode::Verbose => println!("{}", msg.as_ref()),
-            Mode::Quiet => {}
+    pub fn print_above(&self, mode: Mode, msg: impl AsRef<str>) {
+        if self.mode >= mode {
+            print(msg);
         }
     }
 
     #[inline]
-    pub fn print_verbose(&self, msg: impl AsRef<str>) {
-        if self.mode == Mode::Verbose {
-            println!("{}", msg.as_ref());
+    pub fn print_between(&self, from: Mode, until: Mode, msg: impl AsRef<str>) {
+        if self.mode >= from && self.mode < until {
+            print(msg);
         }
     }
 }
 
-#[derive(Debug, PartialEq)]
-enum Mode {
-    Quiet,
-    Standard,
-    Verbose,
+#[derive(Debug, Clone, Copy, Ord, PartialOrd, PartialEq, Eq)]
+pub(crate) enum Mode {
+    Quiet = 0,
+    Standard = 2,
+    Verbose = 3,
+}
+
+#[inline]
+pub fn print(msg: impl AsRef<str>) {
+    println!("{}", msg.as_ref());
 }
