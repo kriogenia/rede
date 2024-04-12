@@ -83,11 +83,8 @@ impl super::Command {
             &output_arrows
         );
 
-        verbose!(
-            "{} - {}",
-            status_color.apply_to(response.status()),
-            style(response.url()).underlined().blue()
-        );
+        let status = status_color.apply_to(response.status());
+        verbose!("{status} - {}", style(response.url()).underlined().blue());
         verbose!("{:?}", response.version());
 
         print_headers(response.headers());
@@ -108,6 +105,10 @@ impl super::Command {
                 standard!("{}", to_string_pretty(&json).unwrap());
                 return;
             }
+        }
+
+        if body.is_empty() {
+            standard!(below[Verbose] "{status}");
         }
         standard!("{body}");
     }
