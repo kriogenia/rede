@@ -10,11 +10,11 @@ The main goal behind this project is to have a suite of text files representing 
 that will be picked and executed by `rede`, allowing for easy sharing and control versioning
 of these requests.
 
-![Execution of rede](./docs/static/readme_rede.gif)
+![Execution of rede](book/src/media/readme_rede.gif)
 
 The `--verbose` looks good too:
 
-![How verbose looks](./docs/static/readme_verbose.png)
+![How verbose looks](book/src/media/readme_verbose.png)
 
 ## Installation
 
