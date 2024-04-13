@@ -20,10 +20,11 @@ pub struct Command {
     /// Specifies if formatting applied should be applied to response body, by default is true
     #[arg(
         long,
-        default_missing_value("true"),
-        default_value("true"),
+        value_name = "true|false",
+        default_missing_value ="true",
+        default_value = "true",
         num_args(0..=1),
-        require_equals(true),
+        require_equals = true,
         action = ArgAction::Set,
     )]
     pretty_print: bool,
