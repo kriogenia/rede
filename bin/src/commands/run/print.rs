@@ -1,6 +1,6 @@
 use crate::{standard, verbose};
 use console::{style, Style};
-use http::{HeaderMap, StatusCode};
+use http::{HeaderMap, Method, StatusCode};
 use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, error};
 use rede_parser::{Body, Request};
@@ -39,13 +39,9 @@ impl super::Command {
         };
 
         let url = format!("{}{}", request.url, query);
+        let method = method_style(&request.method).apply_to(request.method.as_str());
 
-        // TODO print each method in a different color
-        verbose!(
-            "{} {}",
-            style(request.method.as_str()).bold().yellow(),
-            style(url).underlined().blue(),
-        );
+        verbose!("{method} {}", style(url).underlined().blue(),);
         verbose!("{:?}", request.http_version);
 
         print_headers(&request.headers);
@@ -74,7 +70,7 @@ impl super::Command {
     }
 
     pub(crate) async fn print_response(&self, response: Response) {
-        let status_color = status_color(response.status());
+        let status_color = status_style(response.status());
 
         let output_arrows = status_color.apply_to("<<<");
         verbose!(
@@ -136,7 +132,20 @@ fn print_headers(headers: &HeaderMap) {
     verbose!("");
 }
 
-fn status_color(status_code: StatusCode) -> Style {
+fn method_style(method: &Method) -> Style {
+    // postfix match would be quite nice here
+    match *method {
+        Method::GET => Style::new().green(),
+        Method::POST => Style::new().blue(),
+        Method::PUT => Style::new().cyan(),
+        Method::PATCH => Style::new().magenta(),
+        Method::DELETE => Style::new().red(),
+        _ => Style::new().yellow(),
+    }
+    .bold()
+}
+
+fn status_style(status_code: StatusCode) -> Style {
     match status_code.as_u16() {
         100..=199 => Style::new().cyan(),
         200..=299 => Style::new().green(),
