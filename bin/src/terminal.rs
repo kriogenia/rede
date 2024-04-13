@@ -3,6 +3,17 @@ use std::sync::OnceLock;
 pub static TERM_LOCK: OnceLock<Terminal> = OnceLock::new();
 
 #[macro_export]
+macro_rules! if_mode {
+    ([$($mode:ident)|+] $do:expr, $else:expr) => {
+        match $crate::terminal::TERM_LOCK.get().unwrap().mode {
+            $($crate::terminal::Mode::$mode => $do,)+
+            _ => $else,
+        }
+
+    };
+}
+
+#[macro_export]
 macro_rules! standard {
     (below[$mode:ident] $($arg:tt)*) => {{
         use $crate::terminal::{TERM_LOCK, Mode};
@@ -24,7 +35,7 @@ macro_rules! verbose {
 
 #[derive(Debug)]
 pub struct Terminal {
-    mode: Mode,
+    pub(crate) mode: Mode,
 }
 
 impl Terminal {

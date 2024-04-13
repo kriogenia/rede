@@ -51,7 +51,7 @@ impl RedeCommand for Command {
         let client = Client::new((&self).try_into()?);
 
         let response = client.send(request);
-        let bar = print::new_spinner();
+        let bar = self.new_spinner();
         let response = response.await?;
         bar.finish_and_clear();
         self.print_response(response).await;
