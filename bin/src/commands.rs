@@ -9,7 +9,14 @@ mod reqwest;
 mod run;
 
 #[derive(Debug, Parser)]
-#[command(name = "rede", term_width = 100, about, version)]
+#[command(
+    name = "rede",
+    about,
+    infer_long_args = true,
+    infer_subcommands = true,
+    term_width = 100,
+    version
+)]
 pub(crate) struct Cli {
     #[command(subcommand)]
     command: Command,
