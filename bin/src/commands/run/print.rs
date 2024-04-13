@@ -1,4 +1,4 @@
-use crate::{standard, verbose};
+use crate::{if_mode, standard, verbose};
 use console::{style, Style};
 use http::{HeaderMap, Method, StatusCode};
 use indicatif::{ProgressBar, ProgressStyle};
@@ -7,6 +7,8 @@ use rede_parser::{Body, Request};
 use reqwest::Response;
 use serde_json::{from_str, to_string_pretty};
 use std::time::Duration;
+
+const SPINNER_TEMPLATE: &str = "{prefix} {spinner:.cyan/blue} Waiting for the response: {elapsed}";
 
 impl super::Command {
     pub(crate) fn print_request(&self, request: &Request) {
@@ -40,7 +42,6 @@ impl super::Command {
 
         let url = format!("{}{}", request.url, query);
         let method = method_style(&request.method).apply_to(request.method.as_str());
-
         verbose!("{method} {}", style(url).underlined().blue(),);
         verbose!("{:?}", request.http_version);
 
@@ -109,15 +110,19 @@ impl super::Command {
         }
         standard!("{body}");
     }
-}
 
-const SPINNER_TEMPLATE: &str = "{spinner:.cyan/blue} Waiting for the response: {elapsed}";
-pub fn new_spinner() -> ProgressBar {
-    let bar = ProgressBar::new_spinner()
-        .with_prefix("this could be the request if you know...")
-        .with_style(ProgressStyle::with_template(SPINNER_TEMPLATE).unwrap());
-    bar.enable_steady_tick(Duration::from_millis(100));
-    bar
+    pub fn new_spinner(&self) -> ProgressBar {
+        let mut bar = ProgressBar::new_spinner()
+            .with_style(ProgressStyle::with_template(SPINNER_TEMPLATE).unwrap());
+
+        bar = if_mode!([Standard] {
+            let prefix = format!("Launching request {}\n", style(&self.request).yellow().italic());
+            bar.with_prefix(prefix)
+        }, bar);
+
+        bar.enable_steady_tick(Duration::from_millis(100));
+        bar
+    }
 }
 
 fn print_headers(headers: &HeaderMap) {
