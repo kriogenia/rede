@@ -33,7 +33,7 @@ User-Agent = "rede/v0.1.0"
 limit = 1
 ```
 
-Pretty easy to diggest, right?
+Pretty easy to digest, right?
 
 ## rede run
 
