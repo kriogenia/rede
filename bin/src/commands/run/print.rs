@@ -1,10 +1,12 @@
 use crate::{standard, verbose};
 use console::{style, Style};
 use http::{HeaderMap, StatusCode};
+use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, error};
 use rede_parser::{Body, Request};
 use reqwest::Response;
 use serde_json::{from_str, to_string_pretty};
+use std::time::Duration;
 
 impl super::Command {
     pub(crate) fn print_request(&self, request: &Request) {
@@ -52,21 +54,20 @@ impl super::Command {
             verbose!("[{}]", style(mime).cyan());
         }
         match &request.body {
-            Body::Raw { content, .. } => verbose!("{content}\n"),
-            Body::Binary { path, .. } => verbose!("    @{path}\n"),
+            Body::Raw { content, .. } => verbose!("{content}"),
+            Body::Binary { path, .. } => verbose!("    @{path}"),
             Body::XFormUrlEncoded(map) => {
                 let query = map
                     .iter()
                     .map(|(k, v)| format!("{k}={v}"))
                     .collect::<Vec<String>>()
                     .join(&style("&").blue().to_string());
-                verbose!("{query}\n");
+                verbose!("{query}");
             }
             Body::FormData(form) => {
                 for (k, v) in form {
                     verbose!("{}: {}", style(k).blue(), v);
                 }
-                verbose!("");
             }
             Body::None => {}
         }
@@ -114,8 +115,17 @@ impl super::Command {
     }
 }
 
+const SPINNER_TEMPLATE: &str = "{spinner:.cyan/blue} Waiting for the response: {elapsed}";
+pub fn new_spinner() -> ProgressBar {
+    let bar = ProgressBar::new_spinner()
+        .with_prefix("this could be the request if you know...")
+        .with_style(ProgressStyle::with_template(SPINNER_TEMPLATE).unwrap());
+    bar.enable_steady_tick(Duration::from_millis(100));
+    bar
+}
+
 fn print_headers(headers: &HeaderMap) {
-    // TODO use if_verbose! to omit this loop
+    // TODO create if_verbose! to wrap this loop and omit it
     for (header_key, header_value) in headers {
         verbose!(
             "  - {} : {}",
