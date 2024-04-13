@@ -5,6 +5,7 @@ use clap::{Parser, Subcommand};
 
 use crate::terminal::{Terminal, TERM_LOCK};
 
+mod example;
 mod reqwest;
 mod run;
 
@@ -63,6 +64,7 @@ impl Cli {
 #[derive(Debug, Subcommand)]
 enum Command {
     Run(run::Command),
+    Example(example::Command),
 }
 
 trait RedeCommand {
@@ -73,6 +75,7 @@ impl RedeCommand for Command {
     async fn run(self) -> miette::Result<()> {
         match self {
             Command::Run(c) => c.run().await,
+            Command::Example(c) => c.run().await,
         }
     }
 }
