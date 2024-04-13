@@ -1,4 +1,7 @@
 it_test:
 	cargo test -p rede -- --include-ignored
 
-.PHONY: it_test
+serve_doc:
+	cd book && mdbook serve --open
+
+.PHONY: it_test, serve_doc

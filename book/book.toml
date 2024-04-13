@@ -1,0 +1,6 @@
+[book]
+authors = ["Kriogenia"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Rede Documentation"
