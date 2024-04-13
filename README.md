@@ -1,4 +1,6 @@
 # Rede
+[![Rust CI](https://github.com/kriogenia/rede/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/kriogenia/rede/actions/workflows/ci.yml)
+![Crates.io Version](https://img.shields.io/crates/v/rede)
 
 `rede` (galician word for "net") is a command-line utility to help run suites of requests to
 ease the usage and testing of REST APIs. The main inspiration for this project comes from
