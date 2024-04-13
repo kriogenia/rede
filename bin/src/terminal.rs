@@ -19,9 +19,9 @@ macro_rules! standard {
         use $crate::terminal::{TERM_LOCK, Mode};
         TERM_LOCK.get().unwrap().print_between(Mode::Standard, Mode::$mode, format!($($arg)*));
     }};
-    ($($arg:tt)*) => {
+    ($($arg:tt)*) => {{
         use $crate::terminal::{TERM_LOCK, Mode};
-        TERM_LOCK.get().unwrap().print_above(Mode::Standard, format!($($arg)*));{
+        TERM_LOCK.get().unwrap().print_above(Mode::Standard, format!($($arg)*));
     }};
 }
 
