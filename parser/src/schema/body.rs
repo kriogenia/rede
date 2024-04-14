@@ -1,5 +1,5 @@
 use crate::body::Body as PublicBody;
-use crate::schema::table::{FormDataTable, PrimitiveArrTable, Transform};
+use crate::schema::table::{FormDataTable, PrimitiveTable, Transform};
 use crate::schema::types::PrimitiveArray;
 use serde::Deserialize;
 
@@ -24,7 +24,7 @@ pub(crate) enum Body {
         alias = "form_urlencoded",
         alias = "form-urlencoded"
     )]
-    XFormUrlEncoded(PrimitiveArrTable),
+    XFormUrlEncoded(PrimitiveTable),
 }
 
 #[derive(Debug, Deserialize, PartialEq)]

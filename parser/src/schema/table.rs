@@ -10,7 +10,7 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize, PartialEq)]
 pub(crate) struct Table<V>(pub(crate) HashMap<String, V>);
 
-pub type PrimitiveArrTable = Table<PrimitiveArray>;
+pub type PrimitiveTable = Table<PrimitiveArray>;
 pub type FormDataTable = Table<FormDataValue>;
 
 impl<V> Index<&str> for Table<V> {
@@ -58,7 +58,7 @@ where
     }
 }
 
-impl PrimitiveArrTable {
+impl PrimitiveTable {
     pub(crate) fn into_pairs(self) -> Vec<(String, String)> {
         let mut vec = Vec::new();
         for (key, val) in self {
@@ -108,7 +108,7 @@ mod test {
         assert_eq!(map["array"], "one,2");
     }
 
-    fn new_test_table() -> PrimitiveArrTable {
+    fn new_test_table() -> PrimitiveTable {
         let string = r#"
         string = "value"
         integer = 10
