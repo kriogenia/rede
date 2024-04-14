@@ -13,6 +13,9 @@ use std::time::Duration;
 
 /// Executes the provided HTTP request
 #[derive(Debug, Args)]
+#[command(
+    after_help = "Documentation: https://rede.sotoestevez.dev/reference_guide/command_line_interface/run.html"
+)]
 pub struct Command {
     /// Request file to execute
     #[arg(default_value = "-")]

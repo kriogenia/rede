@@ -13,6 +13,7 @@ mod run;
 #[command(
     name = "rede",
     about,
+    after_help = "Check the full documentation: https://rede.sotoestevez.dev",
     next_help_heading = "Global options",
     infer_long_args = true,
     infer_subcommands = true,
