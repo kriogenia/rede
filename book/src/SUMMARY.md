@@ -9,9 +9,9 @@
 # Reference Guide
 - [Request DSL](./reference_guide/request_dsl.md)
   - [Body](./reference_guide/request_dsl/body.md)
-- [Command Line Interface](./reference_guide/command_line_tool.md)
-  - [run](./reference_guide/command_line_tool/run.md)
-  - [example](./reference_guide/command_line_tool/example.md)
+- [Command Line Interface](./reference_guide/command_line_interface)
+  - [run](reference_guide/command_line_interface/run.md)
+  - [example](reference_guide/command_line_interface/example.md)
 
 # Crates
 - [Parser](./crates/parser.md)
