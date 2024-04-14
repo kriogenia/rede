@@ -6,7 +6,7 @@ use serde::Deserialize;
 pub(crate) use body::Body;
 
 use crate::error::Error;
-use crate::schema::table::PrimitiveArrTable;
+use crate::schema::table::PrimitiveTable;
 
 mod body;
 pub(crate) mod table;
@@ -18,15 +18,15 @@ pub(crate) mod types;
 pub(crate) struct Schema {
     pub http: Http,
     #[serde(default)]
-    pub metadata: PrimitiveArrTable,
+    pub metadata: PrimitiveTable,
     #[serde(with = "http_serde::header_map", default)]
     pub headers: HeaderMap,
     #[serde(alias = "queryparams", alias = "query-params", default)]
-    pub query_params: PrimitiveArrTable,
+    pub query_params: PrimitiveTable,
     #[serde(default)]
     pub body: Body,
     #[serde(default)]
-    pub variables: PrimitiveArrTable,
+    pub variables: PrimitiveTable,
 }
 
 #[derive(Deserialize)]
