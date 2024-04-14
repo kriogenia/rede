@@ -6,7 +6,7 @@ use serde::Deserialize;
 pub(crate) use body::Body;
 
 use crate::error::Error;
-use crate::schema::table::{PrimitiveArrTable, PrimitiveTable};
+use crate::schema::table::PrimitiveArrTable;
 
 mod body;
 pub(crate) mod table;
@@ -23,10 +23,10 @@ pub(crate) struct Schema {
     pub headers: HeaderMap,
     #[serde(alias = "queryparams", alias = "query-params", default)]
     pub query_params: PrimitiveArrTable,
-    #[serde(alias = "pathparams", alias = "path-params", default)]
-    pub path_params: PrimitiveTable,
     #[serde(default)]
     pub body: Body,
+    #[serde(default)]
+    pub variables: PrimitiveArrTable,
 }
 
 #[derive(Deserialize)]
@@ -75,11 +75,12 @@ mod test {
     array = [ "first", "second" ]
     boolean = true
 
-    [path-params]
+    [variables]
     string = "string"
     integer = 5
     float = 1.2
     boolean = false
+    array = [ 1, "2" ]
 
     [body]
     raw = """
@@ -133,14 +134,27 @@ mod test {
                 Primitive::Str("second".into()),
             ])
         );
-        assert_eq!(schema.path_params.0.len(), 4);
+        assert_eq!(schema.variables.0.len(), 5);
         assert_eq!(
-            schema.path_params.0["string"],
-            Primitive::Str("string".to_string())
+            schema.variables.0["string"],
+            PrimitiveArray::Single(Primitive::Str("string".to_string()))
         );
-        assert_eq!(schema.path_params.0["integer"], Primitive::Int(5));
-        assert_eq!(schema.path_params.0["float"], Primitive::Float(1.2));
-        assert_eq!(schema.path_params.0["boolean"], Primitive::Bool(false));
+        assert_eq!(
+            schema.variables.0["integer"],
+            PrimitiveArray::Single(Primitive::Int(5))
+        );
+        assert_eq!(
+            schema.variables.0["float"],
+            PrimitiveArray::Single(Primitive::Float(1.2))
+        );
+        assert_eq!(
+            schema.variables.0["boolean"],
+            PrimitiveArray::Single(Primitive::Bool(false))
+        );
+        assert_eq!(
+            schema.variables.0["array"],
+            PrimitiveArray::Multiple(vec![Primitive::Int(1), Primitive::Str("2".into()),])
+        );
         let body: Body = schema.body.into();
         assert!(matches!(body, Body::Raw(content) if content.contains(r#""key": "value""#)));
     }
@@ -168,7 +182,7 @@ mod test {
         assert!(schema.metadata.0.is_empty());
         assert!(schema.headers.is_empty());
         assert!(schema.query_params.0.is_empty());
-        assert!(schema.path_params.0.is_empty());
+        assert!(schema.variables.0.is_empty());
         assert_eq!(schema.body, Body::None);
     }
 }
