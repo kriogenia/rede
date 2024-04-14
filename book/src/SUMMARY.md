@@ -8,6 +8,7 @@
 
 # Reference Guide
 - [Request DSL](./reference_guide/request_dsl.md)
+  - [Body](./reference_guide/request_dsl/body.md)
 - [Command Line Interface](./reference_guide/command_line_tool.md)
   - [run](./reference_guide/command_line_tool/run.md)
   - [example](./reference_guide/command_line_tool/example.md)
@@ -21,3 +22,7 @@
 - [--env](./roadmap/env.md)
 - [Asserts](./roadmap/asserts.md)
 - [Config](./roadmap/config.md)
+
+---
+
+[FAQ](./faq.md)
