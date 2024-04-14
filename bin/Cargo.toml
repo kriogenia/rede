@@ -11,7 +11,7 @@ repository.workspace = true
 
 categories = [ "command-line-utilities" , "development-tools", "web-programming::http-client"]
 description = "CLI tool to run and configure suites of HTTP requests defined in readable files"
-documentation = "https://docs.rs/rede"
+documentation = "https://rede.sotoestevez.dev/"
 keywords = [ "cli", "http", "api", "request" ]
 readme = "../README.md"
 
