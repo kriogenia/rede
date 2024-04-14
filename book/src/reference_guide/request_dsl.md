@@ -68,6 +68,7 @@ _warning: some common leaders like `Host` and `Content-Type` will be autogenerat
 option to disable this autogeneration_
 
 ## [query_params]
+
 This table is **free**. There's no predefined keys but the values can't be of type datetime
 or tables. Arrays are supported and will be sent in the request as a comma separated list of
 the values.
@@ -93,6 +94,18 @@ body.binary = "./doc/project_v2_final_final.pdf"
 [body.x-www-form-urlencoded]
 name = "Feldespato"
 location = "unknown"
+```
+
+## [variables]
+This table is **free**. There's no predefined keys but the values can't be of type datetime
+or tables. Arrays are supported and will be sent in the request as a comma separated list of
+the values.
+
+Variables serve to set a value to replace **placeholders** ([see](./request_dsl/placeholders.md)).
+
+```toml
+host = "192.0.0.1"
+name = "Vin"
 ```
 
 ## [metadata]

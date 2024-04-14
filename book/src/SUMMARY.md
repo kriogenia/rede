@@ -10,7 +10,7 @@
 - [Request DSL](./reference_guide/request_dsl.md)
   - [Body](./reference_guide/request_dsl/body.md)
   - [Input_parameters]()
-  - [Placeholders and variables]()
+  - [Placeholders](./reference_guide/request_dsl/placeholders.md)
 - [Command Line Interface](./reference_guide/command_line_interface.md)
   - [run](reference_guide/command_line_interface/run.md)
   - [example](reference_guide/command_line_interface/example.md)
