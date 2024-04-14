@@ -3,14 +3,13 @@ use std::collections::HashMap;
 use std::ops::Index;
 
 use crate::schema::body::FormDataValue;
-use crate::schema::types::{Primitive, PrimitiveArray};
+use crate::schema::types::PrimitiveArray;
 use serde::Deserialize;
 
 /// Newtype implementation to wrap TOML tables where the set of keys can be free
 #[derive(Debug, Deserialize, PartialEq)]
 pub(crate) struct Table<V>(pub(crate) HashMap<String, V>);
 
-pub type PrimitiveTable = Table<Primitive>;
 pub type PrimitiveArrTable = Table<PrimitiveArray>;
 pub type FormDataTable = Table<FormDataValue>;
 

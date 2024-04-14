@@ -17,8 +17,8 @@ pub struct Request {
     pub metadata: HashMap<String, String>,
     pub headers: HeaderMap,
     pub query_params: Vec<(String, String)>,
-    pub path_params: HashMap<String, String>,
     pub body: Body,
+    pub variables: HashMap<String, String>,
 }
 
 impl TryFrom<Schema> for Request {
@@ -32,7 +32,7 @@ impl TryFrom<Schema> for Request {
             metadata: schema.metadata.into_map(),
             headers: schema.headers,
             query_params: schema.query_params.into_pairs(),
-            path_params: schema.path_params.into_map(),
+            variables: schema.variables.into_map(),
             body: schema.body.into(),
         })
     }
@@ -65,8 +65,11 @@ mod test {
             PrimitiveArray::Multiple(vec![Primitive::Str("s".to_string()), Primitive::Int(1)]),
         );
 
-        let mut path_params = HashMap::new();
-        path_params.insert("pp".to_string(), Primitive::Str("value".to_string()));
+        let mut variables = HashMap::new();
+        variables.insert(
+            "pp".to_string(),
+            PrimitiveArray::Single(Primitive::Str("value".to_string())),
+        );
 
         let body = schema::Body::Binary("path".to_string());
 
@@ -79,7 +82,7 @@ mod test {
             headers,
             metadata: Table::new(metadata),
             query_params: Table::new(query_params),
-            path_params: Table::new(path_params),
+            variables: Table::new(variables),
             body,
         };
 
@@ -96,7 +99,7 @@ mod test {
                 ("qp".to_string(), "1".to_string())
             ]
         );
-        assert_eq!(request.path_params["pp"], "value");
+        assert_eq!(request.variables["pp"], "value");
         assert_eq!(
             request.body,
             Body::Binary {

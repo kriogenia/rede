@@ -59,10 +59,10 @@ _key = "string"
 [query_params]
 _key = ["string", "integer", "float", "boolean", "array"]
 
-####### The path params table defines the value for segment paths enclosed in `{{name}}`, overrides env values
+####### The variables table allows to define values for placeholders
 
-[path_params]
-_key = ["string", "integer", "float", "boolean"]
+[variables]
+_key = ["string", "integer", "float", "boolean", "array"]
 
 ####### Defines the body that will be sent with the request
 
