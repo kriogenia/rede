@@ -8,6 +8,9 @@ use tokio::io::AsyncWriteExt;
 
 /// Generate an example request file to run
 #[derive(Debug, Args)]
+#[command(
+    after_help = "Documentation: https://rede.sotoestevez.dev/reference_guide/command_line_interface/example.html"
+)]
 pub struct Command;
 
 const EXAMPLE: &str = include_str!("../static/example.toml");
