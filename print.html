@@ -1,0 +1,525 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Rede Documentation</title>
+        <meta name="robots" content="noindex" />
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="user_guide/how_to_run.html"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="reference_guide/request_dsl/body.html"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Input_parameters</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Placeholders and variables</div></li></ol></li><li class="chapter-item expanded "><a href="reference_guide/command_line_interface.html"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="reference_guide/command_line_interface/run.html"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="roadmap/upcoming.html"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="faq.html">FAQ</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rede Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="rede"><a class="header" href="#rede">Rede</a></h1>
+<p><code>rede</code> (galician word for &quot;net&quot;) is a command-line utility to help run suites of requests to
+ease the usage and testing of REST APIs. The main inspiration for this project comes from
+<a href="https://www.usebruno.com/">Bruno</a> and their command line tool.</p>
+<p>The main goal behind this project is to have a suite of text files representing HTTP requests
+that will be picked and executed by <code>rede</code>, allowing for easy sharing and control versioning
+of these requests.</p>
+<p><img src="./media/readme_rede.gif" alt="Execution of rede" /></p>
+<h2 id="request-dsl"><a class="header" href="#request-dsl">Request DSL</a></h2>
+<p>Rede requests are stored as plain text files, so they can be easily stored and shared in your
+project repositories via your favourite version control tool. You won't have to set a team with
+your peers to have a shared suite of request to test your application, you only need to push those
+files.</p>
+<p>The DSL that request used is based on TOML as it's a simple and human-readable format that matches
+perfectly our needs. This is an example of a request that rede can execute.</p>
+<pre><code class="language-toml">[http]
+method = &quot;GET&quot;
+url = &quot;https://dogapi.dog/api/v2/facts&quot;
+
+[headers]
+Accept = &quot;application/json&quot;
+User-Agent = &quot;rede/v0.1.0&quot;
+
+[query_params]
+limit = 1
+</code></pre>
+<p>Pretty easy to digest, right?</p>
+<h2 id="rede-run"><a class="header" href="#rede-run">rede run</a></h2>
+<p>The main feature of <code>rede</code> is the command <code>run</code>. You can invoke with the name of the file of your
+request and rede will execute it and return the results.</p>
+<p><img src="./media/readme_verbose.png" alt="rede run with verbose" /></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+<p>As this still an early stage of the project the package repository where it will be provides is cargo, so
+you would need to have Rust installed and run:</p>
+<pre><code class="language-shell">cargo install rede
+</code></pre>
+<p>Of course, if you have Rust installed you can also build it and/or install it yourself.</p>
+<p>Another alternative is to download the latest binary from the
+<a href="https://github.com/kriogenia/rede/releases">releases page</a> but only Linux binary will be available for
+the moment.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-run"><a class="header" href="#how-to-run">How to run</a></h1>
+<p><code>rede</code> works using a DSL built on top of the <a href="https://toml.io/en/">TOML</a> specification.
+All the documentation regarding rede's DSL can be found on the respective <a href="user_guide/../reference_guide/request_dsl.html">page</a>.
+An easy way to boostrap a request following the DSL is running the <code>rede example</code> command.</p>
+<p>It will generate a <code>example.toml</code> file looking like this.</p>
+<pre><code class="language-toml">[http]
+method = &quot;GET&quot;
+url = &quot;https://dogapi.dog/api/v2/facts&quot;
+
+[headers]
+Accept = &quot;application/json&quot;
+User-Agent = &quot;rede/v0.1.0&quot;
+
+[query_params]
+limit = 1
+</code></pre>
+<p>Once you have run this command, or redacted your own request you will be ready to execute rede.</p>
+<pre><code class="language-shell">rede run &lt;your_file&gt;
+</code></pre>
+<p>And that's all you need to start making requests with <code>rede</code>, but the CLI allows for more capabilities.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="request-dsl-1"><a class="header" href="#request-dsl-1">Request DSL</a></h1>
+<p><code>rede</code> is built to work around <a href="https://toml.io/en/">TOML</a> files modeling an HTTP request.
+This is an example of a pretty complex HTTP request following <code>rede</code> DSL.</p>
+<pre><code class="language-toml">[http]
+method = &quot;POST&quot;
+url = &quot;https://www.myapi.gl/api/images&quot;
+version = &quot;HTTP/1.1&quot;
+
+[metadata]
+name = &quot;Submit image&quot;
+description = &quot;Uploads a new image&quot;
+author = &quot;John Carmack&quot;
+
+[headers]
+Content-Type = &quot;multipart/form-data&quot;
+Authorization = &quot;Bearer am6Mlw33eCVK&quot;
+Accept = &quot;application/json&quot;
+
+[body.form_data]
+username.text = &quot;DoomGuy&quot;
+description.text = &quot;Just chilling killing some demons&quot;
+image.file = &quot;~/Pictures/hell/ripping_living_heart_from_demon.png&quot;
+</code></pre>
+<p>I could explain the request that is being represented there, but this format is so readable that there's no need.</p>
+<h1 id="tables"><a class="header" href="#tables">Tables</a></h1>
+<p>Each table (<code>[table]</code>) represents a section of an HTTP request and inside each one a series of keys or tables can be
+defined to provided all you need to represent the HTTP call.</p>
+<p>Some considerations applying to the whole schema:</p>
+<ul>
+<li><strong>Only <code>http</code> is required</strong>, all the other tables are optional.</li>
+<li>The order is not relevant. The order used in this section is only for improve readability.</li>
+<li>Every valid TOML declaration is supported. There's no need to use the same as the examples here.</li>
+<li>Any multiword key supports <code>camel_case</code>, <code>lowercase</code> and <code>kebab-case</code>.</li>
+</ul>
+<h2 id="http"><a class="header" href="#http">[http]</a></h2>
+<p>This table accepts three possible keys:</p>
+<ul>
+<li><code>url</code>, <em>string</em>. The only key <strong>required</strong> in the whole DSL.</li>
+<li><code>method</code>, <em>string</em>. If omitted it will be <code>GET</code>. Accepts extension methods.</li>
+<li><code>version</code>, <em>string</em> of type <code>HTTP/x.y</code>. If omitted it will default to <code>HTTP/1.1</code>.</li>
+</ul>
+<pre><code class="language-toml">[http]
+url = &quot;127.0.0.1/api&quot;
+method = &quot;DELETE&quot;
+version = &quot;HTTP/2.0&quot;
+</code></pre>
+<h2 id="headers"><a class="header" href="#headers">[headers]</a></h2>
+<p>This table is <strong>free</strong>. There's no predefined keys but all values must be <em>strings</em>.
+No transformation is applied to these headers so they must follow the HTTP restrictions.</p>
+<pre><code class="language-toml">[headers]
+date = &quot;1970-01-01&quot;
+My-Own_Weird_Header = &quot;its valid tho&quot;
+</code></pre>
+<p><em>warning: some common leaders like <code>Host</code> and <code>Content-Type</code> will be autogenerated by
+<code>rede</code> based on the other fields of the request. Future plans contemplate allowing the
+option to disable this autogeneration</em></p>
+<h2 id="query_params"><a class="header" href="#query_params">[query_params]</a></h2>
+<p>This table is <strong>free</strong>. There's no predefined keys but the values can't be of type datetime
+or tables. Arrays are supported and will be sent in the request as a comma separated list of
+the values.</p>
+<pre><code class="language-toml">[query-params]
+size = 10
+genre = &quot;scifi&quot;
+tags = [ &quot;dystopia&quot;, &quot;space&quot; ]
+</code></pre>
+<h2 id="body"><a class="header" href="#body">[body]</a></h2>
+<p>The body is a table that can only contain <strong>a single key</strong> specifying the type of body and the
+respective content of the body as value. Defining more than one body type would return an error.
+The see all body types refer to <a href="reference_guide/./request_dsl/body.html">the body page</a>.</p>
+<pre><code class="language-toml">body.binary = &quot;./doc/project_v2_final_final.pdf&quot;
+</code></pre>
+<pre><code class="language-toml">[body.x-www-form-urlencoded]
+name = &quot;Feldespato&quot;
+location = &quot;unknown&quot;
+</code></pre>
+<h2 id="metadata"><a class="header" href="#metadata">[metadata]</a></h2>
+<p>This table is <strong>free</strong> but the values must be one of the primitive values (<em>string</em>, <em>integer</em>,
+<em>float</em> or <em>boolean</em>). It allows you to add any meaningful meta information. One key is currently
+queried by <code>rede</code> but more could come in the future (for example, <em>description</em>):</p>
+<ul>
+<li><code>name</code>. If present, <code>rede</code> will use it to refer to the request instead of using the filename.
+_This works only for printing purposes, <code>rede run</code> still requires the filename.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="body-1"><a class="header" href="#body-1">Body</a></h1>
+<p>The <code>[body]</code> table accepts a series of keys representing the different types that could be submitted
+via HTTP. <strong>Only one</strong> of those types can be defined, attempting to use more than one would render the
+request invalid.</p>
+<p>In this first version only four types are supported, but all these types in conjunction with the
+appropriate headers are enough to represent all possible mime types.</p>
+<h2 id="binary"><a class="header" href="#binary">binary</a></h2>
+<p>Must contain as value the path to the file that will be sent. <strong>IMPORTANT</strong>, the path must be relative
+to the point where <code>rede</code> will be executed, not relative to the request file. Future implementations
+could change this behavior, but keep in mind that this is the current state. A valid alias for the key
+is <code>file</code>.</p>
+<p>If no <code>Content-Type</code> is set in the request, using this type will set it to <code>application/octet-stream</code>.</p>
+<pre><code class="language-toml">body.binary = &quot;$HOME/Videos/la caida de Edgar.mp4&quot;
+</code></pre>
+<h2 id="raw"><a class="header" href="#raw">raw</a></h2>
+<p>Must contain as a value the <em>string</em> representing the body content. <em>Tip: TOML supports multiline strings
+for your JSONs and XMLs</em>. A valid alias for the key is <code>text</code>.</p>
+<p>If no <code>Content-Type</code> is set in the request, using this type will set it to <code>text/plain</code>.</p>
+<pre><code class="language-toml">[body]
+raw = &quot;&quot;&quot;
+{
+  &quot;song&quot;: &quot;Bohemian Rhapsody&quot;,
+  &quot;group&quot;: &quot;Queen&quot;,
+  &quot;awesome&quot;: true
+}
+&quot;&quot;&quot;
+</code></pre>
+<h2 id="x_www_form_urlencoded"><a class="header" href="#x_www_form_urlencoded">x_www_form_urlencoded</a></h2>
+<p>Similar to <a href="reference_guide/request_dsl/../request_dsl.html#query_params">query params</a>. <strong>Free</strong> table supporting everything except
+datetimes and tables as value. Array will be transformed into a comma-separated list of values.
+A valid alias for the key is <code>form_url_encoded</code>.</p>
+<p>If no <code>Content-Type</code> is set in the request, using this type will set it to <code>application/x-www-form-urlencoded</code>.</p>
+<pre><code class="language-toml">[body.x-www-form-urlencoded]
+username = &quot;VeryDivorcedMan&quot;
+country = &quot;za&quot;
+</code></pre>
+<h2 id="multipart_form_data"><a class="header" href="#multipart_form_data">multipart_form_data</a></h2>
+<p><strong>Free</strong> table but all its keys must be of type <em>table</em> having a single key of:</p>
+<ul>
+<li><code>text</code> with the text content.</li>
+<li><code>file</code> with the path to the binary file. Like in <a href="reference_guide/request_dsl/body.html#binary">binary</a> the path must be relative to the point
+of execution, not the the request file.</li>
+</ul>
+<p>Having a single form key with two possible types would be invalid. A valid alias for the key is
+<code>form_data</code>.</p>
+<p>If no <code>Content-Type</code> is set in the request, using this type will set it to <code>multipart/form-data</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="command-line-interface"><a class="header" href="#command-line-interface">Command Line Interface</a></h1>
+<p>The general way of running <code>rede</code> is using <code>rede &lt;subcommand&gt;</code>. The current supported
+subcommands are:</p>
+<ul>
+<li><a href="reference_guide/./command_line_tool/run.html">run</a></li>
+<li><a href="reference_guide/./command_line_tool/example.html">example</a></li>
+<li><code>help</code>, prints the help, same as <code>rede --help</code>.</li>
+</ul>
+<p><code>rede</code> supports infering for both, subcommands and arguments. That means that you substrings
+can match a command as long as there's no conflict. For example, this is valid way of using
+<code>rede run</code> with <code>--verbose</code>:</p>
+<pre><code class="language-shell">rede r --verb my_request
+</code></pre>
+<h2 id="global-options"><a class="header" href="#global-options">Global options</a></h2>
+<p>The following options of <code>rede</code> can be used with all subcommands.</p>
+<ul>
+<li><code>--verbose</code>, ups the number of printing messages.</li>
+<li><code>--quiet</code>, evades all standard output, only errors will be printed in stderr.</li>
+<li><code>--no-color</code>, disables coloring in the outputs.</li>
+<li><code>--help</code>, will print the help of the respective command.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rede-run-1"><a class="header" href="#rede-run-1">rede run</a></h1>
+<p>To execute requests in <code>rede</code> you need to use <code>rede run</code>. This command accepts a path to a file
+containing a valid rede request. The <code>.toml</code> extension is optional, but rede will only attempt
+to load files with that extension. By default, it will print the body of the response, or the
+status code if there's no body in the response.</p>
+<pre><code class="language-shell">rede run my_request
+</code></pre>
+<p><code>rede run</code> is also ready to work with the stdin, so you can also use it in pipes:</p>
+<pre><code class="language-shell">cat my_request | rede run &gt; response.json
+</code></pre>
+<h2 id="redirections"><a class="header" href="#redirections">Redirections</a></h2>
+<p><code>rede run</code> will automatically follow redirect response to arrive at the pointed resource.
+That means that unless this behavior is overriden <code>run</code> can't return 3xx responses. To
+disable this behavior you can use the <code>--no-redirect</code> flag.</p>
+<p>On top of that, <code>run</code> will throw an error after 10 redirections followed in the same
+request, you can override this value with <code>--max-redirects &lt;value&gt;</code></p>
+<h2 id="verbosity"><a class="header" href="#verbosity">Verbosity</a></h2>
+<p>When using <code>rede run</code> with the different verbosity options this is what it will print (each
+level will print the same as the previous plus what is described):</p>
+<ul>
+<li><code>quiet</code>, will only print errors to stderr. The waiting spinner can show but it will be deleted.</li>
+<li><code>standard</code>, will print the response body. If it's empty, the response status code.</li>
+<li><code>verbose</code>, will print the request that it's being sent (including headers and body) and the
+whole response received (status, headers and body).</li>
+</ul>
+<h2 id="other-options"><a class="header" href="#other-options">Other options</a></h2>
+<p><code>rede run</code> supports the following options:</p>
+<ul>
+<li><code>--pretty-print</code>, specifies if formatting and jump lines should be applied to the response
+body. It's enabled by default, but it can be disabled via <code>--pretty-print=false</code></li>
+<li><code>--timeout</code>, sets the maximum duration that the client should wait before giving a timeout.
+For example, <code>--timeout 3s</code> to wait max 3 seconds.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rede-example"><a class="header" href="#rede-example">rede example</a></h1>
+<p>This command is intended to give a brief help to people starting with
+<code>rede</code>. In this first version using it will only output a message
+with an example of a request- It will also create a file named <code>example.toml</code>
+with that request. This allows to have a valid request to try the <code>run</code> command.</p>
+<pre><code class="language-shell">rede example
+rede run example
+</code></pre>
+<p><em>This command is intended to provide example of different types of
+features in the future, but right now it's limited to just this</em></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="errors"><a class="header" href="#errors">Errors</a></h1>
+<h4 id="failed-connection"><a class="header" href="#failed-connection">failed connection</a></h4>
+<p><code>rede</code> was unable to establish a connection with the server. It could be down
+or the URL could be wrong.</p>
+<h4 id="failed-request-building"><a class="header" href="#failed-request-building">failed request building</a></h4>
+<p>A part of your request is not correct, try looking into the cause to discern
+the reason.</p>
+<h4 id="invalid-file"><a class="header" href="#invalid-file">invalid file</a></h4>
+<p>One of the files referenced in the request does not exist or can't be read.
+The most probable reson is that you defined a path relative to the request file,
+but the way rede works the path must be relative to the path from where you are
+executing rede.</p>
+<h4 id="invalid-request"><a class="header" href="#invalid-request">invalid [REQUEST]</a></h4>
+<p>The request file specified in the command does not exist or can't be read.</p>
+<h4 id="invalid-url"><a class="header" href="#invalid-url">invalid url</a></h4>
+<p>The parsed URL is invalid</p>
+<h4 id="unknown-request-error"><a class="header" href="#unknown-request-error">unknown request error</a></h4>
+<p>Some error has occurred with your request that we didn't expect. You can
+<a href="https://github.com/kriogenia/rede/issues">create an issue</a> in the
+repository to help you point out the issue or help us know about it to
+discern if we should give it its own error code and help.</p>
+<h4 id="redirect"><a class="header" href="#redirect">redirect</a></h4>
+<p>The request has reached the maximum number of allowed redirections or some
+redirection loop has been detected.</p>
+<h4 id="spec-violation"><a class="header" href="#spec-violation">spec violation</a></h4>
+<p>Two possible options. You have an invalid <a href="https://toml.io/en/v1.0.0">TOML</a>
+or you are breaking the <a href="reference_guide/request_dsl.html">DSL</a>. Follow the error cues to
+discern what it could be.</p>
+<h4 id="wrong-http-version"><a class="header" href="#wrong-http-version">wrong http version</a></h4>
+<p>The endpoint of your request does not support the HTTP version defined in
+your request file.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="tools"><a class="header" href="#tools">Tools</a></h1>
+<h2 id="crates"><a class="header" href="#crates">Crates</a></h2>
+<p>As part of the development of rede the parsing feature was made into a
+crate of its own. That way it's available to use for any developer that
+would like to work with the request DSL and want to save the time of
+implementing the parsing.</p>
+<ul>
+<li><code>rede_parser</code>
+<ul>
+<li><a href="https://crates.io/crates/rede_parser">Crates.io</a></li>
+<li><a href="https://docs.rs/rede_parser/latest">Docs</a></li>
+</ul>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="upcoming"><a class="header" href="#upcoming">Upcoming</a></h1>
+<p>These are the next planned features for <code>rede v0.2</code>:</p>
+<h2 id="placeholders"><a class="header" href="#placeholders">Placeholders</a></h2>
+<p>The DSL would start to support strings like <code>{{this}}</code> embedded in other
+strings or as values of different keys. This placeholders would be later
+resolved with the new <code>variables</code> table or with input of the user.</p>
+<h2 id="input-parameters"><a class="header" href="#input-parameters">Input parameters</a></h2>
+<p>The DSL will accept a new table to specify a series of placeholder that
+would be resolved asking the user before running the request. A series of
+features are planned for this, but some of them could be delayed.</p>
+<ul>
+<li>Support specification of the expected type.</li>
+<li>Support hints to help the user to provide a good value.</li>
+<li>Support multiple choice.</li>
+<li>Support default values to use if user omits the question.
+<ul>
+<li>The flag <code>--all-defaults</code> would allow to evade the request prompts and
+just use the defaults for everything.</li>
+</ul>
+</li>
+<li><code>--dry-run</code> to produce a request without executing it, just to see it or
+render it as its own file.</li>
+</ul>
+<h2 id="improved-verbosity"><a class="header" href="#improved-verbosity">Improved verbosity</a></h2>
+<p>We can currently have only three levels of verbosity, which is really limited,
+specially considering than one of those is &quot;none at all&quot;. That's why next version
+the plan is to future five levels of verbosity.</p>
+<ul>
+<li><code>quiet</code>, like the current one, prints nothing at all.</li>
+<li><code>discrete</code>, prints only the body of the request, what the standard currently does.
+<ul>
+<li>It's possible that this one could be used as default when using <code>rede run</code> with stdin
+to allow easier piping.</li>
+</ul>
+</li>
+<li><code>standard</code>, will print the opening, the status code and the body.</li>
+<li><code>verbose</code>, will be reduced from before. Will print the same as standard plus the
+method and url of the request and the headers of the response.</li>
+<li><code>stfu</code>, will have everything like the current verbose.</li>
+</ul>
+<h2 id="header-generation"><a class="header" href="#header-generation">Header generation</a></h2>
+<p>Right now <code>rede</code> generates automatically some headers before executing the
+request. It makes sense to offer a way of turning down this feature.
+On top of that, right now rede doesn't generate a <code>User-Agent</code> header, and it should.</p>
+<h2 id="new-body-types"><a class="header" href="#new-body-types">New body types</a></h2>
+<p>It would be a nice addition to support some new body keys to generate some
+common body types like JSON and XML without having to manually set the content
+type header.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="faq"><a class="header" href="#faq">FAQ</a></h1>
+<p><strong>Why is datetime not a valid value in any type?</strong></p>
+<p>Datetimes are easy to read, but not that easy to translate again into a string
+for the HTTP communication based on all the different formats that are possible.
+Accepting just a string representation with the expected format is the smoother
+way of handling it.</p>
+<p><strong>Does rede support GraphQL</strong>?</p>
+<p>Yes, but right now it would require you some manual crafting. Just use <code>POST</code>,
+a <code>body.raw</code> and don't forget to set a <code>Content-Type: application/graphql</code> header.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+    </body>
+</html>
