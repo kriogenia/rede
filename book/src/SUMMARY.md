@@ -14,6 +14,7 @@
 - [Command Line Interface](./reference_guide/command_line_interface.md)
   - [run](reference_guide/command_line_interface/run.md)
   - [example](reference_guide/command_line_interface/example.md)
+- [Errors](./reference_guide/errors.md)
 
 # Crates
 - [Parser](./crates/parser.md)
