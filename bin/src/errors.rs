@@ -10,7 +10,7 @@ pub enum ParsingError {
     #[error("{message}")]
     #[diagnostic(
         code("spec violation"),
-        url("https://toml.io/en/v1.0.0"),
+        url("https://toml.io/en/v1.0.0"), // todo change with Request DSL page
         help("check the TOML specification and rede schema if you don't know what is wrong")
     )]
     Deserialization {
