@@ -1,0 +1,24 @@
+[package]
+name = "rede_placeholders"
+version = "0.1.0"
+edition.workspace = true
+
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+
+categories = [ "parser-implementations", "development-tools" ] #// todo
+description = "Handles the discovering and filling of rede placeholders"
+documentation = "https://docs.rs/rede_placeholders"
+keywords = [ "rede", "placeholder", "search", "replace" ]
+readme = "./README.md"
+
+[dependencies]
+rede_parser = { path = "../parser" }
+
+regex = "1.10.4" # todo remove
+
+[dev-dependencies]
+http.workspace = true
+mime.workspace = true
