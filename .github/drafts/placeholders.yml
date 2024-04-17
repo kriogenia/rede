@@ -1,0 +1,6 @@
+_extends: rede:.github/drafts/base.yml
+name-template: 'rede_placeholders $RESOLVED_VERSION'
+tag-template: 'placeholders_v$RESOLVED_VERSION'
+tag-prefix: 'placeholders_v'
+include-paths:
+  - "placeholders/"
