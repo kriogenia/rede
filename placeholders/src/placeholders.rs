@@ -2,48 +2,12 @@ use std::collections::{HashMap, HashSet};
 
 use regex::Regex;
 
-use rede_parser::Request;
+use rede_parser::body::FormDataValue;
+use rede_parser::{Body, Request};
 
 /// TODO
 #[derive(Debug, Default)]
 pub struct Placeholders(HashMap<String, HashSet<Location>>);
-
-impl Placeholders {
-    /// Creates an empty placeholders object
-    pub(crate) fn new() -> Self {
-        Placeholders::default()
-    }
-
-    /// Returns an iterator with the placeholder's keys
-    pub fn keys(&self) -> impl Iterator<Item = &str> {
-        self.0.keys().map(String::as_str)
-    }
-
-    fn insert(&mut self, key: &str, location: Location) {
-        if let Some(locations) = self.0.get_mut(key) {
-            locations.insert(location);
-        } else {
-            let mut set = HashSet::new();
-            set.insert(location);
-            self.0.insert(key.to_string(), set);
-        }
-    }
-
-    pub(crate) fn add_all<'a>(
-        &mut self,
-        location: Location,
-        keys: impl IntoIterator<Item = &'a str>,
-    ) {
-        for key in keys {
-            self.insert(key, location);
-        }
-    }
-
-    #[cfg(test)]
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-}
 
 impl From<&Request> for Placeholders {
     fn from(request: &Request) -> Self {
@@ -63,9 +27,66 @@ impl From<&Request> for Placeholders {
             placeholder_map.add_all(Location::QueryParams, set); // todo store qp key
         }
 
-        // todo body
+        match &request.body {
+            Body::Raw { content, .. } => {
+                let set = find_placeholders(&re, content);
+                placeholder_map.add_all(Location::Body, set);
+            }
+            Body::Binary { path, .. } => {
+                let set = find_placeholders(&re, path);
+                placeholder_map.add_all(Location::Body, set);
+            }
+            Body::XFormUrlEncoded(form) => {
+                for v in form.values() {
+                    let set = find_placeholders(&re, v);
+                    placeholder_map.add_all(Location::Body, set); // todo store form key
+                }
+            }
+            Body::FormData(form) => {
+                for v in form.values() {
+                    let content = match v {
+                        FormDataValue::Text(v) | FormDataValue::File(v) => v,
+                    };
+                    let set = find_placeholders(&re, content);
+                    placeholder_map.add_all(Location::Body, set); // todo store form key
+                }
+            }
+            Body::None => {}
+        }
 
         placeholder_map
+    }
+}
+
+impl Placeholders {
+    fn new() -> Self {
+        Placeholders::default()
+    }
+
+    /// Returns an iterator with the keys of the request's placeholders.
+    pub fn keys(&self) -> impl Iterator<Item = &str> {
+        self.0.keys().map(String::as_str)
+    }
+
+    fn insert(&mut self, key: &str, location: Location) {
+        if let Some(locations) = self.0.get_mut(key) {
+            locations.insert(location);
+        } else {
+            let mut set = HashSet::new();
+            set.insert(location);
+            self.0.insert(key.to_string(), set);
+        }
+    }
+
+    fn add_all<'a>(&mut self, location: Location, keys: impl IntoIterator<Item = &'a str>) {
+        for key in keys {
+            self.insert(key, location);
+        }
+    }
+
+    #[cfg(test)]
+    pub fn len(&self) -> usize {
+        self.0.len()
     }
 }
 
@@ -81,7 +102,6 @@ pub(crate) enum Location {
     Url,
     Headers,
     QueryParams,
-    #[cfg(test)]
     Body,
 }
 
@@ -146,11 +166,9 @@ mod test {
         };
 
         let placeholders = Placeholders::from(&request);
-        //assert_eq!(placeholders.len(), 3);
-        assert_eq!(placeholders.len(), 2);
+        assert_eq!(placeholders.len(), 3);
         assert_eq!(placeholders.0["host"].len(), 2);
-        //assert_eq!(placeholders.0["name"].len(), 1);
-        //assert_eq!(placeholders.0["genre"].len(), 2);
-        assert_eq!(placeholders.0["genre"].len(), 1);
+        assert_eq!(placeholders.0["name"].len(), 1);
+        assert_eq!(placeholders.0["genre"].len(), 2);
     }
 }
