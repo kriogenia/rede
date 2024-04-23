@@ -1,5 +1,6 @@
 use serde::Deserialize;
 
+// todo: doc
 #[derive(Debug, Default, Deserialize, PartialEq)]
 pub struct InputParam {
     pub hint: Option<String>,

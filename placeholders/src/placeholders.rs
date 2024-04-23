@@ -158,7 +158,7 @@ mod test {
             metadata: Default::default(),
             headers,
             query_params,
-            variables: HashMap::new(),
+            path_params: HashMap::new(),
             body: Body::Raw {
                 content: r#"{"name":"{{name}}","genre":"{{genre}}"}"#.to_string(),
                 mime: mime::APPLICATION_JSON,
