@@ -108,6 +108,20 @@ host = "192.0.0.1"
 name = "Vin"
 ```
 
+## [input_params]
+The input params table can have any key desired by the user, but they must be tables. These tables
+can be empty or can contain the following keys:
+- `hint`, _string_. A hint to the user when prompted to provide a value.
+- `default`, _string_. The default value to be used if the user doesn't provide one.
+
+```toml
+[input_params]
+host = { hint = "The host of the API", default = "127.0.0.1" }
+id = { hint = "The ID of the resource" }
+```
+
+To know how the input parameters are used, refer to the [input parameters page](./request_dsl/input_parameters.md).
+
 ## [metadata]
 
 This table is **free** but the values must be one of the primitive values (_string_, _integer_,

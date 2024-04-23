@@ -14,16 +14,25 @@ use crate::InputParam;
 /// to allow the creation and dispatching of the HTTP request with the command-line interface.
 #[derive(Debug)]
 pub struct Request {
+    /// HTTP method of the request
     pub method: Method,
+    /// URL of the request
     pub url: String,
+    /// HTTP version of the request
     pub http_version: Version,
+    /// Metadata of the request file
     pub metadata: HashMap<String, String>,
+    /// Headers of the request
     pub headers: HeaderMap,
+    /// Query parameters of the request
     pub query_params: Vec<(String, String)>,
+    /// Body of the request
     pub body: Body,
+    /// Variables to provide values for placeholders in the request
     pub variables: HashMap<String, String>,
 
     #[cfg(feature = "input_params")]
+    /// Keys of placeholders to ask the user for input
     pub input_params: HashMap<String, InputParam>,
 }
 

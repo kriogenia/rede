@@ -1,9 +1,11 @@
 use serde::Deserialize;
 
-// todo: doc
+/// Contains the different properties that can be defined for an input parameter.
 #[derive(Debug, Default, Deserialize, PartialEq)]
 pub struct InputParam {
+    /// Hint to provide to the user when asking for the input
     pub hint: Option<String>,
+    /// Default value to use if the user does not provide any input
     pub default: Option<String>,
 }
 
