@@ -41,10 +41,10 @@ impl TryFrom<Schema> for Request {
 #[cfg(test)]
 mod test {
     use crate::body::Body;
-    use crate::schema;
     use crate::schema::table::Table;
     use crate::schema::types::{Primitive, PrimitiveArray};
     use crate::schema::{Http, Schema};
+    use crate::{schema, InputParam};
 
     use super::*;
 
@@ -74,7 +74,7 @@ mod test {
         let mut input_params = HashMap::new();
         input_params.insert(
             "ip".to_string(),
-            schema::InputParam {
+            InputParam {
                 hint: Some("hint".to_string()),
                 default: Some("default".to_string()),
             },

@@ -4,7 +4,7 @@ use std::ops::Index;
 
 use crate::schema::body::FormDataValue;
 use crate::schema::types::PrimitiveArray;
-use crate::schema::InputParam;
+use crate::InputParam;
 use serde::Deserialize;
 
 /// Newtype implementation to wrap TOML tables where the set of keys can be free

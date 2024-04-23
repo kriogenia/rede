@@ -48,6 +48,7 @@
 pub mod body;
 
 mod error;
+mod input_param;
 mod request;
 mod schema;
 
@@ -58,6 +59,8 @@ use std::str::FromStr;
 pub use body::Body;
 #[doc(inline)]
 pub use error::Error;
+#[doc(inline)]
+pub use input_param::InputParam;
 #[doc(inline)]
 pub use request::Request;
 
