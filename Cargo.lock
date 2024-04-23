@@ -1020,12 +1020,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "rede_parser"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b54a22026ffc5198b8e471914258125f51db7e1fb3afe91415cc6f2a6da6c718"
+dependencies = [
+ "http",
+ "http-serde",
+ "mime",
+ "serde",
+ "thiserror",
+ "toml",
+]
+
+[[package]]
 name = "rede_placeholders"
 version = "0.1.0"
 dependencies = [
  "http",
  "mime",
- "rede_parser 0.2.0",
+ "rede_parser 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex",
 ]
 
