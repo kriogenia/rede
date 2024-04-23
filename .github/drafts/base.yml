@@ -44,6 +44,9 @@ autolabeler:
   - label: 'parser'
     files:
       - 'parser/**'
+  - label: 'placeholders'
+    files:
+      - 'placeholders/**'
   - label: 'breaking-change'
     branch:
       - '/.*!:.*/'
