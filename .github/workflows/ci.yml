@@ -36,6 +36,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: check
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -54,6 +55,13 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
+
+      - name: Test rede_parser features
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: -p rede_parser --all-features
+
   lints:
     name: Lint
     runs-on: ubuntu-latest

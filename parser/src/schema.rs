@@ -6,7 +6,10 @@ use serde::Deserialize;
 pub(crate) use body::Body;
 
 use crate::error::Error;
-use crate::schema::table::{InputParamsTable, PrimitiveTable};
+use crate::schema::table::PrimitiveTable;
+
+#[cfg(feature = "input_params")]
+use crate::schema::table::InputParamsTable;
 
 mod body;
 pub(crate) mod table;
@@ -27,8 +30,9 @@ pub(crate) struct Schema {
     pub body: Body,
     #[serde(default)]
     pub variables: PrimitiveTable,
+
+    #[cfg(feature = "input_params")]
     #[serde(alias = "inputparams", alias = "input-params", default)]
-    #[allow(dead_code)]
     pub input_params: InputParamsTable,
 }
 
@@ -54,6 +58,8 @@ impl FromStr for Schema {
 #[cfg(test)]
 mod test {
     use crate::schema::types::{Primitive, PrimitiveArray};
+
+    #[cfg(feature = "input_params")]
     use crate::InputParam;
 
     use super::*;
@@ -163,29 +169,33 @@ mod test {
         );
         assert_eq!(
             schema.variables.0["array"],
-            PrimitiveArray::Multiple(vec![Primitive::Int(1), Primitive::Str("2".into()),])
+            PrimitiveArray::Multiple(vec![Primitive::Int(1), Primitive::Str("2".into())])
         );
         let body: Body = schema.body.into();
         assert!(matches!(body, Body::Raw(content) if content.contains(r#""key": "value""#)));
-        assert_eq!(schema.input_params.0.len(), 3);
-        assert_eq!(
-            schema.input_params.0["host"],
-            InputParam {
-                hint: Some("Host name".to_string()),
-                default: Some("localhost".to_string())
-            }
-        );
-        assert_eq!(
-            schema.input_params.0["empty"],
-            InputParam {
-                hint: None,
-                default: None
-            }
-        );
-        assert_eq!(
-            schema.input_params.0["no-default"].hint,
-            Some("This has no default value".to_string())
-        );
+
+        #[cfg(feature = "input_params")]
+        {
+            assert_eq!(schema.input_params.0.len(), 3);
+            assert_eq!(
+                schema.input_params.0["host"],
+                InputParam {
+                    hint: Some("Host name".to_string()),
+                    default: Some("localhost".to_string()),
+                }
+            );
+            assert_eq!(
+                schema.input_params.0["empty"],
+                InputParam {
+                    hint: None,
+                    default: None,
+                }
+            );
+            assert_eq!(
+                schema.input_params.0["no-default"].hint,
+                Some("This has no default value".to_string())
+            );
+        }
     }
 
     #[test]
@@ -213,6 +223,8 @@ mod test {
         assert!(schema.query_params.0.is_empty());
         assert!(schema.variables.0.is_empty());
         assert_eq!(schema.body, Body::None);
+
+        #[cfg(feature = "input_params")]
         assert!(schema.input_params.0.is_empty());
     }
 }

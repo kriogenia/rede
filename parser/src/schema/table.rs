@@ -4,8 +4,10 @@ use std::ops::Index;
 
 use crate::schema::body::FormDataValue;
 use crate::schema::types::PrimitiveArray;
-use crate::InputParam;
 use serde::Deserialize;
+
+#[cfg(feature = "input_params")]
+use crate::InputParam;
 
 /// Newtype implementation to wrap TOML tables where the set of keys can be free
 #[derive(Debug, Deserialize, PartialEq)]
@@ -13,6 +15,8 @@ pub(crate) struct Table<V>(pub(crate) HashMap<String, V>);
 
 pub type PrimitiveTable = Table<PrimitiveArray>;
 pub type FormDataTable = Table<FormDataValue>;
+
+#[cfg(feature = "input_params")]
 pub type InputParamsTable = Table<InputParam>;
 
 impl<V> Index<&str> for Table<V> {
