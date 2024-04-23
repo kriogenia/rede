@@ -71,6 +71,15 @@ mod test {
             PrimitiveArray::Single(Primitive::Str("value".to_string())),
         );
 
+        let mut input_params = HashMap::new();
+        input_params.insert(
+            "ip".to_string(),
+            schema::InputParam {
+                hint: Some("hint".to_string()),
+                default: Some("default".to_string()),
+            },
+        );
+
         let body = schema::Body::Binary("path".to_string());
 
         let schema = Schema {
@@ -84,6 +93,7 @@ mod test {
             query_params: Table::new(query_params),
             variables: Table::new(variables),
             body,
+            input_params: Table::new(input_params),
         };
 
         let request = Request::try_from(schema).unwrap();

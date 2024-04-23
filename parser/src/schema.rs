@@ -6,7 +6,7 @@ use serde::Deserialize;
 pub(crate) use body::Body;
 
 use crate::error::Error;
-use crate::schema::table::PrimitiveTable;
+use crate::schema::table::{InputParamsTable, PrimitiveTable};
 
 mod body;
 pub(crate) mod table;
@@ -27,6 +27,9 @@ pub(crate) struct Schema {
     pub body: Body,
     #[serde(default)]
     pub variables: PrimitiveTable,
+    #[serde(alias = "inputparams", alias = "input-params", default)]
+    #[allow(dead_code)]
+    pub input_params: InputParamsTable,
 }
 
 #[derive(Deserialize)]
@@ -37,6 +40,12 @@ pub(crate) struct Http {
     pub method: Method,
     #[serde(with = "http_serde::version", default)]
     pub version: Version,
+}
+
+#[derive(Debug, Default, Deserialize, PartialEq)]
+pub(crate) struct InputParam {
+    pub hint: Option<String>,
+    pub default: Option<String>,
 }
 
 impl FromStr for Schema {
@@ -88,6 +97,14 @@ mod test {
         "key": "value"
     }
     """
+
+    [input-params]
+    host = { hint = "Host name", default = "localhost" }
+
+    [input-params.empty]
+
+    [input-params.no-default]
+    hint = "Port number"
     "#;
 
     #[test]
@@ -157,6 +174,25 @@ mod test {
         );
         let body: Body = schema.body.into();
         assert!(matches!(body, Body::Raw(content) if content.contains(r#""key": "value""#)));
+        assert_eq!(schema.input_params.0.len(), 3);
+        assert_eq!(
+            schema.input_params.0["host"],
+            InputParam {
+                hint: Some("Host name".to_string()),
+                default: Some("localhost".to_string())
+            }
+        );
+        assert_eq!(
+            schema.input_params.0["empty"],
+            InputParam {
+                hint: None,
+                default: None
+            }
+        );
+        assert_eq!(
+            schema.input_params.0["no-default"].hint,
+            Some("Port number".to_string())
+        );
     }
 
     #[test]
@@ -184,5 +220,6 @@ mod test {
         assert!(schema.query_params.0.is_empty());
         assert!(schema.variables.0.is_empty());
         assert_eq!(schema.body, Body::None);
+        assert!(schema.input_params.0.is_empty());
     }
 }
