@@ -42,12 +42,6 @@ pub(crate) struct Http {
     pub version: Version,
 }
 
-#[derive(Debug, Default, Deserialize, PartialEq)]
-pub(crate) struct InputParam {
-    pub hint: Option<String>,
-    pub default: Option<String>,
-}
-
 impl FromStr for Schema {
     type Err = Error;
 
@@ -60,6 +54,7 @@ impl FromStr for Schema {
 #[cfg(test)]
 mod test {
     use crate::schema::types::{Primitive, PrimitiveArray};
+    use crate::InputParam;
 
     use super::*;
 
@@ -100,11 +95,9 @@ mod test {
 
     [input-params]
     host = { hint = "Host name", default = "localhost" }
+    no-default = { hint = "This has no default value" }
 
     [input-params.empty]
-
-    [input-params.no-default]
-    hint = "Port number"
     "#;
 
     #[test]
@@ -191,7 +184,7 @@ mod test {
         );
         assert_eq!(
             schema.input_params.0["no-default"].hint,
-            Some("Port number".to_string())
+            Some("This has no default value".to_string())
         );
     }
 
