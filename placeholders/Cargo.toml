@@ -15,8 +15,8 @@ keywords = [ "rede", "placeholder", "search", "replace" ]
 readme = "./README.md"
 
 [dependencies]
-rede_parser = "0.1.4"
-#rede_parser = { path = "../parser" }
+#rede_parser = "0.1.4"
+rede_parser = { path = "../parser", default-features = false }
 
 regex = "1.10.4" # todo remove
 

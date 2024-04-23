@@ -6,6 +6,8 @@ use crate::body::Body;
 use crate::error::Error;
 use crate::schema::table::Transform;
 use crate::schema::Schema;
+
+#[cfg(feature = "input_params")]
 use crate::InputParam;
 
 /// Representation of a rede HTTP request. Contains all the supported content by the current schema
@@ -20,6 +22,8 @@ pub struct Request {
     pub query_params: Vec<(String, String)>,
     pub body: Body,
     pub variables: HashMap<String, String>,
+
+    #[cfg(feature = "input_params")]
     pub input_params: HashMap<String, InputParam>,
 }
 
@@ -36,6 +40,8 @@ impl TryFrom<Schema> for Request {
             query_params: schema.query_params.into_pairs(),
             variables: schema.variables.into_map(),
             body: schema.body.into(),
+
+            #[cfg(feature = "input_params")]
             input_params: schema.input_params.0,
         })
     }
@@ -44,10 +50,10 @@ impl TryFrom<Schema> for Request {
 #[cfg(test)]
 mod test {
     use crate::body::Body;
+    use crate::schema;
     use crate::schema::table::Table;
     use crate::schema::types::{Primitive, PrimitiveArray};
     use crate::schema::{Http, Schema};
-    use crate::{schema, InputParam};
 
     use super::*;
 
@@ -74,14 +80,18 @@ mod test {
             PrimitiveArray::Single(Primitive::Str("value".to_string())),
         );
 
-        let mut input_params = HashMap::new();
-        input_params.insert(
-            "ip".to_string(),
-            InputParam {
-                hint: Some("hint".to_string()),
-                default: Some("127.0.0.1".to_string()),
-            },
-        );
+        #[cfg(feature = "input_params")]
+        let input_params = {
+            let mut input_params = HashMap::new();
+            input_params.insert(
+                "ip".to_string(),
+                InputParam {
+                    hint: Some("hint".to_string()),
+                    default: Some("127.0.0.1".to_string()),
+                },
+            );
+            input_params
+        };
 
         let body = schema::Body::Binary("path".to_string());
 
@@ -96,6 +106,8 @@ mod test {
             query_params: Table::new(query_params),
             variables: Table::new(variables),
             body,
+
+            #[cfg(feature = "input_params")]
             input_params: Table::new(input_params),
         };
 
@@ -109,7 +121,7 @@ mod test {
             request.query_params,
             vec![
                 ("qp".to_string(), "s".to_string()),
-                ("qp".to_string(), "1".to_string())
+                ("qp".to_string(), "1".to_string()),
             ]
         );
         assert_eq!(request.variables["pp"], "value");
@@ -120,11 +132,13 @@ mod test {
                 mime: mime::APPLICATION_OCTET_STREAM,
             }
         );
+
+        #[cfg(feature = "input_params")]
         assert_eq!(
             request.input_params["ip"],
             InputParam {
                 hint: Some("hint".to_string()),
-                default: Some("127.0.0.1".to_string())
+                default: Some("127.0.0.1".to_string()),
             }
         );
     }

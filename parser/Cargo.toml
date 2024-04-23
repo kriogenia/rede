@@ -14,6 +14,9 @@ documentation = "https://docs.rs/rede_parser"
 keywords = [ "parser", "rede", "toml", "http" ]
 readme = "./README.md"
 
+[features]
+input_params = []
+
 [dependencies]
 http.workspace = true
 mime.workspace = true
