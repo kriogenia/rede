@@ -6,6 +6,7 @@ use crate::body::Body;
 use crate::error::Error;
 use crate::schema::table::Transform;
 use crate::schema::Schema;
+use crate::InputParam;
 
 /// Representation of a rede HTTP request. Contains all the supported content by the current schema
 /// to allow the creation and dispatching of the HTTP request with the command-line interface.
@@ -19,6 +20,7 @@ pub struct Request {
     pub query_params: Vec<(String, String)>,
     pub body: Body,
     pub variables: HashMap<String, String>,
+    pub input_params: HashMap<String, InputParam>,
 }
 
 impl TryFrom<Schema> for Request {
@@ -34,6 +36,7 @@ impl TryFrom<Schema> for Request {
             query_params: schema.query_params.into_pairs(),
             variables: schema.variables.into_map(),
             body: schema.body.into(),
+            input_params: schema.input_params.0,
         })
     }
 }
@@ -76,7 +79,7 @@ mod test {
             "ip".to_string(),
             InputParam {
                 hint: Some("hint".to_string()),
-                default: Some("default".to_string()),
+                default: Some("127.0.0.1".to_string()),
             },
         );
 
@@ -115,6 +118,13 @@ mod test {
             Body::Binary {
                 path: "path".to_string(),
                 mime: mime::APPLICATION_OCTET_STREAM,
+            }
+        );
+        assert_eq!(
+            request.input_params["ip"],
+            InputParam {
+                hint: Some("hint".to_string()),
+                default: Some("127.0.0.1".to_string())
             }
         );
     }
