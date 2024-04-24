@@ -89,7 +89,11 @@ impl Placeholders {
         }
     }
 
-    fn add_all<'a>(&mut self, location: &Location, keys: impl IntoIterator<Item = &'a str>) {
+    pub(crate) fn add_all<'a>(
+        &mut self,
+        location: &Location,
+        keys: impl IntoIterator<Item = &'a str>,
+    ) {
         for key in keys {
             self.insert(key, location.clone());
         }
