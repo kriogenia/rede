@@ -72,6 +72,12 @@ impl Placeholders {
         self.0.keys().map(String::as_str)
     }
 
+    /// Returns an iterator over the placeholders and their locations in the request
+    #[must_use]
+    pub fn iter(&self) -> <&PlaceholdersMap as IntoIterator>::IntoIter {
+        <&Self as IntoIterator>::into_iter(self)
+    }
+
     fn insert(&mut self, key: &str, location: Location) {
         if let Some(locations) = self.0.get_mut(key) {
             locations.insert(location);
@@ -87,12 +93,6 @@ impl Placeholders {
         for key in keys {
             self.insert(key, location.clone());
         }
-    }
-
-    /// Returns an iterator over the placeholders and their locations in the request
-    #[must_use]
-    pub fn iter(&self) -> <&PlaceholdersMap as IntoIterator>::IntoIter {
-        <&Self as IntoIterator>::into_iter(self)
     }
 
     #[cfg(test)]
