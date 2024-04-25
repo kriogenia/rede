@@ -1027,6 +1027,7 @@ name = "rede_placeholders"
 version = "0.1.0"
 dependencies = [
  "http",
+ "miette",
  "mime",
  "rede_parser 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rede_schema 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
