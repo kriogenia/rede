@@ -1,5 +1,6 @@
 use crate::placeholders::Location;
 use crate::Placeholders;
+use http::{HeaderMap, HeaderName};
 use rede_schema::Request;
 use std::collections::HashMap;
 
@@ -27,6 +28,7 @@ impl Renderer {
     #[must_use]
     pub fn render(&self, request: Request) -> Request {
         let mut url = request.url;
+        let mut headers = request.headers;
 
         for (key, locations) in self.placeholders.iter() {
             let val = self.values_map.get(key); // maybe this could be changed into a map
@@ -35,7 +37,7 @@ impl Renderer {
                 for location in locations {
                     match location {
                         Location::Url => url = url.replace(&key, val),
-                        Location::Headers(_) => unimplemented!("Headers"),
+                        Location::Headers(name) => render_headers(&mut headers, name, &key, val),
                         Location::QueryParams(_) => unimplemented!("QueryParams"),
                         Location::Body => unimplemented!("Body"),
                         Location::Form(_) => unimplemented!("Form"),
@@ -49,11 +51,19 @@ impl Renderer {
             url,
             http_version: request.http_version,
             metadata: request.metadata,
-            headers: request.headers,
+            headers,
             query_params: request.query_params,
             variables: request.variables,
             body: request.body,
         }
+    }
+}
+
+fn render_headers(header_map: &mut HeaderMap, header: &HeaderName, key: &str, val: &str) {
+    // todo return result
+    if let Some(header_value) = header_map.get_mut(header) {
+        let new_value = header_value.to_str().unwrap().replace(key, val);
+        *header_value = new_value.parse().unwrap();
     }
 }
 
@@ -64,27 +74,35 @@ mod test {
 
     #[test]
     fn render() {
+        // todo replace by generated placeholders
         let mut placeholders = Placeholders::default();
         placeholders.add_all(&Location::Url, vec!["id", "name"]);
-        // placeholders.add_all(&Location::Headers("header".parse().unwrap()), vec!["token"]);
+        placeholders.add_all(
+            &Location::Headers("Authorization".parse().unwrap()),
+            vec!["token"],
+        );
         // placeholders.add_all(&Location::QueryParams("query".to_string()), vec!["page"]);
         // placeholders.add_all(&Location::Body, vec!["id", "name"]);
 
         let values = vec![
             ("id".to_string(), "1".to_string()),
             ("name".to_string(), "test".to_string()),
-            ("token".to_string(), "Bearer abc".to_string()),
+            ("token".to_string(), "abc".to_string()),
             ("page".to_string(), "1".to_string()),
         ];
 
         let renderer = Renderer::new(placeholders, &values);
+
+        let mut headers = HeaderMap::new();
+        headers.insert("Content-Type", "application/json".parse().unwrap());
+        headers.insert("Authorization", "Bearer {{token}}".parse().unwrap());
 
         let request = Request {
             method: Method::GET,
             url: "https://example.com/{{id}}/{{name}}/{{id}}".to_string(),
             http_version: Version::HTTP_11,
             metadata: HashMap::new(),
-            headers: HeaderMap::new(),
+            headers,
             query_params: Vec::new(),
             variables: HashMap::new(),
             body: rede_schema::Body::None,
@@ -93,5 +111,14 @@ mod test {
         let rendered = renderer.render(request);
 
         assert_eq!(rendered.url, "https://example.com/1/test/1");
+        assert_eq!(
+            rendered
+                .headers
+                .get("Authorization")
+                .unwrap()
+                .to_str()
+                .unwrap(),
+            "Bearer abc"
+        );
     }
 }

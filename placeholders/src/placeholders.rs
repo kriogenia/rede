@@ -82,7 +82,7 @@ impl Placeholders {
         if let Some(locations) = self.0.get_mut(key) {
             locations.insert(location);
         } else {
-            #[allow(clippy::mutable_key_type)] // false positive as headername uses `bytes`
+            #[allow(clippy::mutable_key_type)]
             let mut set = HashSet::new();
             set.insert(location);
             self.0.insert(key.to_string(), set);
@@ -160,11 +160,11 @@ mod test {
         let mut set = HashSet::new();
         set.insert("one");
         set.insert("two");
-        pm.add_all(&Location::Url, set);
+        pm.add_all(&Location::Headers("Header".parse().unwrap()), set);
 
         assert_eq!(pm.len(), 2);
         assert_eq!(pm.0["one"].len(), 1);
-        assert_eq!(pm.0["two"].len(), 1);
+        assert_eq!(pm.0["two"].len(), 2);
     }
 
     #[test]
