@@ -15,13 +15,11 @@ keywords = ["rede", "placeholder", "search", "replace"]
 readme = "./README.md"
 
 [dependencies]
+miette.workspace = true
 http.workspace = true
-
 rede_schema = "0.1"
-
 regex = "1.10.6"
 
 [dev-dependencies]
 mime.workspace = true
-
 rede_parser = "0.2"

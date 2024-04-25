@@ -1,6 +1,7 @@
 use crate::placeholders::Location;
 use crate::Placeholders;
 use http::{HeaderMap, HeaderName};
+use miette::{miette, Result};
 use rede_schema::Request;
 use std::collections::HashMap;
 
@@ -25,28 +26,29 @@ impl Renderer {
     }
 
     /// todo doc
-    #[must_use]
-    pub fn render(&self, request: Request) -> Request {
+    ///
+    /// # Errors
+    ///
+    /// todo
+    pub fn render(&self, request: Request) -> Result<Request> {
         let mut url = request.url;
         let mut headers = request.headers;
 
         for (key, locations) in self.placeholders.iter() {
-            let val = self.values_map.get(key); // maybe this could be changed into a map
+            let val = self.values_map.get(key); // todo maybe this could be changed into a map
             if let Some(val) = val {
                 let key = format!("{{{{{key}}}}}");
                 for location in locations {
                     match location {
                         Location::Url => url = url.replace(&key, val),
-                        Location::Headers(name) => render_headers(&mut headers, name, &key, val),
-                        Location::QueryParams(_) => unimplemented!("QueryParams"),
-                        Location::Body => unimplemented!("Body"),
-                        Location::Form(_) => unimplemented!("Form"),
+                        Location::Headers(name) => render_headers(&mut headers, name, &key, val)?,
+                        _ => { /* todo */ }
                     }
                 }
             }
         }
 
-        Request {
+        Ok(Request {
             method: request.method,
             url,
             http_version: request.http_version,
@@ -55,16 +57,26 @@ impl Renderer {
             query_params: request.query_params,
             variables: request.variables,
             body: request.body,
-        }
+        })
     }
 }
 
-fn render_headers(header_map: &mut HeaderMap, header: &HeaderName, key: &str, val: &str) {
-    // todo return result
+fn render_headers(
+    header_map: &mut HeaderMap,
+    header: &HeaderName,
+    key: &str,
+    val: &str,
+) -> Result<()> {
     if let Some(header_value) = header_map.get_mut(header) {
-        let new_value = header_value.to_str().unwrap().replace(key, val);
-        *header_value = new_value.parse().unwrap();
+        let new_value = header_value.to_str().map_err(|_| {
+            miette!("failed to convert header to string: {header} {header_value:?}")
+        })?;
+        let new_value = new_value.to_string().replace(key, val);
+        *header_value = new_value
+            .parse()
+            .map_err(|_| miette!("rendered header value is invalid: {header} {new_value}"))?;
     }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -81,8 +93,8 @@ mod test {
             &Location::Headers("Authorization".parse().unwrap()),
             vec!["token"],
         );
-        // placeholders.add_all(&Location::QueryParams("query".to_string()), vec!["page"]);
-        // placeholders.add_all(&Location::Body, vec!["id", "name"]);
+        placeholders.add_all(&Location::QueryParams("query".to_string()), vec!["page"]);
+        placeholders.add_all(&Location::Body, vec!["id", "name"]);
 
         let values = vec![
             ("id".to_string(), "1".to_string()),
@@ -108,7 +120,7 @@ mod test {
             body: rede_schema::Body::None,
         };
 
-        let rendered = renderer.render(request);
+        let rendered = renderer.render(request).unwrap();
 
         assert_eq!(rendered.url, "https://example.com/1/test/1");
         assert_eq!(
