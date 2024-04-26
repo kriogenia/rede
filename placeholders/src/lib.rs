@@ -2,7 +2,7 @@
 //! It's based on an execution flow with three steps:
 //! - Extract the request' [`Placeholders`].
 //! - Use a [`Resolver`] with different [`ValuePicker`] to identify the values to replace each placeholder.
-//! - (NYI) Pass the placeholders and the resolved values to the `Renderer` to create a new request.
+//! - Pass the placeholders and the resolved values to the [`Renderer`] to create a new request.
 //!
 //! # Example
 //!
@@ -28,6 +28,8 @@
 //! assert_eq!(ph_values.get_value("api_version"), Some(&"v1".to_string()));
 //! assert_eq!(ph_values.get_value("API_TOKEN"), Some(&"token_from_env_var".to_string()));
 //! assert!(ph_values.unresolved().all(|v| v == "id"));
+//!
+//! // TODO add renderer usage example
 //! # Ok(())
 //! # }
 //! ```
