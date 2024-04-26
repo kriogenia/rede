@@ -1,11 +1,16 @@
-use crate::placeholders::Location;
-use crate::Placeholders;
+use std::collections::HashMap;
+
 use http::{HeaderMap, HeaderName};
 use miette::{miette, Result};
 use rede_schema::body::FormDataValue;
 use rede_schema::{Body, Request};
-use std::collections::HashMap;
 
+use crate::placeholders::Location;
+use crate::Placeholders;
+
+/// A renderer is responsible for rendering a request using the placeholders and values provided.
+/// It should be used with [`render`](Renderer::render) to replace the placeholders with the values in the
+/// request.
 pub struct Renderer {
     placeholders: Placeholders,
     values_map: HashMap<String, String>,
@@ -19,7 +24,8 @@ macro_rules! replace_pointer {
 }
 
 impl Renderer {
-    /// todo doc
+    /// Creates a new instance of a `Renderer` that will be able to render request using the given
+    /// placeholders and values.
     #[must_use]
     pub fn new(placeholders: Placeholders, values: &[(String, String)]) -> Self {
         let values_map = values
@@ -33,12 +39,14 @@ impl Renderer {
         }
     }
 
-    /// todo doc
+    /// Renders the given request using the placeholders and values of the `Renderer`. The renderer
+    /// will iterate through all the placeholders in the request and use them to search and replace
+    /// the request part with the map of values.
     ///
     /// # Errors
     ///
-    /// todo
-    ///
+    /// If the renderer fails to render the request, it will return an error. This can happen, for
+    /// example if the generated header value breaks the HTTP specification.
     pub fn render(&self, request: Request) -> Result<Request> {
         let mut url = request.url;
         let mut headers = request.headers;
@@ -46,7 +54,7 @@ impl Renderer {
         let mut body = request.body;
 
         for (key, locations) in self.placeholders.iter() {
-            let val = self.values_map.get(key); // todo maybe this could be changed into a map
+            let val = self.values_map.get(key); // todo this could be changed into a map operation
             if let Some(val) = val {
                 let placeholder = format!("{{{{{key}}}}}");
                 for location in locations {
@@ -136,8 +144,9 @@ fn render_form_urlencoded(
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use std::error::Error;
+
+    use super::*;
 
     #[test]
     fn render() -> std::result::Result<(), Box<dyn Error>> {

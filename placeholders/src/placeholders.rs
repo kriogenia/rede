@@ -8,7 +8,7 @@ use rede_schema::{Body, Request};
 
 type PlaceholdersMap = HashMap<String, HashSet<Location>>;
 
-/// Contains the placeholders found in the request it's created from.
+/// The `Placeholders` struct analyzes a request and extracts all the placeholders from its parts.
 #[derive(Debug, Default)]
 pub struct Placeholders(PlaceholdersMap);
 // todo possible improvement: support placeholders on Header, QueryParms and Form keys
