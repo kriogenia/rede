@@ -2,7 +2,8 @@ use crate::placeholders::Location;
 use crate::Placeholders;
 use http::{HeaderMap, HeaderName};
 use miette::{miette, Result};
-use rede_schema::Request;
+use rede_schema::body::FormDataValue;
+use rede_schema::{Body, Request};
 use std::collections::HashMap;
 
 pub struct Renderer {
@@ -30,10 +31,15 @@ impl Renderer {
     /// # Errors
     ///
     /// todo
+    ///
+    /// # Panics
+    ///
+    /// todo -> if the request structure does not match the placeholders
     pub fn render(&self, request: Request) -> Result<Request> {
         let mut url = request.url;
         let mut headers = request.headers;
         let mut query_params = request.query_params;
+        let mut body = request.body;
 
         for (key, locations) in self.placeholders.iter() {
             let val = self.values_map.get(key); // todo maybe this could be changed into a map
@@ -48,7 +54,14 @@ impl Renderer {
                         Location::QueryParams(k) => {
                             render_query_params(query_params.as_mut(), k, &placeholder, val);
                         }
-                        Location::Body | Location::Form(_) => { /* todo */ }
+                        Location::BodyForm(k) => match &mut body {
+                            Body::FormData(form) => {
+                                render_form_data(form, k, &placeholder, val);
+                            }
+                            Body::XFormUrlEncoded(_) => { /* todo */ }
+                            _ => panic!("unexpected body type"),
+                        },
+                        Location::Body => { /* todo */ }
                     }
                 }
             }
@@ -62,7 +75,7 @@ impl Renderer {
             headers,
             query_params,
             variables: request.variables,
-            body: request.body,
+            body,
         })
     }
 }
@@ -92,6 +105,18 @@ fn render_query_params(
     val: &str,
 ) {
     if let Some((_, v)) = query_params.iter_mut().find(|(k, _)| k == key) {
+        let new_value = v.replace(placeholder, val);
+        *v = new_value;
+    }
+}
+
+fn render_form_data(
+    form: &mut HashMap<String, FormDataValue>,
+    key: &str,
+    placeholder: &str,
+    val: &str,
+) {
+    if let Some(FormDataValue::Text(v) | FormDataValue::File(v)) = form.get_mut(key) {
         let new_value = v.replace(placeholder, val);
         *v = new_value;
     }
@@ -153,9 +178,28 @@ mod test {
             rendered.query_params,
             vec![
                 ("page".to_string(), "1".to_string()),
-                ("size".to_string(), "10".to_string())
+                ("size".to_string(), "10".to_string()),
             ]
         );
         Ok(())
+    }
+
+    #[test]
+    fn render_form_data() {
+        let mut form = HashMap::new();
+        form.insert(
+            "name".to_string(),
+            FormDataValue::Text("{{name}}".to_string()),
+        );
+        form.insert(
+            "file".to_string(),
+            FormDataValue::File("{{path}}/file".to_string()),
+        );
+
+        super::render_form_data(&mut form, "name", "{{name}}", "temp_file");
+        super::render_form_data(&mut form, "file", "{{path}}", "/tmp");
+
+        assert_eq!(form["name"], FormDataValue::Text("temp_file".to_string()));
+        assert_eq!(form["file"], FormDataValue::File("/tmp/file".to_string()));
     }
 }
