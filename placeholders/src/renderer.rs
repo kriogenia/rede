@@ -39,9 +39,6 @@ impl Renderer {
     ///
     /// todo
     ///
-    /// # Panics
-    ///
-    /// todo -> if the request structure does not match the placeholders
     pub fn render(&self, request: Request) -> Result<Request> {
         let mut url = request.url;
         let mut headers = request.headers;
@@ -70,9 +67,15 @@ impl Renderer {
                             Body::XFormUrlEncoded(form) => {
                                 render_form_urlencoded(form, k, &placeholder, val);
                             }
-                            _ => panic!("unexpected body type"),
+                            _ => {}
                         },
-                        Location::Body => { /* todo */ }
+                        Location::Body => {
+                            if let Body::Raw { content, .. } | Body::Binary { path: content, .. } =
+                                &mut body
+                            {
+                                replace_pointer!(content, &placeholder, val);
+                            }
+                        }
                     }
                 }
             }
@@ -134,21 +137,33 @@ fn render_form_urlencoded(
 #[cfg(test)]
 mod test {
     use super::*;
-    use http::{HeaderMap, Method, Version};
     use std::error::Error;
 
     #[test]
     fn render() -> std::result::Result<(), Box<dyn Error>> {
-        // todo replace by generated placeholders
-        let mut placeholders = Placeholders::default();
-        placeholders.add_all(&Location::Url, vec!["id", "name"]);
-        placeholders.add_all(
-            &Location::Headers("Authorization".parse().unwrap()),
-            vec!["token"],
-        );
-        placeholders.add_all(&Location::QueryParams("page".to_string()), vec!["page"]);
-        placeholders.add_all(&Location::QueryParams("size".to_string()), vec!["size"]);
-        placeholders.add_all(&Location::Body, vec!["id", "name"]);
+        let request = r#"
+        [http]
+        url = "https://example.com/{{id}}/{{name}}/{{id}}"
+
+        [headers]
+        Content-Type = "application/json"
+        Authorization = "Bearer {{token}}"
+
+        [query_params]
+        page = "{{page}}"
+        size = "{{size}}"
+
+        [body]
+        raw = """
+        {
+            "id": {{id}},
+            "name": "{{name}} {{last_name}}"
+        }
+        """
+        "#;
+
+        let request = rede_parser::parse_request(request).unwrap();
+        let placeholders = (&request).into();
 
         let values = vec![
             ("id".to_string(), "1".to_string()),
@@ -156,40 +171,39 @@ mod test {
             ("token".to_string(), "abc".to_string()),
             ("page".to_string(), "1".to_string()),
             ("size".to_string(), "10".to_string()),
+            ("last_name".to_string(), "renderer".to_string()),
         ];
 
         let renderer = Renderer::new(placeholders, &values);
-
-        let mut headers = HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse().unwrap());
-        headers.insert("Authorization", "Bearer {{token}}".parse().unwrap());
-
-        let mut query_params = Vec::new();
-        query_params.push(("page".to_string(), "{{page}}".to_string()));
-        query_params.push(("size".to_string(), "{{size}}".to_string()));
-
-        let request = Request {
-            method: Method::GET,
-            url: "https://example.com/{{id}}/{{name}}/{{id}}".to_string(),
-            http_version: Version::HTTP_11,
-            metadata: HashMap::new(),
-            headers,
-            query_params,
-            variables: HashMap::new(),
-            body: rede_schema::Body::None,
-        };
-
         let rendered = renderer.render(request).unwrap();
 
         assert_eq!(rendered.url, "https://example.com/1/test/1");
         assert_eq!(rendered.headers["Authorization"].to_str()?, "Bearer abc");
         assert_eq!(
-            rendered.query_params,
-            vec![
-                ("page".to_string(), "1".to_string()),
-                ("size".to_string(), "10".to_string()),
-            ]
+            rendered
+                .query_params
+                .iter()
+                .find(|(k, _)| k == "page")
+                .unwrap()
+                .1,
+            "1"
         );
+        assert_eq!(
+            rendered
+                .query_params
+                .iter()
+                .find(|(k, _)| k == "size")
+                .unwrap()
+                .1,
+            "10"
+        );
+        if let Body::Raw { content, .. } = rendered.body {
+            println!("{}", content);
+            assert!(content.contains(r#""id": 1"#));
+            assert!(content.contains(r#""name": "test renderer""#));
+        } else {
+            panic!("body is not raw")
+        }
         Ok(())
     }
 
