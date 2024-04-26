@@ -11,6 +11,13 @@ pub struct Renderer {
     values_map: HashMap<String, String>,
 }
 
+macro_rules! replace_pointer {
+    ($pointer:expr, $placeholder:expr, $value:expr) => {
+        let new_value = $pointer.replace($placeholder, $value);
+        *$pointer = new_value;
+    };
+}
+
 impl Renderer {
     /// todo doc
     #[must_use]
@@ -51,14 +58,18 @@ impl Renderer {
                         Location::Headers(name) => {
                             render_headers(&mut headers, name, &placeholder, val)?;
                         }
-                        Location::QueryParams(k) => {
-                            render_query_params(query_params.as_mut(), k, &placeholder, val);
+                        Location::QueryParams(key) => {
+                            if let Some((_, v)) = query_params.iter_mut().find(|(k, _)| k == key) {
+                                replace_pointer!(v, &placeholder, val);
+                            }
                         }
                         Location::BodyForm(k) => match &mut body {
                             Body::FormData(form) => {
                                 render_form_data(form, k, &placeholder, val);
                             }
-                            Body::XFormUrlEncoded(_) => { /* todo */ }
+                            Body::XFormUrlEncoded(form) => {
+                                render_form_urlencoded(form, k, &placeholder, val);
+                            }
                             _ => panic!("unexpected body type"),
                         },
                         Location::Body => { /* todo */ }
@@ -98,18 +109,6 @@ fn render_headers(
     Ok(())
 }
 
-fn render_query_params(
-    query_params: &mut [(String, String)],
-    key: &str,
-    placeholder: &str,
-    val: &str,
-) {
-    if let Some((_, v)) = query_params.iter_mut().find(|(k, _)| k == key) {
-        let new_value = v.replace(placeholder, val);
-        *v = new_value;
-    }
-}
-
 fn render_form_data(
     form: &mut HashMap<String, FormDataValue>,
     key: &str,
@@ -117,8 +116,18 @@ fn render_form_data(
     val: &str,
 ) {
     if let Some(FormDataValue::Text(v) | FormDataValue::File(v)) = form.get_mut(key) {
-        let new_value = v.replace(placeholder, val);
-        *v = new_value;
+        replace_pointer!(v, placeholder, val);
+    }
+}
+
+fn render_form_urlencoded(
+    form: &mut HashMap<String, String>,
+    key: &str,
+    placeholder: &str,
+    val: &str,
+) {
+    if let Some(v) = form.get_mut(key) {
+        replace_pointer!(v, placeholder, val);
     }
 }
 
@@ -201,5 +210,18 @@ mod test {
 
         assert_eq!(form["name"], FormDataValue::Text("temp_file".to_string()));
         assert_eq!(form["file"], FormDataValue::File("/tmp/file".to_string()));
+    }
+
+    #[test]
+    fn render_form_urlencoded() {
+        let mut form = HashMap::new();
+        form.insert("page".to_string(), "{{page}}".to_string());
+        form.insert("order".to_string(), "{{field}}:asc".to_string());
+
+        super::render_form_urlencoded(&mut form, "page", "{{page}}", "10");
+        super::render_form_urlencoded(&mut form, "order", "{{field}}", "id");
+
+        assert_eq!(form["page"], "10".to_string());
+        assert_eq!(form["order"], "id:asc".to_string());
     }
 }
