@@ -43,7 +43,7 @@ impl From<&Request> for Placeholders {
             Body::XFormUrlEncoded(form) => {
                 for (k, v) in form {
                     let set = find_placeholders(&re, v);
-                    placeholder_map.add_all(&Location::Form(k.to_string()), set);
+                    placeholder_map.add_all(&Location::BodyForm(k.clone()), set);
                 }
             }
             Body::FormData(form) => {
@@ -52,7 +52,7 @@ impl From<&Request> for Placeholders {
                         FormDataValue::Text(v) | FormDataValue::File(v) => v,
                     };
                     let set = find_placeholders(&re, content);
-                    placeholder_map.add_all(&Location::Form(k.to_string()), set);
+                    placeholder_map.add_all(&Location::BodyForm(k.clone()), set);
                 }
             }
             Body::None => {}
@@ -128,7 +128,7 @@ pub enum Location {
     Headers(HeaderName),
     QueryParams(String),
     Body,
-    Form(String),
+    BodyForm(String),
 }
 
 #[cfg(test)]
