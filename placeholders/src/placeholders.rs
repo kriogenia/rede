@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use regex::Regex;
 
@@ -7,7 +7,7 @@ use rede_parser::{Body, Request};
 
 /// TODO
 #[derive(Debug, Default)]
-pub struct Placeholders(HashMap<String, HashSet<Location>>);
+pub struct Placeholders(HashMap<String, Vec<Location>>);
 
 impl From<&Request> for Placeholders {
     fn from(request: &Request) -> Self {
@@ -70,11 +70,10 @@ impl Placeholders {
 
     fn insert(&mut self, key: &str, location: Location) {
         if let Some(locations) = self.0.get_mut(key) {
-            locations.insert(location);
+            locations.push(location);
         } else {
-            let mut set = HashSet::new();
-            set.insert(location);
-            self.0.insert(key.to_string(), set);
+            let vec = vec![location];
+            self.0.insert(key.to_string(), vec);
         }
     }
 
@@ -85,12 +84,12 @@ impl Placeholders {
     }
 
     #[cfg(test)]
-    pub fn len(&self) -> usize {
+    pub(self) fn len(&self) -> usize {
         self.0.len()
     }
 }
 
-fn find_placeholders<'a>(regex: &Regex, haystack: &'a str) -> HashSet<&'a str> {
+fn find_placeholders<'a>(regex: &Regex, haystack: &'a str) -> Vec<&'a str> {
     regex
         .find_iter(haystack)
         .map(|c| &c.as_str()[2..c.len() - 2])
@@ -125,7 +124,7 @@ mod test {
 
         assert_eq!(pm.len(), 2);
         assert_eq!(pm.0["host"].len(), 1);
-        assert_eq!(pm.0["id"].len(), 2);
+        assert_eq!(pm.0["id"].len(), 3);
     }
 
     #[test]
@@ -148,14 +147,13 @@ mod test {
         headers.insert("Host", "{{host}}".parse().unwrap());
         headers.insert("Header", "Value".parse().unwrap());
 
-        let mut query_params = Vec::new();
-        query_params.push(("genre".to_string(), "{{genre}}".to_string()));
+        let query_params = vec![("genre".to_string(), "{{genre}}".to_string())];
 
         let request = Request {
             method: Method::GET,
             url: "{{host}}/api/game".to_string(),
             http_version: Version::HTTP_11,
-            metadata: Default::default(),
+            metadata: HashMap::default(),
             headers,
             query_params,
             variables: HashMap::new(),
