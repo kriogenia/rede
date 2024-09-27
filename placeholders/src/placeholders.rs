@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use http::HeaderName;
 use regex::Regex;
 
 use rede_parser::body::FormDataValue;
@@ -8,6 +9,8 @@ use rede_parser::{Body, Request};
 /// TODO
 #[derive(Debug, Default)]
 pub struct Placeholders(HashMap<String, Vec<Location>>);
+// todo possible improvement: store something like { url, times(3)} instead of three Location::Url
+// todo possible improvement: support placeholders on Header, QueryParms and Form keys
 
 impl From<&Request> for Placeholders {
     fn from(request: &Request) -> Self {
@@ -15,31 +18,31 @@ impl From<&Request> for Placeholders {
 
         let mut placeholder_map = Self::new();
         let set = find_placeholders(&re, &request.url);
-        placeholder_map.add_all(Location::Url, set);
+        placeholder_map.add_all(&Location::Url, set);
 
-        for (_, v) in &request.headers {
+        for (n, v) in &request.headers {
             let set = find_placeholders(&re, v.to_str().unwrap());
-            placeholder_map.add_all(Location::Headers, set); // todo store header key
+            placeholder_map.add_all(&Location::Headers(n.to_owned()), set);
         }
 
         for (_, v) in &request.query_params {
             let set = find_placeholders(&re, v.as_str());
-            placeholder_map.add_all(Location::QueryParams, set); // todo store qp key
+            placeholder_map.add_all(&Location::QueryParams, set); // todo store qp key
         }
 
         match &request.body {
             Body::Raw { content, .. } => {
                 let set = find_placeholders(&re, content);
-                placeholder_map.add_all(Location::Body, set);
+                placeholder_map.add_all(&Location::Body, set);
             }
             Body::Binary { path, .. } => {
                 let set = find_placeholders(&re, path);
-                placeholder_map.add_all(Location::Body, set);
+                placeholder_map.add_all(&Location::Body, set);
             }
             Body::XFormUrlEncoded(form) => {
                 for v in form.values() {
                     let set = find_placeholders(&re, v);
-                    placeholder_map.add_all(Location::Body, set); // todo store form key
+                    placeholder_map.add_all(&Location::Body, set); // todo store form key
                 }
             }
             Body::FormData(form) => {
@@ -48,7 +51,7 @@ impl From<&Request> for Placeholders {
                         FormDataValue::Text(v) | FormDataValue::File(v) => v,
                     };
                     let set = find_placeholders(&re, content);
-                    placeholder_map.add_all(Location::Body, set); // todo store form key
+                    placeholder_map.add_all(&Location::Body, set); // todo store form key
                 }
             }
             Body::None => {}
@@ -77,9 +80,9 @@ impl Placeholders {
         }
     }
 
-    fn add_all<'a>(&mut self, location: Location, keys: impl IntoIterator<Item = &'a str>) {
+    fn add_all<'a>(&mut self, location: &Location, keys: impl IntoIterator<Item = &'a str>) {
         for key in keys {
-            self.insert(key, location);
+            self.insert(key, location.clone());
         }
     }
 
@@ -96,10 +99,10 @@ fn find_placeholders<'a>(regex: &Regex, haystack: &'a str) -> Vec<&'a str> {
         .collect()
 }
 
-#[derive(Clone, Copy, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub(crate) enum Location {
     Url,
-    Headers,
+    Headers(HeaderName),
     QueryParams,
     Body,
 }
@@ -109,7 +112,6 @@ mod test {
     use std::collections::HashSet;
 
     use http::{HeaderMap, Method, Version};
-
     use rede_parser::Body;
 
     use super::*;
@@ -134,7 +136,7 @@ mod test {
         let mut set = HashSet::new();
         set.insert("one");
         set.insert("two");
-        pm.add_all(Location::Headers, set);
+        pm.add_all(&Location::Url, set);
 
         assert_eq!(pm.len(), 2);
         assert_eq!(pm.0["one"].len(), 1);
@@ -145,6 +147,7 @@ mod test {
     fn from_request() {
         let mut headers = HeaderMap::new();
         headers.insert("Host", "{{host}}".parse().unwrap());
+        headers.insert("Location", "{{location}}".parse().unwrap());
         headers.insert("Header", "Value".parse().unwrap());
 
         let query_params = vec![("genre".to_string(), "{{genre}}".to_string())];
@@ -164,9 +167,15 @@ mod test {
         };
 
         let placeholders = Placeholders::from(&request);
-        assert_eq!(placeholders.len(), 3);
+        assert_eq!(placeholders.len(), 4);
         assert_eq!(placeholders.0["host"].len(), 2);
         assert_eq!(placeholders.0["name"].len(), 1);
         assert_eq!(placeholders.0["genre"].len(), 2);
+        assert_eq!(placeholders.0["location"].len(), 1);
+
+        assert_eq!(
+            placeholders.0["location"][0],
+            Location::Headers("Location".parse().unwrap())
+        );
     }
 }
