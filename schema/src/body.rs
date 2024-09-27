@@ -32,8 +32,7 @@ impl Body {
     ///
     /// ```
     /// # fn main() {
-    /// # use thiserror::__private::AsDisplay;
-    /// # use rede_parser::body::Body;
+    /// # use rede_schema::body::Body;
     /// # let body = Body::Binary { path: "path".to_string(), mime: mime::APPLICATION_OCTET_STREAM};
     /// assert_eq!(body.mime().map(|m| m.to_string()), Some("application/octet-stream".to_string()));
     /// # }
