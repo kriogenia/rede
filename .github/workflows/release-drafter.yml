@@ -20,7 +20,7 @@ jobs:
         run: echo "RD_CONFIG_NAME=drafts/parser.yml" >> $GITHUB_ENV
       - name: Changes on placeholders
         if: contains(github.event.pull_request.labels.*.name, 'placeholders') || github.event_name == 'workflow_dispatch'
-        run: echo "RD_CONFIG_NAME=drafts/parser.yml" >> $GITHUB_ENV
+        run: echo "RD_CONFIG_NAME=drafts/placeholders.yml" >> $GITHUB_ENV
     outputs:
       config-name: ${{ env.RD_CONFIG_NAME }}
   update_release_draft:
