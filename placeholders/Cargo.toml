@@ -17,10 +17,11 @@ readme = "./README.md"
 [dependencies]
 http.workspace = true
 
-rede_schema = { version = "0.1" }
+rede_schema = "0.1"
 
 regex = "1.10.6"
 
 [dev-dependencies]
-http.workspace = true
 mime.workspace = true
+
+rede_parser = "0.2"
