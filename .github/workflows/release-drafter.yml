@@ -16,13 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Changes on parser
-        if: contains(github.event.pull_request.labels.*.name, 'parser') || github.event_name == 'workflow_dispatch'
+        if: contains(github.event.pull_request.labels.*.name, 'parser')
         run: echo "RD_CONFIG_NAME=drafts/parser.yml" >> $GITHUB_ENV
       - name: Changes on placeholders
-        if: contains(github.event.pull_request.labels.*.name, 'placeholders') || github.event_name == 'workflow_dispatch'
+        if: contains(github.event.pull_request.labels.*.name, 'placeholders')
         run: echo "RD_CONFIG_NAME=drafts/placeholders.yml" >> $GITHUB_ENV
       - name: Changes on schema
-        if: contains(github.event.pull_request.labels.*.name, 'schema') || github.event_name == 'workflow_dispatch'
+        if: contains(github.event.pull_request.labels.*.name, 'schema')
         run: echo "RD_CONFIG_NAME=drafts/schema.yml" >> $GITHUB_ENV
     outputs:
       config-name: ${{ env.RD_CONFIG_NAME }}
