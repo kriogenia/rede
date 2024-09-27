@@ -3,8 +3,8 @@ use std::collections::{HashMap, HashSet};
 use http::HeaderName;
 use regex::Regex;
 
-use rede_parser::body::FormDataValue;
-use rede_parser::{Body, Request};
+use rede_schema::body::FormDataValue;
+use rede_schema::{Body, Request};
 
 /// TODO
 #[derive(Debug, Default)]
@@ -113,7 +113,7 @@ mod test {
     use std::collections::HashSet;
 
     use http::{HeaderMap, Method, Version};
-    use rede_parser::Body;
+    use rede_schema::Body;
 
     use super::*;
 
