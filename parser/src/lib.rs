@@ -9,7 +9,7 @@
 //!
 //! ```
 //! # use http::Method;
-//! # use rede_parser::body::Body;
+//! # use rede_schema::body::Body;
 //! # use std::error::Error;
 //!
 //! # fn main() -> Result<(), Box<dyn Error>> {
@@ -44,9 +44,6 @@
 #![warn(clippy::pedantic)]
 #![allow(clippy::module_name_repetitions)]
 
-/// Contains all the specific types used in the body
-pub mod body;
-
 mod error;
 mod request;
 mod schema;
@@ -57,8 +54,6 @@ mod input_param;
 use crate::schema::Schema;
 use std::str::FromStr;
 
-#[doc(inline)]
-pub use body::Body;
 #[doc(inline)]
 pub use error::Error;
 #[doc(inline)]

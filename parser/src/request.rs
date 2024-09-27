@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use http::{HeaderMap, Method, Version};
+use rede_schema::Body;
 
-use crate::body::Body;
 use crate::error::Error;
 use crate::schema::table::Transform;
 use crate::schema::Schema;
@@ -58,11 +58,11 @@ impl TryFrom<Schema> for Request {
 
 #[cfg(test)]
 mod test {
-    use crate::body::Body;
     use crate::schema;
     use crate::schema::table::Table;
     use crate::schema::types::{Primitive, PrimitiveArray};
     use crate::schema::{Http, Schema};
+    use rede_schema::body::Body;
 
     use super::*;
 
