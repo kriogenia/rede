@@ -1,6 +1,6 @@
 [package]
 name = "rede_parser"
-version = "0.2.0"
+version = "0.2.1"
 edition.workspace = true
 
 authors.workspace = true
@@ -8,10 +8,10 @@ homepage.workspace = true
 repository.workspace = true
 license.workspace = true
 
-categories = [ "parser-implementations", "development-tools" ]
+categories = ["parser-implementations", "development-tools"]
 description = "Parser in charge of modeling Rede's files"
 documentation = "https://docs.rs/rede_parser"
-keywords = [ "parser", "rede", "toml", "http" ]
+keywords = ["parser", "rede", "toml", "http"]
 readme = "./README.md"
 
 [features]
@@ -21,6 +21,8 @@ input_params = []
 http.workspace = true
 mime.workspace = true
 thiserror.workspace = true
+
+rede_schema = "0.1"
 
 http-serde = "2.0"
 serde = { version = "1.0", features = ["derive"] }
