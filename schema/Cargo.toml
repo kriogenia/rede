@@ -14,5 +14,9 @@ documentation = "https://docs.rs/rede_schema"
 keywords = ["rede", "schema", "request"]
 readme = "./README.md"
 
+[features]
+input_params = []
+
 [dependencies]
 http.workspace = true
+mime.workspace = true

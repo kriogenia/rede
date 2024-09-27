@@ -1048,6 +1048,7 @@ name = "rede_schema"
 version = "0.1.0"
 dependencies = [
  "http",
+ "mime",
 ]
 
 [[package]]
