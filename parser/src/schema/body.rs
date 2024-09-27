@@ -1,6 +1,6 @@
-use crate::body::Body as PublicBody;
 use crate::schema::table::{FormDataTable, PrimitiveTable, Transform};
 use crate::schema::types::PrimitiveArray;
+use rede_schema::Body as SchemaBody;
 use serde::Deserialize;
 
 #[derive(Debug, Default, Deserialize, PartialEq)]
@@ -34,30 +34,30 @@ pub(crate) enum FormDataValue {
     File(String),
 }
 
-impl From<Body> for PublicBody {
+impl From<Body> for SchemaBody {
     fn from(value: Body) -> Self {
         match value {
-            Body::None => PublicBody::None,
-            Body::Raw(content) => PublicBody::Raw {
+            Body::None => SchemaBody::None,
+            Body::Raw(content) => SchemaBody::Raw {
                 content,
                 mime: mime::TEXT_PLAIN_UTF_8,
             },
-            Body::Binary(path) => PublicBody::Binary {
+            Body::Binary(path) => SchemaBody::Binary {
                 path,
                 mime: mime::APPLICATION_OCTET_STREAM,
             },
-            Body::FormData(table) => PublicBody::FormData(table.into_map()),
-            Body::XFormUrlEncoded(table) => PublicBody::XFormUrlEncoded(table.into_map()),
+            Body::FormData(table) => SchemaBody::FormData(table.into_map()),
+            Body::XFormUrlEncoded(table) => SchemaBody::XFormUrlEncoded(table.into_map()),
         }
     }
 }
 
-use crate::body::FormDataValue as PublicFDV;
-impl Transform<FormDataValue, PublicFDV> for FormDataTable {
-    fn map_value(value: FormDataValue) -> PublicFDV {
+use rede_schema::body::FormDataValue as SchemaFDV;
+impl Transform<FormDataValue, SchemaFDV> for FormDataTable {
+    fn map_value(value: FormDataValue) -> SchemaFDV {
         match value {
-            FormDataValue::Text(value) => PublicFDV::Text(value.into()),
-            FormDataValue::File(path) => PublicFDV::File(path),
+            FormDataValue::Text(value) => SchemaFDV::Text(value.into()),
+            FormDataValue::File(path) => SchemaFDV::File(path),
         }
     }
 }
@@ -129,7 +129,7 @@ mod test {
 
     #[test]
     fn deserialize_empty() {
-        let err = toml::from_str::<Parent>(r#"[body]"#).err().unwrap();
+        let err = toml::from_str::<Parent>("[body]").err().unwrap();
         assert!(err.to_string().contains("wanted exactly 1 element"));
     }
 }
