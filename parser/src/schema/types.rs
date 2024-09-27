@@ -73,20 +73,20 @@ mod test {
     #[test]
     fn primitive() {
         assert_eq!(parse_pri(r#"primitive="string""#), "string");
-        assert_eq!(parse_pri(r#"primitive=10"#), "10");
-        assert_eq!(parse_pri(r#"primitive=5.1"#), "5.1");
-        assert_eq!(parse_pri(r#"primitive=true"#), "true");
-        assert!(toml::from_str::<Pri>(r#"a=1970-01-01"#).is_err());
+        assert_eq!(parse_pri("primitive=10"), "10");
+        assert_eq!(parse_pri("primitive=5.1"), "5.1");
+        assert_eq!(parse_pri("primitive=true"), "true");
+        assert!(toml::from_str::<Pri>("a=1970-01-01").is_err());
     }
 
     #[test]
     fn primitive_array() {
         assert_eq!(parse_pri_arr(r#"primitive="string""#), "string");
-        assert_eq!(parse_pri_arr(r#"primitive=10"#), "10");
-        assert_eq!(parse_pri_arr(r#"primitive=5.1"#), "5.1");
-        assert_eq!(parse_pri_arr(r#"primitive=true"#), "true");
+        assert_eq!(parse_pri_arr("primitive=10"), "10");
+        assert_eq!(parse_pri_arr("primitive=5.1"), "5.1");
+        assert_eq!(parse_pri_arr("primitive=true"), "true");
         assert_eq!(parse_pri_arr(r#"primitive=[1,"two"]"#), "1,two");
-        assert!(toml::from_str::<PriArr>(r#"a=1970-01-01"#).is_err());
+        assert!(toml::from_str::<PriArr>("a=1970-01-01").is_err());
     }
 
     fn parse_pri(str: &str) -> String {

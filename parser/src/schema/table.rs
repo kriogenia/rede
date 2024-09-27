@@ -7,7 +7,7 @@ use crate::schema::types::PrimitiveArray;
 use serde::Deserialize;
 
 #[cfg(feature = "input_params")]
-use crate::InputParam;
+use super::input_param::InputParam;
 
 /// Newtype implementation to wrap TOML tables where the set of keys can be free
 #[derive(Debug, Deserialize, PartialEq)]
@@ -125,7 +125,7 @@ mod test {
         toml::from_str(string).unwrap()
     }
 
-    fn assert_pair(pairs: &Vec<(String, String)>, key: &str, val: &str) {
+    fn assert_pair(pairs: &[(String, String)], key: &str, val: &str) {
         assert_eq!(pairs.iter().find(|(k, _)| k == key).unwrap().1, val);
     }
 }

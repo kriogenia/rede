@@ -48,9 +48,6 @@ mod error;
 mod request;
 mod schema;
 
-#[cfg(feature = "input_params")]
-mod input_param;
-
 use crate::schema::Schema;
 use std::str::FromStr;
 
@@ -58,10 +55,6 @@ use std::str::FromStr;
 pub use error::Error;
 #[doc(inline)]
 pub use request::Request;
-
-#[cfg(feature = "input_params")]
-#[doc(inline)]
-pub use input_param::InputParam;
 
 /// Attempts to parse the given string into an HTTP request.
 ///

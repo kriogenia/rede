@@ -8,7 +8,7 @@ use crate::schema::table::Transform;
 use crate::schema::Schema;
 
 #[cfg(feature = "input_params")]
-use crate::InputParam;
+use rede_schema::InputParam;
 
 /// Representation of a rede HTTP request. Contains all the supported content by the current schema
 /// to allow the creation and dispatching of the HTTP request with the command-line interface.
@@ -51,7 +51,7 @@ impl TryFrom<Schema> for Request {
             body: schema.body.into(),
 
             #[cfg(feature = "input_params")]
-            input_params: schema.input_params.0,
+            input_params: schema.input_params.into_map(),
         })
     }
 }
@@ -94,9 +94,8 @@ mod test {
             let mut input_params = HashMap::new();
             input_params.insert(
                 "ip".to_string(),
-                InputParam {
+                schema::input_param::InputParam {
                     hint: Some("hint".to_string()),
-                    default: Some("127.0.0.1".to_string()),
                 },
             );
             input_params
@@ -147,7 +146,6 @@ mod test {
             request.input_params["ip"],
             InputParam {
                 hint: Some("hint".to_string()),
-                default: Some("127.0.0.1".to_string()),
             }
         );
     }

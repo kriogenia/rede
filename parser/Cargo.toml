@@ -15,7 +15,7 @@ keywords = ["parser", "rede", "toml", "http"]
 readme = "./README.md"
 
 [features]
-input_params = []
+input_params = ["rede_schema/input_params"]
 
 [dependencies]
 http.workspace = true
