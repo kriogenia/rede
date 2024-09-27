@@ -1,3 +1,3 @@
 # Rede Schema
 
-TODO
+This crate contains the structs used in the `rede` crate.
