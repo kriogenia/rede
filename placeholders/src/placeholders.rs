@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use http::HeaderName;
 use regex::Regex;
@@ -8,8 +8,7 @@ use rede_parser::{Body, Request};
 
 /// TODO
 #[derive(Debug, Default)]
-pub struct Placeholders(HashMap<String, Vec<Location>>);
-// todo possible improvement: store something like { url, times(3)} instead of three Location::Url
+pub struct Placeholders(HashMap<String, HashSet<Location>>);
 // todo possible improvement: support placeholders on Header, QueryParms and Form keys
 
 impl From<&Request> for Placeholders {
@@ -73,10 +72,11 @@ impl Placeholders {
 
     fn insert(&mut self, key: &str, location: Location) {
         if let Some(locations) = self.0.get_mut(key) {
-            locations.push(location);
+            locations.insert(location);
         } else {
-            let vec = vec![location];
-            self.0.insert(key.to_string(), vec);
+            let mut set = HashSet::new();
+            set.insert(location);
+            self.0.insert(key.to_string(), set);
         }
     }
 
@@ -127,7 +127,7 @@ mod test {
 
         assert_eq!(pm.len(), 2);
         assert_eq!(pm.0["host"].len(), 1);
-        assert_eq!(pm.0["id"].len(), 3);
+        assert_eq!(pm.0["id"].len(), 2);
     }
 
     #[test]
@@ -141,7 +141,7 @@ mod test {
 
         assert_eq!(pm.len(), 2);
         assert_eq!(pm.0["one"].len(), 1);
-        assert_eq!(pm.0["two"].len(), 2);
+        assert_eq!(pm.0["two"].len(), 1);
     }
 
     #[test]
@@ -183,17 +183,17 @@ mod test {
         assert_eq!(placeholders.len(), 5);
         assert_eq!(placeholders.0["host"].len(), 2);
         assert_eq!(placeholders.0["name"].len(), 1);
-        assert_eq!(placeholders.0["genre"].len(), 3);
+        assert_eq!(placeholders.0["genre"].len(), 2);
         assert_eq!(placeholders.0["location"].len(), 1);
         assert_eq!(placeholders.0["date"].len(), 1);
 
         assert_eq!(
-            placeholders.0["location"][0],
-            Location::Headers("Location".parse().unwrap())
+            placeholders.0["location"].iter().next().unwrap(),
+            &Location::Headers("Location".parse().unwrap())
         );
         assert_eq!(
-            placeholders.0["date"][0],
-            Location::QueryParams("release".to_string())
+            placeholders.0["date"].iter().next().unwrap(),
+            &Location::QueryParams("release".to_string())
         );
     }
 }
