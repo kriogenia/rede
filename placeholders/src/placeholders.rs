@@ -40,18 +40,18 @@ impl From<&Request> for Placeholders {
                 placeholder_map.add_all(&Location::Body, set);
             }
             Body::XFormUrlEncoded(form) => {
-                for v in form.values() {
+                for (k, v) in form {
                     let set = find_placeholders(&re, v);
-                    placeholder_map.add_all(&Location::Body, set); // todo store form key
+                    placeholder_map.add_all(&Location::Form(k.to_string()), set);
                 }
             }
             Body::FormData(form) => {
-                for v in form.values() {
+                for (k, v) in form {
                     let content = match v {
                         FormDataValue::Text(v) | FormDataValue::File(v) => v,
                     };
                     let set = find_placeholders(&re, content);
-                    placeholder_map.add_all(&Location::Body, set); // todo store form key
+                    placeholder_map.add_all(&Location::Form(k.to_string()), set);
                 }
             }
             Body::None => {}
@@ -105,6 +105,7 @@ pub(crate) enum Location {
     Headers(HeaderName),
     QueryParams(String),
     Body,
+    Form(String),
 }
 
 #[cfg(test)]
