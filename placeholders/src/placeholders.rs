@@ -25,9 +25,9 @@ impl From<&Request> for Placeholders {
             placeholder_map.add_all(&Location::Headers(n.to_owned()), set);
         }
 
-        for (_, v) in &request.query_params {
+        for (k, v) in &request.query_params {
             let set = find_placeholders(&re, v.as_str());
-            placeholder_map.add_all(&Location::QueryParams, set); // todo store qp key
+            placeholder_map.add_all(&Location::QueryParams(k.clone()), set);
         }
 
         match &request.body {
@@ -103,7 +103,7 @@ fn find_placeholders<'a>(regex: &Regex, haystack: &'a str) -> Vec<&'a str> {
 pub(crate) enum Location {
     Url,
     Headers(HeaderName),
-    QueryParams,
+    QueryParams(String),
     Body,
 }
 
@@ -150,7 +150,10 @@ mod test {
         headers.insert("Location", "{{location}}".parse().unwrap());
         headers.insert("Header", "Value".parse().unwrap());
 
-        let query_params = vec![("genre".to_string(), "{{genre}}".to_string())];
+        let query_params = vec![
+            ("genre".to_string(), "{{genre}}".to_string()),
+            ("release".to_string(), "before:{{date}}".to_string()),
+        ];
 
         let request = Request {
             method: Method::GET,
@@ -161,21 +164,35 @@ mod test {
             query_params,
             variables: HashMap::new(),
             body: Body::Raw {
-                content: r#"{"name":"{{name}}","genre":"{{genre}}"}"#.to_string(),
+                content: r#"
+                {
+                    "name": "{{name}}",
+                    "genre": "{{genre}}",
+                    "categories": [ 
+                        "dreamcast",
+                        "{{genre}}"
+                    ]
+                }"#
+                .to_string(),
                 mime: mime::APPLICATION_JSON,
             },
         };
 
         let placeholders = Placeholders::from(&request);
-        assert_eq!(placeholders.len(), 4);
+        assert_eq!(placeholders.len(), 5);
         assert_eq!(placeholders.0["host"].len(), 2);
         assert_eq!(placeholders.0["name"].len(), 1);
-        assert_eq!(placeholders.0["genre"].len(), 2);
+        assert_eq!(placeholders.0["genre"].len(), 3);
         assert_eq!(placeholders.0["location"].len(), 1);
+        assert_eq!(placeholders.0["date"].len(), 1);
 
         assert_eq!(
             placeholders.0["location"][0],
             Location::Headers("Location".parse().unwrap())
+        );
+        assert_eq!(
+            placeholders.0["date"][0],
+            Location::QueryParams("release".to_string())
         );
     }
 }
