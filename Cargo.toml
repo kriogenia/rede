@@ -1,15 +1,11 @@
 [workspace]
-members = [
-    "bin",
-    "parser",
-    "placeholders"
-]
+members = ["bin", "parser", "placeholders", "schema"]
 resolver = "2"
 
 [workspace.package]
 edition = "2021"
 
-authors = [ "SotoEstevez <ricardo@sotoestevez.dev"]
+authors = ["SotoEstevez <ricardo@sotoestevez.dev"]
 homepage = "https://rede.sotoestevez.dev/"
 repository = "https://github.com/kriogenia/rede"
 license = "Apache-2.0 OR MIT"

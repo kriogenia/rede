@@ -1,0 +1,18 @@
+[package]
+name = "rede_schema"
+version = "0.1.0"
+edition.workspace = true
+
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+
+categories = ["network-programming"]
+description = "Exposes the request schema used by rede"
+documentation = "https://docs.rs/rede_schema"
+keywords = ["rede", "schema", "request"]
+readme = "./README.md"
+
+[dependencies]
+http.workspace = true
