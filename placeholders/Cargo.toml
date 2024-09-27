@@ -8,18 +8,21 @@ homepage.workspace = true
 repository.workspace = true
 license.workspace = true
 
-categories = [ "parser-implementations", "development-tools" ] #// todo
+categories = ["parser-implementations", "development-tools"]             #// todo
 description = "Handles the discovering and filling of rede placeholders"
 documentation = "https://docs.rs/rede_placeholders"
-keywords = [ "rede", "placeholder", "search", "replace" ]
+keywords = ["rede", "placeholder", "search", "replace"]
 readme = "./README.md"
 
 [dependencies]
-rede_parser = { version = "0.2.0"}
+http.workspace = true
+
+rede_parser = { version = "0.2.0" }
 #rede_parser = { path = "../parser" }
 
-regex = "1.10.4" # todo remove
+regex = "1.10.6"
 
 [dev-dependencies]
 http.workspace = true
 mime.workspace = true
+
