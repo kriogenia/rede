@@ -1,0 +1,6 @@
+_extends: rede:.github/drafts/base.yml
+name-template: 'rede_schema $RESOLVED_VERSION'
+tag-template: 'schema_v$RESOLVED_VERSION'
+tag-prefix: 'schema_v'
+include-paths:
+  - "schema/"

@@ -47,6 +47,9 @@ autolabeler:
   - label: 'placeholders'
     files:
       - 'placeholders/**'
+  - label: 'schema'
+    files:
+      - 'schema/**'
   - label: 'breaking-change'
     branch:
       - '/.*!:.*/'
