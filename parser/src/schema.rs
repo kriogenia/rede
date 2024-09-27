@@ -12,8 +12,12 @@ use crate::schema::table::PrimitiveTable;
 use crate::schema::table::InputParamsTable;
 
 mod body;
+
 pub(crate) mod table;
 pub(crate) mod types;
+
+#[cfg(feature = "input_params")]
+pub(crate) mod input_param;
 
 /// Model of the supported request schema contents.
 #[derive(Deserialize)]
@@ -60,7 +64,7 @@ mod test {
     use crate::schema::types::{Primitive, PrimitiveArray};
 
     #[cfg(feature = "input_params")]
-    use crate::InputParam;
+    use super::input_param::InputParam;
 
     use super::*;
 
@@ -171,7 +175,7 @@ mod test {
             schema.variables.0["array"],
             PrimitiveArray::Multiple(vec![Primitive::Int(1), Primitive::Str("2".into())])
         );
-        let body: Body = schema.body.into();
+        let body: Body = schema.body;
         assert!(matches!(body, Body::Raw(content) if content.contains(r#""key": "value""#)));
 
         #[cfg(feature = "input_params")]
@@ -181,16 +185,9 @@ mod test {
                 schema.input_params.0["host"],
                 InputParam {
                     hint: Some("Host name".to_string()),
-                    default: Some("localhost".to_string()),
                 }
             );
-            assert_eq!(
-                schema.input_params.0["empty"],
-                InputParam {
-                    hint: None,
-                    default: None,
-                }
-            );
+            assert_eq!(schema.input_params.0["empty"], InputParam { hint: None });
             assert_eq!(
                 schema.input_params.0["no-default"].hint,
                 Some("This has no default value".to_string())
