@@ -1,40 +1,8 @@
-use std::collections::HashMap;
-
-use http::{HeaderMap, Method, Version};
-use rede_schema::Body;
+use rede_schema::Request;
 
 use crate::error::Error;
 use crate::schema::table::Transform;
 use crate::schema::Schema;
-
-#[cfg(feature = "input_params")]
-use rede_schema::InputParam;
-
-/// Representation of a rede HTTP request. Contains all the supported content by the current schema
-/// to allow the creation and dispatching of the HTTP request with the command-line interface.
-#[derive(Debug)]
-pub struct Request {
-    /// HTTP method of the request
-    pub method: Method,
-    /// URL of the request
-    pub url: String,
-    /// HTTP version of the request
-    pub http_version: Version,
-    /// Metadata of the request file
-    pub metadata: HashMap<String, String>,
-    /// Headers of the request
-    pub headers: HeaderMap,
-    /// Query parameters of the request
-    pub query_params: Vec<(String, String)>,
-    /// Body of the request
-    pub body: Body,
-    /// Variables to provide values for placeholders in the request
-    pub variables: HashMap<String, String>,
-
-    #[cfg(feature = "input_params")]
-    /// Keys of placeholders to ask the user for input
-    pub input_params: HashMap<String, InputParam>,
-}
 
 impl TryFrom<Schema> for Request {
     type Error = Error;
@@ -58,11 +26,17 @@ impl TryFrom<Schema> for Request {
 
 #[cfg(test)]
 mod test {
+    use std::collections::HashMap;
+
     use crate::schema;
     use crate::schema::table::Table;
     use crate::schema::types::{Primitive, PrimitiveArray};
     use crate::schema::{Http, Schema};
+    use http::{HeaderMap, Method, Version};
     use rede_schema::body::Body;
+
+    #[cfg(feature = "input_params")]
+    use rede_schema::InputParam;
 
     use super::*;
 

@@ -1,7 +1,7 @@
 //! Library to handle the parsing of requests in TOML format used by the crate `rede`.
 //!
 //! The library offers the function [`rede_parser::parse_request`](parse_request)
-//! to convert a given string into a valid [`rede_parser::Request`](Request).
+//! to convert a given string into a valid rede [`rede_schema::Request`](Request).
 //!
 //! # Example
 //!
@@ -53,8 +53,6 @@ use std::str::FromStr;
 
 #[doc(inline)]
 pub use error::Error;
-#[doc(inline)]
-pub use request::Request;
 
 /// Attempts to parse the given string into an HTTP request.
 ///
@@ -92,8 +90,8 @@ pub use request::Request;
 /// assert!(result.is_err());
 /// # }
 /// ```
-pub fn parse_request(content: &str) -> Result<Request, Error> {
+pub fn parse_request(content: &str) -> Result<rede_schema::Request, Error> {
     let schema = Schema::from_str(content)?;
-    let request = Request::try_from(schema)?;
+    let request = rede_schema::Request::try_from(schema)?;
     Ok(request)
 }
