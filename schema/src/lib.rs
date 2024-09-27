@@ -1,0 +1,3 @@
+//! TODO
+
+#![warn(clippy::pedantic)]
