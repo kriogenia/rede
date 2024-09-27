@@ -6,9 +6,11 @@ use regex::Regex;
 use rede_schema::body::FormDataValue;
 use rede_schema::{Body, Request};
 
+type PlaceholdersMap = HashMap<String, HashSet<Location>>;
+
 /// TODO
 #[derive(Debug, Default)]
-pub struct Placeholders(HashMap<String, HashSet<Location>>);
+pub struct Placeholders(PlaceholdersMap);
 // todo possible improvement: support placeholders on Header, QueryParms and Form keys
 
 impl From<&Request> for Placeholders {
@@ -74,6 +76,7 @@ impl Placeholders {
         if let Some(locations) = self.0.get_mut(key) {
             locations.insert(location);
         } else {
+            #[allow(clippy::mutable_key_type)] // false positive as headername uses `bytes`
             let mut set = HashSet::new();
             set.insert(location);
             self.0.insert(key.to_string(), set);
@@ -86,9 +89,23 @@ impl Placeholders {
         }
     }
 
+    #[must_use]
+    pub fn iter(&self) -> <&PlaceholdersMap as IntoIterator>::IntoIter {
+        <&Self as IntoIterator>::into_iter(self)
+    }
+
     #[cfg(test)]
     pub(self) fn len(&self) -> usize {
         self.0.len()
+    }
+}
+
+impl<'p> IntoIterator for &'p Placeholders {
+    type Item = <&'p PlaceholdersMap as IntoIterator>::Item;
+    type IntoIter = <&'p PlaceholdersMap as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter()
     }
 }
 
@@ -100,7 +117,7 @@ fn find_placeholders<'a>(regex: &Regex, haystack: &'a str) -> Vec<&'a str> {
 }
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
-pub(crate) enum Location {
+pub enum Location {
     Url,
     Headers(HeaderName),
     QueryParams(String),
@@ -169,7 +186,7 @@ mod test {
                 {
                     "name": "{{name}}",
                     "genre": "{{genre}}",
-                    "categories": [ 
+                    "categories": [
                         "dreamcast",
                         "{{genre}}"
                     ]
