@@ -5,7 +5,7 @@ use std::env;
 pub trait ValuePicker {
     /// For a given `placeholder` generates a possible value to replace
     /// in the request
-    fn pick_for(req: &Request, placeholder: &str) -> Option<String>;
+    fn pick_for(&self, req: &Request, placeholder: &str) -> Option<String>;
 }
 
 /// Picks a value from the request variables
@@ -23,13 +23,13 @@ pub trait ValuePicker {
 /// # variables = { name = "variable "}
 /// # "#;
 /// # let request = rede_parser::parse_request(toml).unwrap();
-/// assert_eq!(VariablesPicker::pick_for(&request, "name").unwrap(), request.variables["name"]);
-/// assert_eq!(VariablesPicker::pick_for(&request, "missing"), None);
+/// assert_eq!(VariablesPicker.pick_for(&request, "name").unwrap(), request.variables["name"]);
+/// assert_eq!(VariablesPicker.pick_for(&request, "missing"), None);
 /// ```
 pub struct VariablesPicker;
 
 impl ValuePicker for VariablesPicker {
-    fn pick_for(req: &Request, placeholder: &str) -> Option<String> {
+    fn pick_for(&self, req: &Request, placeholder: &str) -> Option<String> {
         req.variables.get(placeholder).map(String::to_owned)
     }
 }
@@ -50,15 +50,15 @@ impl ValuePicker for VariablesPicker {
 /// # "#;
 /// # let request = rede_parser::parse_request(toml)?;
 /// std::env::set_var("envvar", "value");
-/// assert_eq!(EnvVarPicker::pick_for(&request, "envvar"), Some("value".to_string()));
-/// assert_eq!(EnvVarPicker::pick_for(&request, "missing"), None);
+/// assert_eq!(EnvVarPicker.pick_for(&request, "envvar"), Some("value".to_string()));
+/// assert_eq!(EnvVarPicker.pick_for(&request, "missing"), None);
 /// # Ok(())
 /// # }
 /// ```
 pub struct EnvVarPicker;
 
 impl ValuePicker for EnvVarPicker {
-    fn pick_for(_request: &Request, placeholder: &str) -> Option<String> {
+    fn pick_for(&self, _request: &Request, placeholder: &str) -> Option<String> {
         env::var(placeholder).ok()
     }
 }
