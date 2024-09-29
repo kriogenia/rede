@@ -25,6 +25,7 @@ input_params = ["rede_schema/input_params", "rede_parser/input_params"]
 
 [dependencies]
 rede_parser = "0.2.2"
+rede_placeholders = { path = "../placeholders" }
 rede_schema = "0.2.0"
 
 http.workspace = true
