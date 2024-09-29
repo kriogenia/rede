@@ -9,15 +9,19 @@ homepage.workspace = true
 license.workspace = true
 repository.workspace = true
 
-categories = [ "command-line-utilities" , "development-tools", "web-programming::http-client"]
+categories = [
+  "command-line-utilities",
+  "development-tools",
+  "web-programming::http-client",
+]
 description = "CLI tool to run and configure suites of HTTP requests defined in readable files"
 documentation = "https://rede.sotoestevez.dev/"
-keywords = [ "cli", "http", "api", "request" ]
+keywords = ["cli", "http", "api", "request"]
 readme = "../README.md"
 
 [dependencies]
-rede_parser = "0.1.4"
-#rede_parser = { path = "../parser" }
+rede_parser = "0.2.1"
+rede_schema = "0.1"
 
 http.workspace = true
 log.workspace = true
