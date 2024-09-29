@@ -9,6 +9,7 @@ use console::style;
 use log::{info, trace};
 use miette::{miette, LabeledSpan, Report};
 use rede_parser::parse_request;
+use rede_placeholders::Placeholders;
 use std::time::Duration;
 
 use super::GlobalArgs;
@@ -55,6 +56,9 @@ impl RedeCommand for Command {
         trace!("Content: {content}");
 
         let request = parse_request(&content).map_err(|e| ParsingError::parsing(content, e))?;
+        let placeholders: Placeholders = (&request).into();
+        dbg!(placeholders);
+
         self.print_request(&request);
         if gargs.dry_run {
             return Ok(());
