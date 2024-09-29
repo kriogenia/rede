@@ -1,6 +1,8 @@
 .PHONY: build
 build:
-	@cargo build --workspace --exclude rede_placeholders
+	@cargo build -p rede
+	@cargo build -p rede_schema
+	@cargo build -p rede_parser
 	@cargo build -p rede_placeholders
 
 .PHONY: it_test
@@ -13,6 +15,7 @@ serve_doc:
 
 .PHONY: test
 test:
-	@cargo test --workspace --exclude rede_placeholders --no-default-features
-	@cargo test --workspace --exclude rede_placeholders --all-features
+	@cargo test -p rede
+	@cargo test -p rede_schema
+	@cargo test -p rede_parser --all-features
 	@cargo test -p rede_placeholders
