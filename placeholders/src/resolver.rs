@@ -1,17 +1,14 @@
 use std::collections::HashMap;
 
-use rede_schema::Request;
-
 use crate::{Placeholders, ValuePicker};
 
-// TODO remove the request from the ValuePicker trait
-
+/// Uses a list of [`ValuePicker`] to resolve the value of [`Placeholders`].
 #[derive(Default)]
-pub struct Resolver {
-    pickers: Vec<Box<dyn ValuePicker>>,
+pub struct Resolver<'req> {
+    pickers: Vec<Box<dyn ValuePicker + 'req>>,
 }
 
-impl Resolver {
+impl<'req> Resolver<'req> {
     /// Creates a new empty resolver
     #[must_use]
     pub fn new() -> Self {
@@ -20,7 +17,8 @@ impl Resolver {
 
     /// Adds a new [`ValuePicker`] to the resolver. The resolver will use the provided
     /// pickers in the order they were adding to resolve the placholder values.
-    pub fn add_picker(&mut self, picker: Box<dyn ValuePicker>) -> &mut Resolver {
+    #[must_use]
+    pub fn add_picker(mut self, picker: Box<dyn ValuePicker + 'req>) -> Self {
         self.pickers.push(picker);
         self
     }
@@ -44,29 +42,26 @@ impl Resolver {
     /// let request = rede_parser::parse_request(toml).unwrap();
     /// let placeholders = (&request).into();
     ///
-    /// let mut resolver = Resolver::new();
-    /// &resolver.add_picker(Box::new(EnvVarPicker)).add_picker(Box::new(VariablesPicker));
+    /// let mut resolver = Resolver::new()
+    ///     .add_picker(Box::new(EnvVarPicker))
+    ///     .add_picker(Box::new(VariablesPicker::from(&request.variables)));
     ///
-    /// let ph_values = resolver.resolve(&placeholders, &request);
+    /// let ph_values = resolver.resolve(&placeholders);
     /// assert_eq!(ph_values.values["name"], Some("variable".to_string()));
     /// assert_eq!(ph_values.values["unresolved"], None);
     ///
     /// std::env::set_var("name", "env_var");
     /// std::env::set_var("unresolved", "fixed");
-    /// let ph_values = resolver.resolve(&placeholders, &request);
+    /// let ph_values = resolver.resolve(&placeholders);
     /// assert_ne!(ph_values.values["name"], Some("variable".to_string()));
     /// assert_eq!(ph_values.values["name"], Some("env_var".to_string()));
     /// assert_eq!(ph_values.values["unresolved"], Some("fixed".to_string()));
     /// ```
     #[must_use]
-    pub fn resolve<'ph>(
-        &self,
-        placeholders: &'ph Placeholders,
-        req: &Request,
-    ) -> PlaceholderValues<'ph> {
+    pub fn resolve<'ph>(&self, placeholders: &'ph Placeholders) -> PlaceholderValues<'ph> {
         let values: HashMap<&str, Option<String>> = placeholders
             .keys()
-            .map(|k| (k, self.pickers.iter().find_map(|p| p.pick_for(req, k))))
+            .map(|k| (k, self.pickers.iter().find_map(|p| p.pick_for(k))))
             .collect();
         PlaceholderValues { values }
     }
