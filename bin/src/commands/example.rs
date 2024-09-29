@@ -6,6 +6,8 @@ use std::io::Error;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 
+use super::GlobalArgs;
+
 /// Generate an example request file to run
 #[derive(Debug, Args)]
 #[command(
@@ -16,7 +18,7 @@ pub struct Command;
 const EXAMPLE: &str = include_str!("../static/example.toml");
 
 impl Command {
-    pub async fn run(self) -> miette::Result<()> {
+    pub async fn run(self, _gargs: GlobalArgs) -> miette::Result<()> {
         let mut file = File::create("example.toml").await.map_err(map_err)?;
         let write = file.write_all(EXAMPLE.as_ref());
 

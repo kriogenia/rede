@@ -11,6 +11,8 @@ use miette::{miette, LabeledSpan, Report};
 use rede_parser::parse_request;
 use std::time::Duration;
 
+use super::GlobalArgs;
+
 /// Executes the provided HTTP request
 #[derive(Debug, Args)]
 #[command(
@@ -46,7 +48,7 @@ pub struct Command {
 }
 
 impl RedeCommand for Command {
-    async fn run(self) -> miette::Result<()> {
+    async fn run(self, _gargs: GlobalArgs) -> miette::Result<()> {
         info!("Launched rede run with {}", self.request);
 
         let content = input_to_string(&self.request)?;

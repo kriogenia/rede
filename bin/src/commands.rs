@@ -32,6 +32,13 @@ pub(crate) struct Cli {
     /// Disables output coloring
     #[arg(long, global = true)]
     no_color: bool,
+    /// Disables the execution performing only the set-up steps
+    #[arg(long, global = true)]
+    dry_run: bool,
+}
+
+pub(crate) struct GlobalArgs {
+    dry_run: bool,
 }
 
 static COLOR: OnceLock<bool> = OnceLock::new();
@@ -54,11 +61,15 @@ impl Cli {
         }))
         .unwrap();
 
+        let gargs = GlobalArgs {
+            dry_run: self.dry_run,
+        };
+
         tokio::runtime::Builder::new_current_thread()
             .enable_all()
             .build()
             .unwrap()
-            .block_on(async { self.command.run().await })
+            .block_on(async { self.command.run(gargs).await })
     }
 }
 
@@ -69,14 +80,14 @@ enum Command {
 }
 
 trait RedeCommand {
-    async fn run(self) -> miette::Result<()>;
+    async fn run(self, global_args: GlobalArgs) -> miette::Result<()>;
 }
 
 impl RedeCommand for Command {
-    async fn run(self) -> miette::Result<()> {
+    async fn run(self, global_args: GlobalArgs) -> miette::Result<()> {
         match self {
-            Command::Run(c) => c.run().await,
-            Command::Example(c) => c.run().await,
+            Command::Run(c) => c.run(global_args).await,
+            Command::Example(c) => c.run(global_args).await,
         }
     }
 }
