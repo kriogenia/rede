@@ -20,7 +20,7 @@ pub struct Command {
     /// Request file to execute
     #[arg(default_value = "-")]
     request: String,
-    /// Specifies if formatting applied should be applied to response body, by default is true
+    /// Specifies if formatting should be applied to response body, by default is true
     #[arg(
         long,
         value_name = "true|false",
@@ -31,8 +31,11 @@ pub struct Command {
         action = ArgAction::Set,
     )]
     pretty_print: bool,
-    /// Timeout, in a string like [0-9]+(ns|us|ms|[smhdwy], for example "3m"
-    #[arg(long)]
+    /// Timeout, in a string like [0-9]+(ns|us|ms|\[smhdwy\], for example "3m"
+    #[arg(
+        long,
+        help = r#"Timeout, in a string like [0-9]+(ns|us|ms|[smhdwy], for example "3m"#
+    )]
     timeout: Option<String>,
     /// Disallows auto-redirection
     #[arg(long)]

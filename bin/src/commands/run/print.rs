@@ -3,7 +3,7 @@ use console::{style, Style};
 use http::{HeaderMap, Method, StatusCode};
 use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, error};
-use rede_parser::{Body, Request};
+use rede_schema::{Body, Request};
 use reqwest::Response;
 use serde_json::{from_str, to_string_pretty};
 use std::time::Duration;
