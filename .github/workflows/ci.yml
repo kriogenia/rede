@@ -3,7 +3,9 @@ permissions:
   contents: read
 
 on:
+  workflow_dispatch:
   pull_request:
+    types: [opened, labeled, reopened, synchronize, ready_for_review]
     paths:
       - ".github/workflows/ci.yml"
       - "**.rs"
@@ -50,20 +52,30 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Test workspace - No features
+      - name: Test rede
         uses: actions-rs/cargo@v1
+        if: contains(github.event.pull_request.labels.*.name, 'bin')
         with:
           command: test
-          args: --no-default-features --workspace --exclude rede_placeholders
+          args: -p rede
 
-      - name: Test workspace - All features
+      - name: Test rede_schema
         uses: actions-rs/cargo@v1
+        if: contains(github.event.pull_request.labels.*.name, 'schema')
         with:
           command: test
-          args: --all-features --workspace --exclude rede_placeholders
+          args: -p rede_schema
 
-      - name: Test excluded
+      - name: Test rede_parser
         uses: actions-rs/cargo@v1
+        if: contains(github.event.pull_request.labels.*.name, 'parser')
+        with:
+          command: test
+          args: -p rede_parser --all-features
+
+      - name: Test rede_placeholders
+        uses: actions-rs/cargo@v1
+        if: contains(github.event.pull_request.labels.*.name, 'placeholders')
         with:
           command: test
           args: -p rede_placeholders
@@ -89,14 +101,30 @@ jobs:
           command: fmt
           args: --all -- --check
 
-      - name: clippy workspace
+      - name: clippy rede
         uses: actions-rs/cargo@v1
+        if: contains(github.event.pull_request.labels.*.name, 'bin')
         with:
           command: clippy
-          args: --all-features --workspace --exclude rede_placeholders -- -D warnings
+          args: -p rede -- -D warnings
 
-      - name: clippy - All features
+      - name: clippy rede_schema
         uses: actions-rs/cargo@v1
+        if: contains(github.event.pull_request.labels.*.name, 'schema')
+        with:
+          command: clippy
+          args: -p rede_schema -- -D warnings
+
+      - name: clippy rede_parser
+        uses: actions-rs/cargo@v1
+        if: contains(github.event.pull_request.labels.*.name, 'parser')
+        with:
+          command: clippy
+          args: -p rede_parser --all-features -- -D warnings
+
+      - name: clippy rede_placeholders
+        uses: actions-rs/cargo@v1
+        if: contains(github.event.pull_request.labels.*.name, 'placeholders')
         with:
           command: clippy
           args: -p rede_placeholders -- -D warnings
