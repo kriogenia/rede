@@ -50,16 +50,23 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Run cargo test
+      - name: Test workspace - No features
         uses: actions-rs/cargo@v1
         with:
           command: test
+          args: --no-default-features --workspace --exclude rede_placeholders
 
-      - name: Test rede_parser features
+      - name: Test workspace - All features
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: -p rede_parser --all-features
+          args: --all-features --workspace --exclude rede_placeholders
+
+      - name: Test excluded
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: -p rede_placeholders
 
   lints:
     name: Lint
@@ -76,14 +83,20 @@ jobs:
           override: true
           components: rustfmt, clippy
       
-      - name: Run cargo fmt
+      - name: cargo fmt
         uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: --all -- --check
-      
-      - name: Run cargo clippy
+
+      - name: clippy workspace
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: -- -D warnings
+          args: --all-features --workspace --exclude rede_placeholders -- -D warnings
+
+      - name: clippy - All features
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: -p rede_placeholders -- -D warnings
