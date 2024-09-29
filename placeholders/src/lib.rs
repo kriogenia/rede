@@ -8,7 +8,7 @@
 //!
 //! ```
 //! # use std::error::Error;
-//! # use crate::rede_placeholders::{Placeholders, Resolver, value_picker::{EnvVarPicker, VariablesPicker}};
+//! # use crate::rede_placeholders::{Placeholders, Renderer, Resolver, value_picker::{EnvVarPicker, VariablesPicker}};
 //! #
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! # std::env::set_var("API_TOKEN", "token_from_env_var");
@@ -19,17 +19,21 @@
 //! "#;
 //! let request = rede_parser::parse_request(toml).unwrap();
 //!
+//! // find placeholders
 //! let placeholders = (&request).into();
-//! let resolver = Resolver::new()
-//!     .add_picker(Box::new(EnvVarPicker))
-//!     .add_picker(Box::new(VariablesPicker::from(&request.variables)));
-//! let ph_values = resolver.resolve(&placeholders);
+//! // identify values, as the resolver uses the variables picker, it should be dropped before the render step
+//! let ph_values = {
+//!     let resolver = Resolver::new()
+//!         .add_picker(Box::new(EnvVarPicker))
+//!         .add_picker(Box::new(VariablesPicker::from(&request.variables)));
+//!     resolver.resolve(&placeholders)
+//! };
+//! // render new request
+//! let renderer = Renderer::new(&placeholders, ph_values);
+//! let rendered = renderer.render(request)?;
 //!
-//! assert_eq!(ph_values.get_value("api_version"), Some(&"v1".to_string()));
-//! assert_eq!(ph_values.get_value("API_TOKEN"), Some(&"token_from_env_var".to_string()));
-//! assert!(ph_values.unresolved().all(|v| v == "id"));
-//!
-//! // TODO add renderer usage example
+//! assert_eq!(rendered.url, "http://localhost:8080/v1/example/{{id}}");
+//! assert_eq!(rendered.query_params[0].1, "token_from_env_var".to_string());
 //! # Ok(())
 //! # }
 //! ```

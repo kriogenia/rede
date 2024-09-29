@@ -6,14 +6,15 @@ use rede_schema::body::FormDataValue;
 use rede_schema::{Body, Request};
 
 use crate::placeholders::Location;
+use crate::resolver::PlaceholderValues;
 use crate::Placeholders;
 
 /// A renderer is responsible for rendering a request using the placeholders and values provided.
 /// It should be used with [`render`](Renderer::render) to replace the placeholders with the values in the
 /// request.
-pub struct Renderer {
-    placeholders: Placeholders,
-    values_map: HashMap<String, String>,
+pub struct Renderer<'ph> {
+    placeholders: &'ph Placeholders,
+    values: PlaceholderValues<'ph>,
 }
 
 macro_rules! replace_pointer {
@@ -23,25 +24,25 @@ macro_rules! replace_pointer {
     };
 }
 
-impl Renderer {
+impl<'ph> Renderer<'ph> {
     /// Creates a new instance of a `Renderer` that will be able to render request using the given
     /// placeholders and values.
     #[must_use]
-    pub fn new(placeholders: Placeholders, values: &[(String, String)]) -> Self {
-        let values_map = values
-            .iter()
-            .map(|(key, value)| (key.clone(), value.clone()))
-            .collect();
-
+    pub fn new(placeholders: &'ph Placeholders, values: PlaceholderValues<'ph>) -> Self {
         Self {
             placeholders,
-            values_map,
+            values,
         }
     }
 
     /// Renders the given request using the placeholders and values of the `Renderer`. The renderer
     /// will iterate through all the placeholders in the request and use them to search and replace
     /// the request part with the map of values.
+    ///
+    /// In case that any of the placeholder keys is unresolved the render operation won't fail.
+    /// It will continue without replacing the placeholder. This is by design to allow the option
+    /// of chaining multiple renderings to make multistep replacements that could help to, for
+    /// example, enable in the future the option for nested placeholders.
     ///
     /// # Errors
     ///
@@ -54,7 +55,7 @@ impl Renderer {
         let mut body = request.body;
 
         for (key, locations) in self.placeholders.iter() {
-            let val = self.values_map.get(key); // todo this could be changed into a map operation
+            let val = self.values.get_value(key); // todo this could be changed into a map operation
             if let Some(val) = val {
                 let placeholder = format!("{{{{{key}}}}}");
                 for location in locations {
@@ -166,7 +167,8 @@ mod test {
         raw = """
         {
             "id": {{id}},
-            "name": "{{name}} {{last_name}}"
+            "name": "{{name}} {{last_name}}",
+            "tag": "{{NOT_REPLACED}}"
         }
         """
         "#;
@@ -175,15 +177,19 @@ mod test {
         let placeholders = (&request).into();
 
         let values = vec![
-            ("id".to_string(), "1".to_string()),
-            ("name".to_string(), "test".to_string()),
-            ("token".to_string(), "abc".to_string()),
-            ("page".to_string(), "1".to_string()),
-            ("size".to_string(), "10".to_string()),
-            ("last_name".to_string(), "renderer".to_string()),
-        ];
+            ("id", "1".to_string()),
+            ("name", "test".to_string()),
+            ("token", "abc".to_string()),
+            ("page", "1".to_string()),
+            ("size", "10".to_string()),
+            ("last_name", "renderer".to_string()),
+        ]
+        .into_iter()
+        .map(|(k, v)| (k, Some(v)))
+        .collect();
+        let values = PlaceholderValues { values };
 
-        let renderer = Renderer::new(placeholders, &values);
+        let renderer = Renderer::new(&placeholders, values);
         let rendered = renderer.render(request).unwrap();
 
         assert_eq!(rendered.url, "https://example.com/1/test/1");
@@ -210,6 +216,7 @@ mod test {
             println!("{}", content);
             assert!(content.contains(r#""id": 1"#));
             assert!(content.contains(r#""name": "test renderer""#));
+            assert!(content.contains("{{NOT_REPLACED}}"));
         } else {
             panic!("body is not raw")
         }

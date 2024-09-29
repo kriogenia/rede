@@ -11,7 +11,11 @@ pub trait ValuePicker {
     fn pick_for(&self, placeholder: &str) -> Option<String>;
 }
 
-/// Picks a value from the request variables
+/// Picks a value from the request variables.
+///
+/// > WARNING_: using this picker with the [`Request::variables`](rede_schema::Request::variables)
+/// will generate a compilation error in the `render` step. Drop the picker before rendering,
+/// check the library root documentation for an example.
 ///
 /// # Example
 ///
