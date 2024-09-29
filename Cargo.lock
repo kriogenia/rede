@@ -971,7 +971,7 @@ dependencies = [
 
 [[package]]
 name = "rede"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "assert_cmd",
  "clap",
@@ -984,27 +984,14 @@ dependencies = [
  "miette",
  "mime",
  "predicates",
- "rede_parser 0.1.4",
+ "rede_parser 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rede_schema 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "reqwest",
  "serde_json",
  "thiserror",
  "tokio",
  "tokio-util",
  "url",
-]
-
-[[package]]
-name = "rede_parser"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "208525f68b8de2cca220b3cee4346e6e4741bcaf83c6e70825842a05a0b8cca3"
-dependencies = [
- "http",
- "http-serde",
- "mime",
- "serde",
- "thiserror",
- "toml",
 ]
 
 [[package]]

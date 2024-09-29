@@ -1,5 +1,6 @@
 [workspace]
 members = ["bin", "parser", "placeholders", "schema"]
+default-members = ["bin"]
 resolver = "2"
 
 [workspace.package]
