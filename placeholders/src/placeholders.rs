@@ -8,7 +8,7 @@ use rede_schema::{Body, Request};
 
 type PlaceholdersMap = HashMap<String, HashSet<Location>>;
 
-/// TODO
+/// Contains the placeholders found in the request it's created from.
 #[derive(Debug, Default)]
 pub struct Placeholders(PlaceholdersMap);
 // todo possible improvement: support placeholders on Header, QueryParms and Form keys
@@ -89,6 +89,7 @@ impl Placeholders {
         }
     }
 
+    /// Returns an iterator over the placeholders and their locations in the request
     #[must_use]
     pub fn iter(&self) -> <&PlaceholdersMap as IntoIterator>::IntoIter {
         <&Self as IntoIterator>::into_iter(self)
@@ -116,6 +117,7 @@ fn find_placeholders<'a>(regex: &Regex, haystack: &'a str) -> Vec<&'a str> {
         .collect()
 }
 
+/// Represents the part of the request where a placeholder can be present
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub enum Location {
     Url,
