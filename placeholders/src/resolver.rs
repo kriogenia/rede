@@ -47,15 +47,15 @@ impl<'req> Resolver<'req> {
     ///     .add_picker(Box::new(VariablesPicker::from(&request.variables)));
     ///
     /// let ph_values = resolver.resolve(&placeholders);
-    /// assert_eq!(ph_values.values["name"], Some("variable".to_string()));
-    /// assert_eq!(ph_values.values["unresolved"], None);
+    /// assert_eq!(ph_values.get_value("name"), Some(&"variable".to_string()));
+    /// assert_eq!(ph_values.get_value("unresolved"), None);
     ///
     /// std::env::set_var("name", "env_var");
     /// std::env::set_var("unresolved", "fixed");
     /// let ph_values = resolver.resolve(&placeholders);
-    /// assert_ne!(ph_values.values["name"], Some("variable".to_string()));
-    /// assert_eq!(ph_values.values["name"], Some("env_var".to_string()));
-    /// assert_eq!(ph_values.values["unresolved"], Some("fixed".to_string()));
+    /// assert_ne!(ph_values.get_value("name"), Some(&"variable".to_string()));
+    /// assert_eq!(ph_values.get_value("name"), Some(&"env_var".to_string()));
+    /// assert_eq!(ph_values.get_value("unresolved"), Some(&"fixed".to_string()));
     /// ```
     #[must_use]
     pub fn resolve<'ph>(&self, placeholders: &'ph Placeholders) -> PlaceholderValues<'ph> {
@@ -76,6 +76,20 @@ pub struct PlaceholderValues<'ph> {
 }
 
 impl<'ph> PlaceholderValues<'ph> {
+    /// Returns the value for the given key if any. This method doesn't differentiate into keys
+    /// of inexistent placeholders and unresolved keys derived from a value not found.
+    ///
+    /// In case of wanting to query a key taking into account this distinction, you can access
+    /// the internal [`HashMap`] `values`, using query against this map would return a nested option
+    /// where `None` are inexistent placholders and `Some(None)` would be unresolved placeholders.
+    pub fn get_value(&self, k: &str) -> Option<&String> {
+        // TODO a get returning Solved(val), Unresolved and Unknown?
+        match self.values.get(k) {
+            Some(val) => val.as_ref(),
+            None => None,
+        }
+    }
+
     // Returns an iterator with the pairs of placeholder keys and their resolved values found.
     // Every placeholder unresolved won't be returned in this iterator, but in the `unresolved` one.
     pub fn resolved(&self) -> impl Iterator<Item = (&str, String)> {
@@ -100,6 +114,18 @@ mod test {
     use std::collections::HashMap;
 
     use super::PlaceholderValues;
+
+    #[test]
+    fn get_value() {
+        let mut values = HashMap::new();
+        values.insert("resolved", Some("value".to_string()));
+        values.insert("unresolved", None);
+
+        let ph_values = PlaceholderValues { values };
+        assert_eq!(ph_values.get_value("resolved"), Some(&"value".to_string()));
+        assert_eq!(ph_values.get_value("unresolved"), None);
+        assert_eq!(ph_values.get_value("unknown"), None);
+    }
 
     #[test]
     fn placeholder_values_iters() {
