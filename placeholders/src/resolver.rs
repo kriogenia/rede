@@ -82,6 +82,7 @@ impl<'ph> PlaceholderValues<'ph> {
     /// In case of wanting to query a key taking into account this distinction, you can access
     /// the internal [`HashMap`] `values`, using query against this map would return a nested option
     /// where `None` are inexistent placholders and `Some(None)` would be unresolved placeholders.
+    #[must_use]
     pub fn get_value(&self, k: &str) -> Option<&String> {
         // TODO a get returning Solved(val), Unresolved and Unknown?
         match self.values.get(k) {
@@ -92,6 +93,7 @@ impl<'ph> PlaceholderValues<'ph> {
 
     // Returns an iterator with the pairs of placeholder keys and their resolved values found.
     // Every placeholder unresolved won't be returned in this iterator, but in the `unresolved` one.
+    #[allow(clippy::missing_panics_doc)] // clippy is missing the filter ensuring the safe unwrap
     pub fn resolved(&self) -> impl Iterator<Item = (&str, String)> {
         self.values
             .iter()

@@ -54,7 +54,7 @@ impl<'ph> Renderer<'ph> {
         let mut query_params = request.query_params;
         let mut body = request.body;
 
-        for (key, locations) in self.placeholders.iter() {
+        for (key, locations) in self.placeholders {
             let val = self.values.get_value(key); // todo this could be changed into a map operation
             if let Some(val) = val {
                 let placeholder = format!("{{{{{key}}}}}");
@@ -190,12 +190,12 @@ mod test {
         let values = PlaceholderValues { values };
 
         let renderer = Renderer::new(&placeholders, values);
-        let rendered = renderer.render(request).unwrap();
+        let request = renderer.render(request).unwrap();
 
-        assert_eq!(rendered.url, "https://example.com/1/test/1");
-        assert_eq!(rendered.headers["Authorization"].to_str()?, "Bearer abc");
+        assert_eq!(request.url, "https://example.com/1/test/1");
+        assert_eq!(request.headers["Authorization"].to_str()?, "Bearer abc");
         assert_eq!(
-            rendered
+            request
                 .query_params
                 .iter()
                 .find(|(k, _)| k == "page")
@@ -204,7 +204,7 @@ mod test {
             "1"
         );
         assert_eq!(
-            rendered
+            request
                 .query_params
                 .iter()
                 .find(|(k, _)| k == "size")
@@ -212,8 +212,7 @@ mod test {
                 .1,
             "10"
         );
-        if let Body::Raw { content, .. } = rendered.body {
-            println!("{}", content);
+        if let Body::Raw { content, .. } = request.body {
             assert!(content.contains(r#""id": 1"#));
             assert!(content.contains(r#""name": "test renderer""#));
             assert!(content.contains("{{NOT_REPLACED}}"));
