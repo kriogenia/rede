@@ -3,6 +3,7 @@ use console::{style, Style};
 use http::{HeaderMap, Method, StatusCode};
 use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, error};
+use rede_placeholders::PlaceholderValues;
 use rede_schema::{Body, Request};
 use reqwest::Response;
 use serde_json::{from_str, to_string_pretty};
@@ -123,6 +124,24 @@ impl super::Command {
         bar.enable_steady_tick(Duration::from_millis(100));
         bar
     }
+}
+
+pub(super) fn print_replacements(placeholder_values: &PlaceholderValues) {
+    verbose!("{} Placeholder replacement", style(">").bold().cyan());
+
+    let replacement_arrow = style(">").bold().green();
+    for (ph_replaced, ph_replacement) in placeholder_values.resolved() {
+        verbose!(
+            "    {} {} {}",
+            ph_replaced,
+            &replacement_arrow,
+            ph_replacement,
+        );
+    }
+    for ph_unresolved in placeholder_values.unresolved() {
+        verbose!("    {} {}", ph_unresolved, style("x").bold().red());
+    }
+    verbose!("");
 }
 
 fn print_headers(headers: &HeaderMap) {
