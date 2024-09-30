@@ -110,13 +110,13 @@ fn render_headers(
     val: &str,
 ) -> Result<()> {
     if let Some(header_value) = header_map.get_mut(header) {
-        let new_value = header_value.to_str().map_err(|_| {
-            miette!("failed to convert header to string: {header} {header_value:?}")
-        })?;
+        let new_value = header_value
+            .to_str()
+            .map_err(|_| miette!("failed to convert value of header {header} to string"))?;
         let new_value = new_value.to_string().replace(placeholder, val);
         *header_value = new_value
             .parse()
-            .map_err(|_| miette!("rendered header value is invalid: {header} {new_value}"))?;
+            .map_err(|_| miette!("rendered value of header {header} is invalid"))?;
     }
     Ok(())
 }
