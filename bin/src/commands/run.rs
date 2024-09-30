@@ -8,8 +8,13 @@ use clap::{ArgAction, Args};
 use console::style;
 use log::{info, trace};
 use miette::{miette, LabeledSpan, Report};
+use print::print_replacements;
 use rede_parser::parse_request;
-use rede_placeholders::Placeholders;
+use rede_placeholders::{
+    value_picker::{EnvVarPicker, VariablesPicker},
+    Resolver,
+};
+use rede_schema::Request;
 use std::time::Duration;
 
 use super::GlobalArgs;
@@ -56,8 +61,7 @@ impl RedeCommand for Command {
         trace!("Content: {content}");
 
         let request = parse_request(&content).map_err(|e| ParsingError::parsing(content, e))?;
-        let placeholders: Placeholders = (&request).into();
-        dbg!(placeholders);
+        let request = replace_placeholders(request);
 
         self.print_request(&request);
         if gargs.dry_run {
@@ -74,6 +78,20 @@ impl RedeCommand for Command {
 
         Ok(())
     }
+}
+
+fn replace_placeholders(request: Request) -> Request {
+    let placeholders = (&request).into();
+    let values = {
+        let resolver = Resolver::new()
+            .add_picker(Box::new(EnvVarPicker))
+            .add_picker(Box::new(VariablesPicker::new(&request.variables)));
+        resolver.resolve(&placeholders)
+    };
+
+    print_replacements(&values);
+
+    request
 }
 
 pub struct ClientProperties {
