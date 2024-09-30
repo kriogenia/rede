@@ -12,7 +12,7 @@ use print::print_replacements;
 use rede_parser::parse_request;
 use rede_placeholders::{
     value_picker::{EnvVarPicker, VariablesPicker},
-    Resolver,
+    Renderer, Resolver,
 };
 use rede_schema::Request;
 use std::time::Duration;
@@ -61,7 +61,7 @@ impl RedeCommand for Command {
         trace!("Content: {content}");
 
         let request = parse_request(&content).map_err(|e| ParsingError::parsing(content, e))?;
-        let request = replace_placeholders(request);
+        let request = replace_placeholders(request)?;
 
         self.print_request(&request);
         if gargs.dry_run {
@@ -80,7 +80,7 @@ impl RedeCommand for Command {
     }
 }
 
-fn replace_placeholders(request: Request) -> Request {
+fn replace_placeholders(request: Request) -> miette::Result<Request> {
     let placeholders = (&request).into();
     let values = {
         let resolver = Resolver::new()
@@ -91,7 +91,7 @@ fn replace_placeholders(request: Request) -> Request {
 
     print_replacements(&values);
 
-    request
+    Renderer::new(&placeholders, values).render(request)
 }
 
 pub struct ClientProperties {
