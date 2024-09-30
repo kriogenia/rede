@@ -58,6 +58,8 @@ test_request!(override_content_type -> contains(r#""content-type":"application/j
 test_request!(status_if_no_body<not_found> -> contains("404"));
 // todo -no-redirect, requires --verbose
 
+test_req!(dry_run, success, stdout, <get_simple> "--dry-run", "--verbose" -> contains("http://localhost:8080/api/hello").and(contains(r#"{"hello":"world"}"#).not()));
+
 test_error!(missing_file -> contains("invalid [REQUEST]").and(contains("No such file or directory")));
 test_error!(invalid_url -> contains("invalid url").and(contains("http://128.0.0.256")));
 test_error!(failed_connection -> contains("failed connection").and(contains("completelymadeupurl")));
