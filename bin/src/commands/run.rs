@@ -48,7 +48,7 @@ pub struct Command {
 }
 
 impl RedeCommand for Command {
-    async fn run(self, _gargs: GlobalArgs) -> miette::Result<()> {
+    async fn run(self, gargs: GlobalArgs) -> miette::Result<()> {
         info!("Launched rede run with {}", self.request);
 
         let content = input_to_string(&self.request)?;
@@ -56,6 +56,9 @@ impl RedeCommand for Command {
 
         let request = parse_request(&content).map_err(|e| ParsingError::parsing(content, e))?;
         self.print_request(&request);
+        if gargs.dry_run {
+            return Ok(());
+        }
 
         let client = Client::new((&self).try_into()?);
 

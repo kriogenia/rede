@@ -18,10 +18,7 @@ pub struct Command;
 const EXAMPLE: &str = include_str!("../static/example.toml");
 
 impl Command {
-    pub async fn run(self, _gargs: GlobalArgs) -> miette::Result<()> {
-        let mut file = File::create("example.toml").await.map_err(map_err)?;
-        let write = file.write_all(EXAMPLE.as_ref());
-
+    pub async fn run(self, gargs: GlobalArgs) -> miette::Result<()> {
         let rede = style("rede").bold().cyan();
 
         standard!("Welcome to {rede}\n");
@@ -38,7 +35,16 @@ impl Command {
         standard!("```\n{EXAMPLE}\n```\n");
         standard!("Now just run: {}", style("rede run example").cyan());
 
-        write.await.map_err(map_err)?;
+        if !gargs.dry_run {
+            // feels kinda bad to not run this concurrently ith the printing but dry-run fucks it a bit
+            File::create("example.toml")
+                .await
+                .map_err(map_err)?
+                .write_all(EXAMPLE.as_ref())
+                .await
+                .map_err(map_err)?;
+        }
+
         Ok(())
     }
 }
