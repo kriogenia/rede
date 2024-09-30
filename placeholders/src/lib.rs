@@ -47,5 +47,6 @@ pub mod value_picker;
 
 pub use placeholders::Placeholders;
 pub use renderer::Renderer;
+pub use resolver::PlaceholderValues;
 pub use resolver::Resolver;
 pub use value_picker::ValuePicker;
