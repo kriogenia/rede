@@ -1,3 +1,5 @@
+#[cfg(feature = "input_params")]
+mod inputparam_picker;
 mod print;
 
 use crate::commands::reqwest::Client;
@@ -6,6 +8,8 @@ use crate::errors::ParsingError;
 use crate::util::input_to_string;
 use clap::{ArgAction, Args};
 use console::style;
+#[cfg(feature = "input_params")]
+use inputparam_picker::InputParamPicker;
 use log::{info, trace};
 use miette::{miette, LabeledSpan, Report};
 use print::print_replacements;
@@ -83,9 +87,10 @@ impl RedeCommand for Command {
 fn replace_placeholders(request: Request) -> miette::Result<Request> {
     let placeholders = (&request).into();
     let values = {
-        let resolver = Resolver::new()
-            .add_picker(Box::new(EnvVarPicker))
-            .add_picker(Box::new(VariablesPicker::new(&request.variables)));
+        let resolver = Resolver::new().add_picker(Box::new(EnvVarPicker));
+        #[cfg(feature = "input_params")]
+        let resolver = resolver.add_picker(Box::new(InputParamPicker::new(&request.input_params)));
+        let resolver = resolver.add_picker(Box::new(VariablesPicker::new(&request.variables)));
         resolver.resolve(&placeholders)
     };
 
