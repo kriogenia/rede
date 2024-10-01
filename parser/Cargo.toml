@@ -1,6 +1,6 @@
 [package]
 name = "rede_parser"
-version = "0.2.1"
+version = "0.2.2"
 edition.workspace = true
 
 authors.workspace = true
@@ -18,11 +18,11 @@ readme = "./README.md"
 input_params = ["rede_schema/input_params"]
 
 [dependencies]
+rede_schema = { version = "0.1.1", path = "../schema" }
+
 http.workspace = true
 mime.workspace = true
 thiserror.workspace = true
-
-rede_schema = "0.1"
 
 http-serde = "2.0"
 serde = { version = "1.0", features = ["derive"] }

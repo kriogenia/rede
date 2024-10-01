@@ -1,5 +1,5 @@
-use std::collections::hash_map::IntoIter;
-use std::collections::HashMap;
+use std::collections::btree_map::IntoIter;
+use std::collections::BTreeMap;
 use std::ops::Index;
 
 use crate::schema::body::FormDataValue;
@@ -11,7 +11,7 @@ use super::input_param::InputParam;
 
 /// Newtype implementation to wrap TOML tables where the set of keys can be free
 #[derive(Debug, Deserialize, PartialEq)]
-pub(crate) struct Table<V>(pub(crate) HashMap<String, V>);
+pub(crate) struct Table<V>(pub(crate) BTreeMap<String, V>);
 
 pub type PrimitiveTable = Table<PrimitiveArray>;
 pub type FormDataTable = Table<FormDataValue>;
@@ -38,7 +38,7 @@ impl<V> IntoIterator for Table<V> {
 
 impl<V> Default for Table<V> {
     fn default() -> Self {
-        Self(HashMap::new())
+        Self(BTreeMap::new())
     }
 }
 
@@ -48,7 +48,7 @@ where
 {
     fn map_value(value: V) -> O;
 
-    fn into_map(self) -> HashMap<String, O> {
+    fn into_map(self) -> BTreeMap<String, O> {
         self.into_iter()
             .map(|(k, v)| (k, Self::map_value(v)))
             .collect()
@@ -78,7 +78,7 @@ impl PrimitiveTable {
 
 #[cfg(test)]
 impl<V> Table<V> {
-    pub fn new(table: HashMap<String, V>) -> Self {
+    pub fn new(table: BTreeMap<String, V>) -> Self {
         Self(table)
     }
 
@@ -104,7 +104,7 @@ mod test {
 
     #[test]
     fn into_map() {
-        let map: HashMap<String, String> = new_test_table().into_map();
+        let map: BTreeMap<String, String> = new_test_table().into_map();
 
         assert_eq!(map.len(), 5);
         assert_eq!(map["string"], "value");
