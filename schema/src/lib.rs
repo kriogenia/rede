@@ -19,7 +19,7 @@ pub use body::Body;
 #[doc(inline)]
 pub use input_param::InputParam;
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use http::{HeaderMap, Method, Version};
 
@@ -34,7 +34,7 @@ pub struct Request {
     /// HTTP version of the request
     pub http_version: Version,
     /// Metadata of the request file
-    pub metadata: HashMap<String, String>,
+    pub metadata: BTreeMap<String, String>,
     /// Headers of the request
     pub headers: HeaderMap,
     /// Query parameters of the request
@@ -42,9 +42,9 @@ pub struct Request {
     /// Body of the request
     pub body: Body,
     /// Variables to provide values for placeholders in the request
-    pub variables: HashMap<String, String>,
+    pub variables: BTreeMap<String, String>,
 
     #[cfg(feature = "input_params")]
     /// Keys of placeholders to ask the user for input
-    pub input_params: HashMap<String, InputParam>,
+    pub input_params: BTreeMap<String, InputParam>,
 }
