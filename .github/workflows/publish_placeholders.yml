@@ -15,6 +15,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@stable
-      - run: cargo publish --token ${CRATES_TOKEN} -p rede
+      - run: cargo publish --token ${CRATES_TOKEN} -p rede_placeholders
         env:
           CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
