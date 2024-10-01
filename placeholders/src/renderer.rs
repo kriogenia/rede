@@ -99,6 +99,8 @@ impl<'ph> Renderer<'ph> {
             query_params,
             variables: request.variables,
             body,
+            #[cfg(feature = "input_params")]
+            input_params: request.input_params,
         })
     }
 }
