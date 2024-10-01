@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use http::{HeaderMap, HeaderName};
 use miette::{miette, Result};
@@ -124,7 +124,7 @@ fn render_headers(
 }
 
 fn render_form_data(
-    form: &mut HashMap<String, FormDataValue>,
+    form: &mut BTreeMap<String, FormDataValue>,
     key: &str,
     placeholder: &str,
     val: &str,
@@ -135,7 +135,7 @@ fn render_form_data(
 }
 
 fn render_form_urlencoded(
-    form: &mut HashMap<String, String>,
+    form: &mut BTreeMap<String, String>,
     key: &str,
     placeholder: &str,
     val: &str,
@@ -226,7 +226,7 @@ mod test {
 
     #[test]
     fn render_form_data() {
-        let mut form = HashMap::new();
+        let mut form = BTreeMap::new();
         form.insert(
             "name".to_string(),
             FormDataValue::Text("{{name}}".to_string()),
@@ -245,7 +245,7 @@ mod test {
 
     #[test]
     fn render_form_urlencoded() {
-        let mut form = HashMap::new();
+        let mut form = BTreeMap::new();
         form.insert("page".to_string(), "{{page}}".to_string());
         form.insert("order".to_string(), "{{field}}:asc".to_string());
 
