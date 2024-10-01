@@ -28,7 +28,7 @@ pub trait ValuePicker {
 /// variables = { name = "variable" }
 /// "#;
 /// let request = rede_parser::parse_request(toml).unwrap();
-/// let picker = VariablesPicker::from(&request.variables);
+/// let picker = VariablesPicker::new(&request.variables);
 /// assert_eq!(picker.pick_for("name"), Some("variable".to_string()));
 /// assert_eq!(picker.pick_for("missing"), None);
 /// ```
@@ -40,7 +40,7 @@ impl<'var> VariablesPicker<'var> {
     // Generates a picker surrounding the given dictionary of keys and values. Commonly used to
     // be instantiated with the [`Request`](rede_schema::Request)'s `variables` field.
     #[must_use]
-    pub fn from(vars: &'var HashMap<String, String>) -> Self {
+    pub fn new(vars: &'var HashMap<String, String>) -> Self {
         Self { vars }
     }
 }

@@ -25,7 +25,7 @@
 //! let ph_values = {
 //!     let resolver = Resolver::new()
 //!         .add_picker(Box::new(EnvVarPicker))
-//!         .add_picker(Box::new(VariablesPicker::from(&request.variables)));
+//!         .add_picker(Box::new(VariablesPicker::new(&request.variables)));
 //!     resolver.resolve(&placeholders)
 //! };
 //! // render new request

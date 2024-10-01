@@ -44,7 +44,7 @@ impl<'req> Resolver<'req> {
     ///
     /// let mut resolver = Resolver::new()
     ///     .add_picker(Box::new(EnvVarPicker))
-    ///     .add_picker(Box::new(VariablesPicker::from(&request.variables)));
+    ///     .add_picker(Box::new(VariablesPicker::new(&request.variables)));
     ///
     /// let ph_values = resolver.resolve(&placeholders);
     /// assert_eq!(ph_values.get_value("name"), Some(&"variable".to_string()));
