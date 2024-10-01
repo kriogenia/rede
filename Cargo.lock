@@ -984,7 +984,7 @@ dependencies = [
  "miette",
  "mime",
  "predicates",
- "rede_parser 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rede_parser 0.2.1",
  "rede_schema 0.1.0",
  "reqwest",
  "serde_json",
@@ -992,19 +992,6 @@ dependencies = [
  "tokio",
  "tokio-util",
  "url",
-]
-
-[[package]]
-name = "rede_parser"
-version = "0.2.1"
-dependencies = [
- "http",
- "http-serde",
- "mime",
- "rede_schema 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde",
- "thiserror",
- "toml",
 ]
 
 [[package]]
@@ -1023,13 +1010,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "rede_parser"
+version = "0.2.2"
+dependencies = [
+ "http",
+ "http-serde",
+ "mime",
+ "rede_schema 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde",
+ "thiserror",
+ "toml",
+]
+
+[[package]]
 name = "rede_placeholders"
 version = "0.1.0"
 dependencies = [
  "http",
  "miette",
  "mime",
- "rede_parser 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rede_parser 0.2.1",
  "rede_schema 0.1.0",
  "regex",
 ]
