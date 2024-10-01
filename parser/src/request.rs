@@ -26,7 +26,7 @@ impl TryFrom<Schema> for Request {
 
 #[cfg(test)]
 mod test {
-    use std::collections::HashMap;
+    use std::collections::BTreeMap;
 
     use crate::schema;
     use crate::schema::table::Table;
@@ -42,7 +42,7 @@ mod test {
 
     #[test]
     fn from_schema() {
-        let mut metadata = HashMap::new();
+        let mut metadata = BTreeMap::new();
         metadata.insert(
             "name".to_string(),
             PrimitiveArray::Single(Primitive::Str("test".to_string())),
@@ -51,13 +51,13 @@ mod test {
         let mut headers = HeaderMap::new();
         headers.insert("Header", "Value".parse().unwrap());
 
-        let mut query_params = HashMap::new();
+        let mut query_params = BTreeMap::new();
         query_params.insert(
             "qp".to_string(),
             PrimitiveArray::Multiple(vec![Primitive::Str("s".to_string()), Primitive::Int(1)]),
         );
 
-        let mut variables = HashMap::new();
+        let mut variables = BTreeMap::new();
         variables.insert(
             "pp".to_string(),
             PrimitiveArray::Single(Primitive::Str("value".to_string())),
@@ -65,7 +65,7 @@ mod test {
 
         #[cfg(feature = "input_params")]
         let input_params = {
-            let mut input_params = HashMap::new();
+            let mut input_params = BTreeMap::new();
             input_params.insert(
                 "ip".to_string(),
                 schema::input_param::InputParam {
