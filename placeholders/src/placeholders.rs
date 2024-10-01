@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashSet};
 
 use http::HeaderName;
 use regex::Regex;
@@ -6,7 +6,7 @@ use regex::Regex;
 use rede_schema::body::FormDataValue;
 use rede_schema::{Body, Request};
 
-type PlaceholdersMap = HashMap<String, HashSet<Location>>;
+type PlaceholdersMap = BTreeMap<String, HashSet<Location>>;
 
 /// The `Placeholders` struct analyzes a request and extracts all the placeholders from its parts.
 #[derive(Debug, Default)]
@@ -183,10 +183,10 @@ mod test {
             method: Method::GET,
             url: "{{host}}/api/game".to_string(),
             http_version: Version::HTTP_11,
-            metadata: HashMap::default(),
+            metadata: BTreeMap::default(),
             headers,
             query_params,
-            variables: HashMap::new(),
+            variables: BTreeMap::new(),
             body: Body::Raw {
                 content: r#"
                 {

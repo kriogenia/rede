@@ -3,7 +3,7 @@
 //! and used in the [`Resolver`](crate::Resolver)
 //! like those provided.
 
-use std::{collections::HashMap, env};
+use std::{collections::BTreeMap, env};
 
 /// Selects a value to resolve the placeholder.
 pub trait ValuePicker {
@@ -33,14 +33,14 @@ pub trait ValuePicker {
 /// assert_eq!(picker.pick_for("missing"), None);
 /// ```
 pub struct VariablesPicker<'var> {
-    vars: &'var HashMap<String, String>,
+    vars: &'var BTreeMap<String, String>,
 }
 
 impl<'var> VariablesPicker<'var> {
     // Generates a picker surrounding the given dictionary of keys and values. Commonly used to
     // be instantiated with the [`Request`](rede_schema::Request)'s `variables` field.
     #[must_use]
-    pub fn new(vars: &'var HashMap<String, String>) -> Self {
+    pub fn new(vars: &'var BTreeMap<String, String>) -> Self {
         Self { vars }
     }
 }
