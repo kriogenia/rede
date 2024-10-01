@@ -22,7 +22,7 @@ http.workspace = true
 mime.workspace = true
 thiserror.workspace = true
 
-rede_schema = "0.1"
+rede_schema = "0.2"
 
 http-serde = "2.0"
 serde = { version = "1.0", features = ["derive"] }

@@ -1001,7 +1001,7 @@ dependencies = [
  "http",
  "http-serde",
  "mime",
- "rede_schema 0.1.0",
+ "rede_schema 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "thiserror",
  "toml",
@@ -1047,6 +1047,16 @@ dependencies = [
 [[package]]
 name = "rede_schema"
 version = "0.2.0"
+dependencies = [
+ "http",
+ "mime",
+]
+
+[[package]]
+name = "rede_schema"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fa01393edacb26911e58265839a461d0ae7193c65768ccd3515a083323c2a412"
 dependencies = [
  "http",
  "mime",
