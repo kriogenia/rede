@@ -21,7 +21,11 @@ readme = "../README.md"
 
 [features]
 defaults = ["input_params"]
-input_params = ["rede_schema/input_params", "rede_parser/input_params"]
+input_params = [
+  "rede_schema/input_params",
+  "rede_parser/input_params",
+  "rede_placeholders/input_params",
+]
 
 [dependencies]
 rede_parser = "0.2.2"
