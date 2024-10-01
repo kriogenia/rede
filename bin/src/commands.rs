@@ -9,6 +9,7 @@ mod example;
 mod reqwest;
 mod run;
 
+#[allow(clippy::struct_excessive_bools)] // this are command flags, not states
 #[derive(Debug, Parser)]
 #[command(
     name = "rede",
