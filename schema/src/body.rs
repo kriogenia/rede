@@ -1,5 +1,5 @@
 use mime::Mime;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::fmt::{Display, Formatter};
 
 /// Body of the request, it contains all the currently supported options
@@ -15,9 +15,9 @@ pub enum Body {
     /// This body can be bundled with Content-Type headers like application/pdf.
     Binary { path: String, mime: Mime },
     /// The body is an HTTP form.
-    FormData(HashMap<String, FormDataValue>),
+    FormData(BTreeMap<String, FormDataValue>),
     /// The body of the request is an HTTP form encoded in the URL.
-    XFormUrlEncoded(HashMap<String, String>),
+    XFormUrlEncoded(BTreeMap<String, String>),
 }
 
 /// Types of values for form data, can be text or binaries
@@ -106,13 +106,13 @@ mod test {
         };
         println!("{body}");
 
-        let mut map = HashMap::new();
+        let mut map = BTreeMap::new();
         map.insert("text".to_string(), FormDataValue::Text("value".to_string()));
         map.insert("file".to_string(), FormDataValue::File("path".to_string()));
         let body = Body::FormData(map);
         println!("{body}");
 
-        let mut map = HashMap::new();
+        let mut map = BTreeMap::new();
         map.insert("key".to_string(), "val".to_string());
         map.insert("other".to_string(), "val".to_string());
         let body = Body::XFormUrlEncoded(map);
