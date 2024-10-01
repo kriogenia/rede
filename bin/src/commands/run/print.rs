@@ -17,7 +17,7 @@ impl super::Command {
 
         verbose!(
             "{} Executing request {}\n",
-            style(">").bold().cyan(),
+            style(">").bold().blue(),
             style(request.metadata.get("name").unwrap_or(&self.request)).yellow()
         );
 
@@ -127,7 +127,7 @@ impl super::Command {
 }
 
 pub(super) fn print_replacements(placeholder_values: &PlaceholderValues) {
-    verbose!("{} Placeholder replacement", style(">").bold().cyan());
+    verbose!("{} Placeholder replacement", style(">").bold().blue());
 
     let replacement_arrow = style(">").bold().green();
     for (ph_replaced, ph_replacement) in placeholder_values.resolved() {
