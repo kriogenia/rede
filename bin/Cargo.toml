@@ -20,8 +20,8 @@ keywords = ["cli", "http", "api", "request"]
 readme = "../README.md"
 
 [dependencies]
-rede_parser = "0.2.1"
-rede_schema = "0.1"
+rede_parser = "0.2.2"
+rede_schema = "0.2.0"
 
 http.workspace = true
 log.workspace = true
