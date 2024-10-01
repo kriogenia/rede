@@ -25,13 +25,13 @@ rede_schema = "0.1"
 
 http.workspace = true
 log.workspace = true
-miette = { workspace = true, features = ["fancy"] }
 mime.workspace = true
 thiserror.workspace = true
 
 clap = { version = "4.5.4", features = ["derive"] }
 duration-str = { version = "0.7.1", default-features = false }
 env_logger = "0.11.3"
+miette = { version = "7.2.0", features = ["fancy"] }
 reqwest = { version = "=0.12.2", features = ["multipart", "stream"] }
 tokio = { version = "1.37.0", features = ["fs"] }
 url = "2.5.0"
