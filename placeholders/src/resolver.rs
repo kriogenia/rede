@@ -91,6 +91,19 @@ impl<'ph> PlaceholderValues<'ph> {
         }
     }
 
+    /// Returns true if all the placeholders are resolved
+    #[must_use]
+    pub fn is_all_resolved(&self) -> bool {
+        self.values.iter().all(|(_, v)| v.is_some())
+    }
+
+    /// Returns the count of placeholders resolved and unresolved, in that order
+    #[must_use]
+    pub fn counts(&self) -> (usize, usize) {
+        let resolved = self.values.iter().filter(|(_, v)| v.is_some()).count();
+        (resolved, self.values.len() - resolved)
+    }
+
     // Returns an iterator with the pairs of placeholder keys and their resolved values found.
     // Every placeholder unresolved won't be returned in this iterator, but in the `unresolved` one.
     #[allow(clippy::missing_panics_doc)] // clippy is missing the filter ensuring the safe unwrap
@@ -127,6 +140,29 @@ mod test {
         assert_eq!(ph_values.get_value("resolved"), Some(&"value".to_string()));
         assert_eq!(ph_values.get_value("unresolved"), None);
         assert_eq!(ph_values.get_value("unknown"), None);
+    }
+
+    #[test]
+    fn is_all_resolved() {
+        let mut values = HashMap::new();
+        values.insert("resolved", Some("value".to_string()));
+        values.insert("resolved_too", Some("value".to_string()));
+        assert!(PlaceholderValues { values }.is_all_resolved());
+
+        let mut values = HashMap::new();
+        values.insert("resolved", Some("value".to_string()));
+        values.insert("unresolved", None);
+        assert!(!PlaceholderValues { values }.is_all_resolved());
+    }
+
+    #[test]
+    fn count() {
+        let mut values = HashMap::new();
+        values.insert("resolved", Some("value".to_string()));
+        values.insert("unresolved", None);
+        values.insert("resolved_too", Some("different_value".to_string()));
+
+        assert_eq!(PlaceholderValues { values }.counts(), (2, 1));
     }
 
     #[test]
