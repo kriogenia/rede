@@ -65,6 +65,7 @@ test_error!(invalid_url -> contains("invalid url").and(contains("http://128.0.0.
 test_error!(failed_connection -> contains("failed connection").and(contains("completelymadeupurl")));
 test_error!(bad_url_scheme -> contains("failed request building").and(contains("htt:/www.url.com")));
 test_error!(wrong_binary -> contains("invalid file").and(contains("no_exists.zip")));
+test_error!(unresolved_placeholders -> contains("unresolved placeholders").and(contains("ph_unresolved")));
 
 test_error!(#[ignore] timeout<> "--timeout", "0ms" -> contains("timeout"));
 test_error!(#[ignore] unsupported_http_version -> contains("wrong http version"));
