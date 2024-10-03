@@ -91,7 +91,17 @@ fn replace_placeholders(request: Request) -> miette::Result<Request> {
 
     print_replacements(&values);
 
-    Renderer::new(&placeholders, values).render(request)
+    if values.is_all_resolved() {
+        Renderer::new(&placeholders, values).render(request)
+    } else {
+        Err(miette!(
+            code = "unresolved placeholders",
+            url = "https://rede.sotoestevez.dev/reference_guide/request_dsl/placeholders.html",
+            help = "check the placeholders of you request or ensure than you input all those without variable",
+            "At least one of you placeholders ended unresolved: {}",
+            values.unresolved().collect::<Vec<&str>>().join(", ")
+        ))
+    }
 }
 
 pub struct ClientProperties {
