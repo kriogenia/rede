@@ -990,7 +990,7 @@ dependencies = [
  "mime",
  "predicates",
  "rede_parser 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "rede_placeholders",
+ "rede_placeholders 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rede_schema 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "reqwest",
  "serde_json",
@@ -1036,6 +1036,18 @@ dependencies = [
  "miette",
  "mime",
  "rede_parser 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rede_schema 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex",
+]
+
+[[package]]
+name = "rede_placeholders"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "28b9e2ebe67c34313d6413ae3feab613a6f2270928c276a67d2c22d022fdbcb4"
+dependencies = [
+ "http",
+ "miette",
  "rede_schema 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex",
 ]
