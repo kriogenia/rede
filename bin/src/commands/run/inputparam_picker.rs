@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use console::style;
 use dialoguer::Input;
@@ -10,7 +10,7 @@ use crate::verbose;
 /// [`ValuePicker`](rede_placeholders::value_picker::ValuePicker) implementation to obtain
 /// the values from the user input.
 pub(super) struct InputParamPicker<'req> {
-    input_params: &'req HashMap<String, InputParam>,
+    input_params: &'req BTreeMap<String, InputParam>,
 }
 
 impl<'req> ValuePicker for InputParamPicker<'req> {
@@ -44,7 +44,7 @@ impl<'req> ValuePicker for InputParamPicker<'req> {
 }
 
 impl<'req> InputParamPicker<'req> {
-    pub fn new(input_params: &'req HashMap<String, InputParam>) -> Self {
+    pub fn new(input_params: &'req BTreeMap<String, InputParam>) -> Self {
         Self { input_params }
     }
 }

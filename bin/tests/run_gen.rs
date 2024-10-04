@@ -56,7 +56,7 @@ test_request!(body_form_data -> contains(r#""text":"agarimo""#).and(contains(r#"
 test_request!(body_form_url_encoded -> contains(r#""anime":"Evangelion""#).and(contains(r#""content-type":"application/x-www-form-urlencoded""#)));
 test_request!(override_content_type -> contains(r#""content-type":"application/json""#));
 test_request!(status_if_no_body<not_found> -> contains("404"));
-test_request!(variables_replace -> contains(r#"{"hello":"world"}"#));
+test_request!(replace_variables -> contains(r#"{"hello":"world"}"#));
 // todo -no-redirect, requires --verbose
 
 test_req!(dry_run, success, stdout, <get_simple> "--dry-run", "--verbose" -> contains("http://localhost:8080/api/hello").and(contains(r#"{"hello":"world"}"#).not()));
