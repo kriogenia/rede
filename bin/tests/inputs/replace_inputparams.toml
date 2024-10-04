@@ -1,0 +1,6 @@
+[http]
+method = "GET"
+url = "http://localhost:8080/{{endpoint}}"
+
+[input_params]
+endpoint = {}
