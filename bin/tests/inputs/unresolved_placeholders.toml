@@ -1,2 +1,6 @@
 [http]
-url = "http://localhost/{{ph_unresolved}}"
+method = "POST"
+url = "http://localhost:8080/api/raw"
+
+[body]
+raw = "{{message}}"
