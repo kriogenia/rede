@@ -55,6 +55,9 @@ pub struct Command {
     /// Maximum number of redirects allowed, by default 10.
     #[arg(long)]
     max_redirects: Option<usize>,
+    /// Ignores input params, disabling prompting the user
+    #[arg(long)]
+    no_input: bool,
 }
 
 impl RedeCommand for Command {
@@ -65,7 +68,7 @@ impl RedeCommand for Command {
         trace!("Content: {content}");
 
         let request = parse_request(&content).map_err(|e| ParsingError::parsing(content, e))?;
-        let request = replace_placeholders(request)?;
+        let request = self.replace_placeholders(request)?;
 
         self.print_request(&request);
         if gargs.dry_run {
@@ -84,28 +87,34 @@ impl RedeCommand for Command {
     }
 }
 
-fn replace_placeholders(request: Request) -> miette::Result<Request> {
-    let placeholders = (&request).into();
-    let values = {
-        let resolver = Resolver::new().add_picker(Box::new(EnvVarPicker));
-        #[cfg(feature = "input_params")]
-        let resolver = resolver.add_picker(Box::new(InputParamPicker::new(&request.input_params)));
-        let resolver = resolver.add_picker(Box::new(VariablesPicker::new(&request.variables)));
-        resolver.resolve(&placeholders)
-    };
+impl Command {
+    fn replace_placeholders(&self, request: Request) -> miette::Result<Request> {
+        let placeholders = (&request).into();
+        let values = {
+            let resolver = Resolver::new().add_picker(Box::new(EnvVarPicker));
+            #[cfg(feature = "input_params")]
+            let resolver = if self.no_input {
+                resolver
+            } else {
+                resolver.add_picker(Box::new(InputParamPicker::new(&request.input_params)))
+            };
+            let resolver = resolver.add_picker(Box::new(VariablesPicker::new(&request.variables)));
+            resolver.resolve(&placeholders)
+        };
 
-    print_replacements(&values);
+        print_replacements(&values);
 
-    if values.is_all_resolved() {
-        Renderer::new(&placeholders, values).render(request)
-    } else {
-        Err(miette!(
+        if values.is_all_resolved() {
+            Renderer::new(&placeholders, values).render(request)
+        } else {
+            Err(miette!(
             code = "unresolved placeholders",
             url = "https://rede.sotoestevez.dev/reference_guide/request_dsl/placeholders.html",
             help = "check the placeholders of you request or ensure than you input all those without variable",
             "At least one of you placeholders ended unresolved: {}",
             values.unresolved().collect::<Vec<&str>>().join(", ")
         ))
+        }
     }
 }
 

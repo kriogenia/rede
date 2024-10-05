@@ -26,8 +26,8 @@ macro_rules! test_req {
 }
 
 macro_rules! test_request {
-    ($name:ident -> $assert:expr) => {
-        test_req!(#[ignore]$name, success, stdout, <$name> -> $assert);
+    ($name:ident $($arg:literal),* -> $assert:expr) => {
+        test_req!(#[ignore]$name, success, stdout, <$name> $($arg),* -> $assert);
     };
     ($name:ident <$file:ident> -> $assert:expr) => {
         test_req!(#[ignore]$name, success, stdout, <$file> -> $assert);
@@ -57,6 +57,7 @@ test_request!(body_form_url_encoded -> contains(r#""anime":"Evangelion""#).and(c
 test_request!(override_content_type -> contains(r#""content-type":"application/json""#));
 test_request!(status_if_no_body<not_found> -> contains("404"));
 test_request!(replace_variables -> contains(r#"{"hello":"world"}"#));
+test_request!(no_input "--no-input" -> contains(r#"{"hello":"world"}"#));
 // todo -no-redirect, requires --verbose
 
 test_req!(dry_run, success, stdout, <get_simple> "--dry-run", "--verbose" -> contains("http://localhost:8080/api/hello").and(contains(r#"{"hello":"world"}"#).not()));

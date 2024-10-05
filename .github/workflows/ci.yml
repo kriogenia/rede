@@ -47,14 +47,14 @@ jobs:
         if: contains(github.event.pull_request.labels.*.name, 'bin')
         with:
           command: test
-          args: -p rede
+          args: -p rede --all-features
 
       - name: Test rede_schema
         uses: actions-rs/cargo@v1
         if: contains(github.event.pull_request.labels.*.name, 'schema')
         with:
           command: test
-          args: -p rede_schema
+          args: -p rede_schema --all-features
 
       - name: Test rede_parser
         uses: actions-rs/cargo@v1
@@ -68,7 +68,7 @@ jobs:
         if: contains(github.event.pull_request.labels.*.name, 'placeholders')
         with:
           command: test
-          args: -p rede_placeholders
+          args: -p rede_placeholders --all-features
 
   lints:
     name: Lint
@@ -93,14 +93,14 @@ jobs:
         if: contains(github.event.pull_request.labels.*.name, 'bin')
         with:
           command: clippy
-          args: -p rede -- -D warnings
+          args: -p rede --all-features -- -D warnings
 
       - name: clippy rede_schema
         uses: actions-rs/cargo@v1
         if: contains(github.event.pull_request.labels.*.name, 'schema')
         with:
           command: clippy
-          args: -p rede_schema -- -D warnings
+          args: -p rede_schema --all-features -- -D warnings
 
       - name: clippy rede_parser
         uses: actions-rs/cargo@v1
@@ -114,4 +114,4 @@ jobs:
         if: contains(github.event.pull_request.labels.*.name, 'placeholders')
         with:
           command: clippy
-          args: -p rede_placeholders -- -D warnings
+          args: -p rede_placeholders --all-features -- -D warnings
