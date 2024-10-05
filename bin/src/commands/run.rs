@@ -24,6 +24,7 @@ use std::time::Duration;
 use super::GlobalArgs;
 
 /// Executes the provided HTTP request
+#[allow(clippy::struct_excessive_bools)] // flags, no states
 #[derive(Debug, Args)]
 #[command(
     after_help = "Documentation: https://rede.sotoestevez.dev/reference_guide/command_line_interface/run.html"
@@ -58,6 +59,9 @@ pub struct Command {
     /// Ignores input params, disabling prompting the user
     #[arg(long)]
     no_input: bool,
+    /// Executes the request even if some placeholders ended unresolved
+    #[arg(long)]
+    allow_unresolved: bool,
 }
 
 impl RedeCommand for Command {
@@ -103,8 +107,8 @@ impl Command {
         };
 
         print_replacements(&values);
-
-        if values.is_all_resolved() {
+        println!("{}", self.allow_unresolved);
+        if values.is_all_resolved() || self.allow_unresolved {
             Renderer::new(&placeholders, values).render(request)
         } else {
             Err(miette!(

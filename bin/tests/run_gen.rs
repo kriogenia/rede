@@ -29,8 +29,8 @@ macro_rules! test_request {
     ($name:ident $($arg:literal),* -> $assert:expr) => {
         test_req!(#[ignore]$name, success, stdout, <$name> $($arg),* -> $assert);
     };
-    ($name:ident <$file:ident> -> $assert:expr) => {
-        test_req!(#[ignore]$name, success, stdout, <$file> -> $assert);
+    ($name:ident <$file:ident> $($arg:literal),* -> $assert:expr) => {
+        test_req!(#[ignore]$name, success, stdout, <$file> $($arg),* -> $assert);
     };
 }
 
@@ -58,6 +58,7 @@ test_request!(override_content_type -> contains(r#""content-type":"application/j
 test_request!(status_if_no_body<not_found> -> contains("404"));
 test_request!(replace_variables -> contains(r#"{"hello":"world"}"#));
 test_request!(no_input "--no-input" -> contains(r#"{"hello":"world"}"#));
+test_request!(allow_unresolved<unresolved_placeholders> "--allow-unresolved" -> contains("{{message}}"));
 // todo -no-redirect, requires --verbose
 
 test_req!(dry_run, success, stdout, <get_simple> "--dry-run", "--verbose" -> contains("http://localhost:8080/api/hello").and(contains(r#"{"hello":"world"}"#).not()));
@@ -67,7 +68,7 @@ test_error!(invalid_url -> contains("invalid url").and(contains("http://128.0.0.
 test_error!(failed_connection -> contains("failed connection").and(contains("completelymadeupurl")));
 test_error!(bad_url_scheme -> contains("failed request building").and(contains("htt:/www.url.com")));
 test_error!(wrong_binary -> contains("invalid file").and(contains("no_exists.zip")));
-test_error!(unresolved_placeholders -> contains("unresolved placeholders").and(contains("ph_unresolved")));
+test_error!(unresolved_placeholders -> contains("unresolved placeholders").and(contains("message")));
 
 test_error!(#[ignore] timeout<> "--timeout", "0ms" -> contains("timeout"));
 test_error!(#[ignore] unsupported_http_version -> contains("wrong http version"));
