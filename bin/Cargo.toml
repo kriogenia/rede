@@ -20,6 +20,7 @@ keywords = ["cli", "http", "api", "request"]
 readme = "../README.md"
 
 [features]
+default = ["input_params"]
 input_params = [
   "rede_parser/input_params",
   "rede_placeholders/input_params",
@@ -29,11 +30,6 @@ input_params = [
 [[bin]]
 name = "rede"
 required-features = ["input_params"]
-
-[[bin]]
-name = "redeslim"
-required-features = []
-path = "src/main.rs"
 
 [dependencies]
 rede_parser = "0.2.2"
