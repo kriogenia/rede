@@ -1,32 +1,22 @@
 # Upcoming
 
-These are the next planned features for `rede v0.2`:
+These are the next planned features for `rede v0.3`:
 
-## Placeholders
+## Improve input parameters
 
-The DSL would start to support strings like `{{this}}` embedded in other
-strings or as values of different keys. This placeholders would be later
-resolved with the new `variables` table or with input of the user.
+Input parameters right now are kinda limited, future versions will
+allow for a bit more customization adding:
 
-## Input parameters
-
-The DSL will accept a new table to specify a series of placeholder that
-would be resolved asking the user before running the request. A series of
-features are planned for this, but some of them could be delayed.
-- Support specification of the expected type.
-- Support hints to help the user to provide a good value.
-- Support multiple choice.
-- Support default values to use if user omits the question.
-  - The flag `--all-defaults` would allow to evade the request prompts and
-    just use the defaults for everything.
-- `--dry-run` to produce a request without executing it, just to see it or
-  render it as its own file.
+- `secret` to accept parameters that should be hidden
+- `choices` to allow selection between a series of values.
+- `type` to constraint the input value.
 
 ## Improved verbosity
 
 We can currently have only three levels of verbosity, which is really limited,
 specially considering than one of those is "none at all". That's why next version
 the plan is to future five levels of verbosity.
+
 - `quiet`, like the current one, prints nothing at all.
 - `discrete`, prints only the body of the request, what the standard currently does.
   - It's possible that this one could be used as default when using `rede run` with stdin
