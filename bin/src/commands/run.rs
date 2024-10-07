@@ -107,7 +107,6 @@ impl Command {
         };
 
         print_replacements(&values);
-        println!("{}", self.allow_unresolved);
         if values.is_all_resolved() || self.allow_unresolved {
             Renderer::new(&placeholders, values).render(request)
         } else {
