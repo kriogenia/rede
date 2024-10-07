@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../../user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../../user_guide/how_to_run.html"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../../reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../reference_guide/request_dsl/body.html"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Input_parameters</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Placeholders and variables</div></li></ol></li><li class="chapter-item expanded "><a href="../../reference_guide/command_line_interface.html"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../reference_guide/command_line_interface/run.html" class="active"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="../../reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="../../reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="../../reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="../../roadmap/upcoming.html"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../../faq.html">FAQ</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../../user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../../user_guide/how_to_run.html"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../../reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../reference_guide/request_dsl/body.html"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><a href="../../reference_guide/request_dsl/input_parameters.html"><strong aria-hidden="true">3.2.</strong> Input parameters</a></li><li class="chapter-item expanded "><a href="../../reference_guide/request_dsl/placeholders.html"><strong aria-hidden="true">3.3.</strong> Placeholders</a></li></ol></li><li class="chapter-item expanded "><a href="../../reference_guide/command_line_interface.html"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../reference_guide/command_line_interface/run.html" class="active"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="../../reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="../../reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="../../reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="../../roadmap/upcoming.html"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../../faq.html">FAQ</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -135,38 +135,46 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="rede-run"><a class="header" href="#rede-run">rede run</a></h1>
-<p>To execute requests in <code>rede</code> you need to use <code>rede run</code>. This command accepts a path to a file
-containing a valid rede request. The <code>.toml</code> extension is optional, but rede will only attempt
-to load files with that extension. By default, it will print the body of the response, or the
-status code if there's no body in the response.</p>
+<p>To execute requests in <code>rede</code> you need to use <code>rede run</code>.
+This command accepts a path to a file containing a valid rede request.
+The <code>.toml</code> extension is optional, but rede will only attempt to load
+files with that extension. By default, it will print the body of
+the response, or the status code if there's no body in the response.</p>
 <pre><code class="language-shell">rede run my_request
 </code></pre>
 <p><code>rede run</code> is also ready to work with the stdin, so you can also use it in pipes:</p>
 <pre><code class="language-shell">cat my_request | rede run &gt; response.json
 </code></pre>
 <h2 id="redirections"><a class="header" href="#redirections">Redirections</a></h2>
-<p><code>rede run</code> will automatically follow redirect response to arrive at the pointed resource.
-That means that unless this behavior is overriden <code>run</code> can't return 3xx responses. To
-disable this behavior you can use the <code>--no-redirect</code> flag.</p>
-<p>On top of that, <code>run</code> will throw an error after 10 redirections followed in the same
-request, you can override this value with <code>--max-redirects &lt;value&gt;</code></p>
+<p><code>rede run</code> will automatically follow redirect response to arrive at
+the pointed resource. That means that unless this behavior is overridden
+<code>run</code> can't return 3xx responses. To disable this behavior you can use
+the <code>--no-redirect</code> flag.</p>
+<p>On top of that, <code>run</code> will throw an error after 10 redirections
+followed in the same request, you can override this value with <code>--max-redirects &lt;value&gt;</code></p>
 <h2 id="verbosity"><a class="header" href="#verbosity">Verbosity</a></h2>
-<p>When using <code>rede run</code> with the different verbosity options this is what it will print (each
-level will print the same as the previous plus what is described):</p>
+<p>When using <code>rede run</code> with the different verbosity options this is what
+it will print (each level will print the same as the previous plus
+what is described):</p>
 <ul>
-<li><code>quiet</code>, will only print errors to stderr. The waiting spinner can show but it will be deleted.</li>
+<li><code>quiet</code>, will only print errors to stderr. The waiting spinner can show
+but it will be deleted.</li>
 <li><code>standard</code>, will print the response body. If it's empty, the response status code.</li>
-<li><code>verbose</code>, will print the request that it's being sent (including headers and body) and the
-whole response received (status, headers and body).</li>
+<li><code>verbose</code>, will print the request that it's being sent (including headers and body)
+and the whole response received (status, headers and body).</li>
 </ul>
 <h2 id="other-options"><a class="header" href="#other-options">Other options</a></h2>
 <p><code>rede run</code> supports the following options:</p>
 <ul>
-<li><code>--pretty-print</code>, specifies if formatting and jump lines should be applied to the response
-body. It's enabled by default, but it can be disabled via <code>--pretty-print=false</code></li>
-<li><code>--timeout</code>, sets the maximum duration that the client should wait before giving a timeout.
-For example, <code>--timeout 3s</code> to wait max 3 seconds.</li>
+<li><code>--pretty-print</code>, specifies if formatting and jump lines should be
+applied to the response body. It's enabled by default, but it can be disabled
+via <code>--pretty-print=false</code></li>
+<li><code>--timeout</code>, sets the maximum duration that the client should wait before giving
+a timeout. For example, <code>--timeout 3s</code> to wait max 3 seconds.</li>
 </ul>
+<p>On top of that, it support the global <code>--dry-run</code> flag, this will execute all
+the steps to build the request but won't execute it. It's a good way to test
+your placeholders.</p>
 
                     </main>
 

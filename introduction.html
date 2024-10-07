@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html" class="active">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="user_guide/how_to_run.html"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="reference_guide/request_dsl/body.html"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Input_parameters</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Placeholders and variables</div></li></ol></li><li class="chapter-item expanded "><a href="reference_guide/command_line_interface.html"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="reference_guide/command_line_interface/run.html"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="roadmap/upcoming.html"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="faq.html">FAQ</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html" class="active">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="user_guide/how_to_run.html"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="reference_guide/request_dsl/body.html"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><a href="reference_guide/request_dsl/input_parameters.html"><strong aria-hidden="true">3.2.</strong> Input parameters</a></li><li class="chapter-item expanded "><a href="reference_guide/request_dsl/placeholders.html"><strong aria-hidden="true">3.3.</strong> Placeholders</a></li></ol></li><li class="chapter-item expanded "><a href="reference_guide/command_line_interface.html"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="reference_guide/command_line_interface/run.html"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="roadmap/upcoming.html"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="faq.html">FAQ</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -135,20 +135,22 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="rede"><a class="header" href="#rede">Rede</a></h1>
-<p><code>rede</code> (galician word for &quot;net&quot;) is a command-line utility to help run suites of requests to
-ease the usage and testing of REST APIs. The main inspiration for this project comes from
-<a href="https://www.usebruno.com/">Bruno</a> and their command line tool.</p>
-<p>The main goal behind this project is to have a suite of text files representing HTTP requests
-that will be picked and executed by <code>rede</code>, allowing for easy sharing and control versioning
-of these requests.</p>
+<p><code>rede</code> (galician word for &quot;net&quot;) is a command-line utility to help run suites
+of requests to ease the usage and testing of REST APIs. The main inspiration
+for this project comes from <a href="https://www.usebruno.com/">Bruno</a> and their command
+line tool.</p>
+<p>The main goal behind this project is to have a suite of text files representing
+HTTP requests that will be picked and executed by <code>rede</code>, allowing for easy sharing
+and control versioning of these requests.</p>
 <p><img src="./media/readme_rede.gif" alt="Execution of rede" /></p>
 <h2 id="request-dsl"><a class="header" href="#request-dsl">Request DSL</a></h2>
-<p>Rede requests are stored as plain text files, so they can be easily stored and shared in your
-project repositories via your favourite version control tool. You won't have to set a team with
-your peers to have a shared suite of request to test your application, you only need to push those
-files.</p>
-<p>The DSL that request used is based on TOML as it's a simple and human-readable format that matches
-perfectly our needs. This is an example of a request that rede can execute.</p>
+<p>Rede requests are stored as plain text files, so they can be easily stored and
+shared in your project repositories via your favourite version control tool.
+You won't have to set a team with your peers to have a shared suite of request
+to test your application, you only need to push those files.</p>
+<p>The DSL that <code>rede</code> uses is based on TOML as it's a simple and human-readable
+format that matches perfectly our needs. This is an example of a request that
+rede can execute:</p>
 <pre><code class="language-toml">[http]
 method = &quot;GET&quot;
 url = &quot;https://dogapi.dog/api/v2/facts&quot;
@@ -162,8 +164,8 @@ limit = 1
 </code></pre>
 <p>Pretty easy to digest, right?</p>
 <h2 id="rede-run"><a class="header" href="#rede-run">rede run</a></h2>
-<p>The main feature of <code>rede</code> is the command <code>run</code>. You can invoke with the name of the file of your
-request and rede will execute it and return the results.</p>
+<p>The main feature of <code>rede</code> is the command <code>run</code>. You can invoke it with the
+name of the file of your request and rede will execute it and return the results.</p>
 <p><img src="./media/readme_verbose.png" alt="rede run with verbose" /></p>
 
                     </main>

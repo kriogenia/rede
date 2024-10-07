@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../user_guide/how_to_run.html"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reference_guide/request_dsl/body.html"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Input_parameters</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Placeholders and variables</div></li></ol></li><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface.html"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface/run.html"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="../reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="../reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="../roadmap/upcoming.html" class="active"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../faq.html">FAQ</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../user_guide/how_to_run.html"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reference_guide/request_dsl/body.html"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><a href="../reference_guide/request_dsl/input_parameters.html"><strong aria-hidden="true">3.2.</strong> Input parameters</a></li><li class="chapter-item expanded "><a href="../reference_guide/request_dsl/placeholders.html"><strong aria-hidden="true">3.3.</strong> Placeholders</a></li></ol></li><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface.html"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface/run.html"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="../reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="../reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="../roadmap/upcoming.html" class="active"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../faq.html">FAQ</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -135,27 +135,14 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="upcoming"><a class="header" href="#upcoming">Upcoming</a></h1>
-<p>These are the next planned features for <code>rede v0.2</code>:</p>
-<h2 id="placeholders"><a class="header" href="#placeholders">Placeholders</a></h2>
-<p>The DSL would start to support strings like <code>{{this}}</code> embedded in other
-strings or as values of different keys. This placeholders would be later
-resolved with the new <code>variables</code> table or with input of the user.</p>
-<h2 id="input-parameters"><a class="header" href="#input-parameters">Input parameters</a></h2>
-<p>The DSL will accept a new table to specify a series of placeholder that
-would be resolved asking the user before running the request. A series of
-features are planned for this, but some of them could be delayed.</p>
+<p>These are the next planned features for <code>rede v0.3</code>:</p>
+<h2 id="improve-input-parameters"><a class="header" href="#improve-input-parameters">Improve input parameters</a></h2>
+<p>Input parameters right now are kinda limited, future versions will
+allow for a bit more customization adding:</p>
 <ul>
-<li>Support specification of the expected type.</li>
-<li>Support hints to help the user to provide a good value.</li>
-<li>Support multiple choice.</li>
-<li>Support default values to use if user omits the question.
-<ul>
-<li>The flag <code>--all-defaults</code> would allow to evade the request prompts and
-just use the defaults for everything.</li>
-</ul>
-</li>
-<li><code>--dry-run</code> to produce a request without executing it, just to see it or
-render it as its own file.</li>
+<li><code>secret</code> to accept parameters that should be hidden</li>
+<li><code>choices</code> to allow selection between a series of values.</li>
+<li><code>type</code> to constraint the input value.</li>
 </ul>
 <h2 id="improved-verbosity"><a class="header" href="#improved-verbosity">Improved verbosity</a></h2>
 <p>We can currently have only three levels of verbosity, which is really limited,

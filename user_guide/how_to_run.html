@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../user_guide/how_to_run.html" class="active"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reference_guide/request_dsl/body.html"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Input_parameters</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Placeholders and variables</div></li></ol></li><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface.html"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface/run.html"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="../reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="../reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="../roadmap/upcoming.html"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../faq.html">FAQ</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../user_guide/how_to_run.html" class="active"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reference_guide/request_dsl/body.html"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><a href="../reference_guide/request_dsl/input_parameters.html"><strong aria-hidden="true">3.2.</strong> Input parameters</a></li><li class="chapter-item expanded "><a href="../reference_guide/request_dsl/placeholders.html"><strong aria-hidden="true">3.3.</strong> Placeholders</a></li></ol></li><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface.html"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface/run.html"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="../reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="../reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="../roadmap/upcoming.html"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../faq.html">FAQ</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -137,7 +137,8 @@
                         <h1 id="how-to-run"><a class="header" href="#how-to-run">How to run</a></h1>
 <p><code>rede</code> works using a DSL built on top of the <a href="https://toml.io/en/">TOML</a> specification.
 All the documentation regarding rede's DSL can be found on the respective <a href="../reference_guide/request_dsl.html">page</a>.
-An easy way to boostrap a request following the DSL is running the <code>rede example</code> command.</p>
+An easy way to boostrap a request following the DSL is running the
+<code>rede example</code> command.</p>
 <p>It will generate a <code>example.toml</code> file looking like this.</p>
 <pre><code class="language-toml">[http]
 method = &quot;GET&quot;
@@ -148,12 +149,20 @@ Accept = &quot;application/json&quot;
 User-Agent = &quot;rede/v0.1.0&quot;
 
 [query_params]
-limit = 1
+limit = &quot;{{limit}}&quot;
+
+[input_params]
+limit.hint = &quot;Number of facts to retrieve&quot;
+
+[variables]
+limit = 3
 </code></pre>
-<p>Once you have run this command, or redacted your own request you will be ready to execute rede.</p>
+<p>Once you have run this command, or redacted your own request, you will be ready
+to execute rede.</p>
 <pre><code class="language-shell">rede run &lt;your_file&gt;
 </code></pre>
-<p>And that's all you need to start making requests with <code>rede</code>, but the CLI allows for more capabilities.</p>
+<p>And that's all you need to start making requests with <code>rede</code>, but that's not all
+you can do.</p>
 
                     </main>
 

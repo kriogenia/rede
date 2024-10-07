@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../../user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../../user_guide/how_to_run.html"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../../reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../reference_guide/request_dsl/body.html" class="active"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Input_parameters</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Placeholders and variables</div></li></ol></li><li class="chapter-item expanded "><a href="../../reference_guide/command_line_interface.html"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../reference_guide/command_line_interface/run.html"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="../../reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="../../reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="../../reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="../../roadmap/upcoming.html"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../../faq.html">FAQ</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../../user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../../user_guide/how_to_run.html"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../../reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../reference_guide/request_dsl/body.html" class="active"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><a href="../../reference_guide/request_dsl/input_parameters.html"><strong aria-hidden="true">3.2.</strong> Input parameters</a></li><li class="chapter-item expanded "><a href="../../reference_guide/request_dsl/placeholders.html"><strong aria-hidden="true">3.3.</strong> Placeholders</a></li></ol></li><li class="chapter-item expanded "><a href="../../reference_guide/command_line_interface.html"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../reference_guide/command_line_interface/run.html"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="../../reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="../../reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="../../reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="../../roadmap/upcoming.html"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../../faq.html">FAQ</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -135,23 +135,29 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="body"><a class="header" href="#body">Body</a></h1>
-<p>The <code>[body]</code> table accepts a series of keys representing the different types that could be submitted
-via HTTP. <strong>Only one</strong> of those types can be defined, attempting to use more than one would render the
+<p>The <code>[body]</code> table accepts a series of keys representing the different
+types that could be submitted via HTTP. <strong>Only one</strong> of those types
+can be defined, attempting to use more than one would render the
 request invalid.</p>
-<p>In this first version only four types are supported, but all these types in conjunction with the
-appropriate headers are enough to represent all possible mime types.</p>
+<p>In this first version only four types are supported, but all these
+types in conjunction with the appropriate headers are enough to
+represent all possible mime types.</p>
 <h2 id="binary"><a class="header" href="#binary">binary</a></h2>
-<p>Must contain as value the path to the file that will be sent. <strong>IMPORTANT</strong>, the path must be relative
-to the point where <code>rede</code> will be executed, not relative to the request file. Future implementations
-could change this behavior, but keep in mind that this is the current state. A valid alias for the key
-is <code>file</code>.</p>
-<p>If no <code>Content-Type</code> is set in the request, using this type will set it to <code>application/octet-stream</code>.</p>
+<p>Must contain the path to the file that will be sent as value.
+<strong>IMPORTANT</strong>, the path must be relative to the point where <code>rede</code>
+will be executed, not relative to the request file. Future
+implementations could change this behavior, but keep in mind
+that this is the current state. A valid alias for the key is <code>file</code>.</p>
+<p>If no <code>Content-Type</code> is set in the request, using this type will
+set it to <code>application/octet-stream</code>.</p>
 <pre><code class="language-toml">body.binary = &quot;$HOME/Videos/la caida de Edgar.mp4&quot;
 </code></pre>
 <h2 id="raw"><a class="header" href="#raw">raw</a></h2>
-<p>Must contain as a value the <em>string</em> representing the body content. <em>Tip: TOML supports multiline strings
-for your JSONs and XMLs</em>. A valid alias for the key is <code>text</code>.</p>
-<p>If no <code>Content-Type</code> is set in the request, using this type will set it to <code>text/plain</code>.</p>
+<p>Must contain as a value the <em>string</em> representing the body content.
+<em>Tip: TOML supports multiline strings for your JSONs and XMLs</em>.
+A valid alias for the key is <code>text</code>.</p>
+<p>If no <code>Content-Type</code> is set in the request, using this type
+will set it to <code>text/plain</code>.</p>
 <pre><code class="language-toml">[body]
 raw = &quot;&quot;&quot;
 {
@@ -162,10 +168,12 @@ raw = &quot;&quot;&quot;
 &quot;&quot;&quot;
 </code></pre>
 <h2 id="x_www_form_urlencoded"><a class="header" href="#x_www_form_urlencoded">x_www_form_urlencoded</a></h2>
-<p>Similar to <a href="../request_dsl.html#query_params">query params</a>. <strong>Free</strong> table supporting everything except
-datetimes and tables as value. Array will be transformed into a comma-separated list of values.
+<p>Similar to <a href="../request_dsl.html#query_params">query params</a>.
+<strong>Free</strong> table supporting everything except datetimes and tables
+as value. Array will be transformed into a comma-separated list of values.
 A valid alias for the key is <code>form_url_encoded</code>.</p>
-<p>If no <code>Content-Type</code> is set in the request, using this type will set it to <code>application/x-www-form-urlencoded</code>.</p>
+<p>If no <code>Content-Type</code> is set in the request, using this type will
+set it to <code>application/x-www-form-urlencoded</code>.</p>
 <pre><code class="language-toml">[body.x-www-form-urlencoded]
 username = &quot;VeryDivorcedMan&quot;
 country = &quot;za&quot;
@@ -174,12 +182,13 @@ country = &quot;za&quot;
 <p><strong>Free</strong> table but all its keys must be of type <em>table</em> having a single key of:</p>
 <ul>
 <li><code>text</code> with the text content.</li>
-<li><code>file</code> with the path to the binary file. Like in <a href="#binary">binary</a> the path must be relative to the point
-of execution, not the the request file.</li>
+<li><code>file</code> with the path to the binary file. Like in <a href="#binary">binary</a>
+the path must be relative to the point of execution, not to the request file.</li>
 </ul>
-<p>Having a single form key with two possible types would be invalid. A valid alias for the key is
-<code>form_data</code>.</p>
-<p>If no <code>Content-Type</code> is set in the request, using this type will set it to <code>multipart/form-data</code>.</p>
+<p>Having a single form key with two possible types would be invalid. A valid
+alias for the key is <code>form_data</code>.</p>
+<p>If no <code>Content-Type</code> is set in the request, using this type will set it
+to <code>multipart/form-data</code>.</p>
 
                     </main>
 
@@ -188,7 +197,7 @@ of execution, not the the request file.</li>
                             <a rel="prev" href="../../reference_guide/request_dsl.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="../../reference_guide/command_line_interface.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../../reference_guide/request_dsl/input_parameters.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
@@ -200,7 +209,7 @@ of execution, not the the request file.</li>
                     <a rel="prev" href="../../reference_guide/request_dsl.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="../../reference_guide/command_line_interface.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../../reference_guide/request_dsl/input_parameters.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

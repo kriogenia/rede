@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../user_guide/how_to_run.html"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reference_guide/request_dsl/body.html"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Input_parameters</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Placeholders and variables</div></li></ol></li><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface.html" class="active"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface/run.html"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="../reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="../reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="../roadmap/upcoming.html"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../faq.html">FAQ</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user_guide/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../user_guide/how_to_run.html"><strong aria-hidden="true">2.</strong> How to run</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../reference_guide/request_dsl.html"><strong aria-hidden="true">3.</strong> Request DSL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reference_guide/request_dsl/body.html"><strong aria-hidden="true">3.1.</strong> Body</a></li><li class="chapter-item expanded "><a href="../reference_guide/request_dsl/input_parameters.html"><strong aria-hidden="true">3.2.</strong> Input parameters</a></li><li class="chapter-item expanded "><a href="../reference_guide/request_dsl/placeholders.html"><strong aria-hidden="true">3.3.</strong> Placeholders</a></li></ol></li><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface.html" class="active"><strong aria-hidden="true">4.</strong> Command Line Interface</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface/run.html"><strong aria-hidden="true">4.1.</strong> run</a></li><li class="chapter-item expanded "><a href="../reference_guide/command_line_interface/example.html"><strong aria-hidden="true">4.2.</strong> example</a></li></ol></li><li class="chapter-item expanded "><a href="../reference_guide/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li><li class="chapter-item expanded "><a href="../reference_guide/tools.html"><strong aria-hidden="true">6.</strong> Tools</a></li><li class="chapter-item expanded affix "><li class="part-title">Roadmap</li><li class="chapter-item expanded "><a href="../roadmap/upcoming.html"><strong aria-hidden="true">7.</strong> Upcoming</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Piping</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> --env</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Asserts</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Config</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../faq.html">FAQ</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -138,29 +138,30 @@
 <p>The general way of running <code>rede</code> is using <code>rede &lt;subcommand&gt;</code>. The current supported
 subcommands are:</p>
 <ul>
-<li><a href="./command_line_tool/run.html">run</a></li>
-<li><a href="./command_line_tool/example.html">example</a></li>
+<li><a href="./command_line_interface/run.html">run</a></li>
+<li><a href="./command_line_interface/example.html">example</a></li>
 <li><code>help</code>, prints the help, same as <code>rede --help</code>.</li>
 </ul>
-<p><code>rede</code> supports infering for both, subcommands and arguments. That means that you substrings
-can match a command as long as there's no conflict. For example, this is valid way of using
-<code>rede run</code> with <code>--verbose</code>:</p>
+<p><code>rede</code> supports infering for both, subcommands and arguments. That means that
+you can use substrings to match a command as long as there's no conflict. For
+example, this is valid way of using <code>rede run</code> with <code>--verbose</code>:</p>
 <pre><code class="language-shell">rede r --verb my_request
 </code></pre>
 <h2 id="global-options"><a class="header" href="#global-options">Global options</a></h2>
 <p>The following options of <code>rede</code> can be used with all subcommands.</p>
 <ul>
-<li><code>--verbose</code>, ups the number of printing messages.</li>
-<li><code>--quiet</code>, evades all standard output, only errors will be printed in stderr.</li>
-<li><code>--no-color</code>, disables coloring in the outputs.</li>
 <li><code>--help</code>, will print the help of the respective command.</li>
+<li><code>--quiet</code>, evades all standard output, only errors will be printed (to stderr).</li>
+<li><code>--verbose</code>, ups the number of printing messages.</li>
+<li><code>--dry-run</code>, <em>see for each command</em>.</li>
+<li><code>--no-color</code>, disables coloring in the outputs.</li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../reference_guide/request_dsl/body.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../reference_guide/request_dsl/placeholders.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                             <a rel="next" href="../reference_guide/command_line_interface/run.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
@@ -172,7 +173,7 @@ can match a command as long as there's no conflict. For example, this is valid w
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../reference_guide/request_dsl/body.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../reference_guide/request_dsl/placeholders.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                     <a rel="next" href="../reference_guide/command_line_interface/run.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
