@@ -128,4 +128,3 @@ $ 1994-10-07
 This is the idea behind `rede`, creating parametrizable and reusable request in TOML
 format that can be used from the command line to test you APIs.
 But there's still a long road ahead before this is the reality.
-
