@@ -5,11 +5,17 @@ types that could be submitted via HTTP. **Only one** of those types
 can be defined, attempting to use more than one would render the
 request invalid.
 
-In this first version only four types are supported, but all these
-types in conjunction with the appropriate headers are enough to
-represent all possible mime types.
+`rede` supports mainly four types of body listed bellow, but combining
+these types with the appropriate `Content-Type` headers every mime
+type can be used.
 
-## binary
+Aside from those four main types, `rede` also supports some convenience
+types that works like one of the main types but also setting the correct
+`Content-Type`.
+
+## Main types
+
+### binary
 
 Must contain the path to the file that will be sent as value.
 **IMPORTANT**, the path must be relative to the point where `rede`
@@ -24,7 +30,7 @@ set it to `application/octet-stream`.
 body.binary = "$HOME/Videos/la caida de Edgar.mp4"
 ```
 
-## raw
+### raw
 
 Must contain as a value the _string_ representing the body content.
 _Tip: TOML supports multiline strings for your JSONs and XMLs_.
@@ -44,7 +50,7 @@ raw = """
 """
 ```
 
-## x_www_form_urlencoded
+### x_www_form_urlencoded
 
 Similar to [query params](../request_dsl.md#query_params).
 **Free** table supporting everything except datetimes and tables
@@ -60,7 +66,7 @@ username = "VeryDivorcedMan"
 country = "za"
 ```
 
-## multipart_form_data
+### multipart_form_data
 
 **Free** table but all its keys must be of type _table_ having a single key of:
 
@@ -73,3 +79,28 @@ alias for the key is `form_data`.
 
 If no `Content-Type` is set in the request, using this type will set it
 to `multipart/form-data`.
+
+## Convenience types
+
+The following convenience types can also be used to set a body. The usage is
+exactly the same as for their main types. For example, to create a JSON body
+you can just do the following:
+
+```toml
+[body]
+json = """
+{
+  "game: "Balatro",
+  "genres": [ "card_game", "strategy", "rogue_like", "cocaine" ]
+}
+"""
+```
+
+The currently supported types are the following, if you want a new type to be
+added comment or contribute as it's indicated in this
+[issue](https://github.com/kriogenia/rede/issues/63).
+
+| Key | Type | MIME |
+|-----|------|------|
+| `json` | raw | `application/json` |
+| `xml` | raw | `application/xml` |
