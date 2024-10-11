@@ -4,5 +4,3 @@
 
 * [Soto Estévez](https://github.com/kriogenia)
 * [Sachith C Shetty](https://github.com/shettysach)
-
-For more information, please refer to our [CONTRIBUTING](CONTRIBUTING.md) guide.
