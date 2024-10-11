@@ -1,0 +1,23 @@
+[http]
+method = "POST"
+url = "http://localhost:8080/api/post"
+
+[body]
+json = '''
+{
+  "characters": [
+    {
+      "code_name": "Solid Snake",
+      "real_name": "David"
+    },
+    {
+      "code_name": "Liquid Snake",
+      "real_name": "Eli" 
+    },
+    {
+      "code_name": "Gray Fox",
+      "real_name": "Frank Jaegar"
+    }
+  ]
+}
+'''

@@ -19,6 +19,8 @@ input_params = ["rede_schema/input_params"]
 
 [dependencies]
 rede_schema = "0.2"
+# rede_schema = { path = "../schema" } # local
+
 http.workspace = true
 miette.workspace = true
 regex = "1.10.6"
@@ -26,3 +28,4 @@ regex = "1.10.6"
 [dev-dependencies]
 mime.workspace = true
 rede_parser = "0.2.2"
+# rede_parser = { path = "../parser/" } # local
