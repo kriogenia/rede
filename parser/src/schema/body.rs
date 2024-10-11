@@ -10,6 +10,10 @@ pub(crate) enum Body {
     None,
     #[serde(alias = "text")]
     Raw(String),
+    #[serde(alias = "json")]
+    Json(String),
+    #[serde(alias = "xml")]
+    Xml(String),
     #[serde(alias = "file")]
     Binary(String),
     #[serde(
@@ -41,6 +45,14 @@ impl From<Body> for SchemaBody {
             Body::Raw(content) => SchemaBody::Raw {
                 content,
                 mime: mime::TEXT_PLAIN_UTF_8,
+            },
+            Body::Json(content) => SchemaBody::Raw {
+                content,
+                mime: mime::APPLICATION_JSON,
+            },
+            Body::Xml(content) => SchemaBody::Raw {
+                content,
+                mime: mime::TEXT_XML,
             },
             Body::Binary(path) => SchemaBody::Binary {
                 path,

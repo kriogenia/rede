@@ -1,0 +1,20 @@
+[http]
+method = "POST"
+url = "http://localhost:8080/api/post"
+
+[body]
+xml = '''
+<characters>
+
+    <character>
+        <name>Rhaegar Targaryen</name>
+        <title>The Last Dragon</title>
+    </character>
+
+    <character>
+        <name>Arthur Dayne</name>
+        <title>Sword of the Morning</title>
+    </character>
+
+</characters>
+'''

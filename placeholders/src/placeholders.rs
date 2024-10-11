@@ -200,6 +200,9 @@ mod test {
                 .to_string(),
                 mime: mime::APPLICATION_JSON,
             },
+
+            #[cfg(feature = "input_params")]
+            input_params: BTreeMap::new(),
         };
 
         let placeholders = Placeholders::from(&request);
