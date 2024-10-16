@@ -1,0 +1,9 @@
+[http]
+method = "POST"
+url = "http://127.0.0.1:8000/post"
+
+[headers]
+Content-Type = "application/pdf"
+
+[body]
+file = "D:/open-source/rede/bin/tests/inputs/dummy-pdf_2.pdf"

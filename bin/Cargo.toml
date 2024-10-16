@@ -32,13 +32,13 @@ name = "rede"
 required-features = ["input_params"]
 
 [dependencies]
-rede_parser = "0.2.2"
-rede_placeholders = "0.1.0"
-rede_schema = "0.2.0"
+# rede_parser = "0.2.2"
+# rede_placeholders = "0.1.0"
+# rede_schema = "0.2.0"
 
-# rede_parser = { path = "../parser" }            # local
-# rede_placeholders = { path = "../placeholders"} # local
-# rede_schema = { path = "../schema" }            # local
+rede_parser = { path = "../parser" }             # local
+rede_placeholders = { path = "../placeholders" } # local
+rede_schema = { path = "../schema" }             # local
 
 http.workspace = true
 log.workspace = true
