@@ -1,0 +1,13 @@
+[http]
+method = "POST"
+url = "http://127.0.0.1:8000/post"
+
+[headers]
+Content-Disposition = "inline; filename=moon.png"
+Content-Type = "image/png"
+
+[body]
+file = "D:/open-source/rede/bin/tests/assets/moon.png" #modify relative path
+
+[metadata]
+name = "moon.png"

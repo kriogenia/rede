@@ -3,7 +3,8 @@ method = "POST"
 url = "http://127.0.0.1:8000/post"
 
 [headers]
+Content-Disposition = "inline; filename=dummy-pdf_2.pdf"
 Content-Type = "application/pdf"
 
 [body]
-file = "D:/open-source/rede/bin/tests/inputs/dummy-pdf_2.pdf"
+file = "D:/open-source/rede/bin/tests/assets/dummy-pdf_2.pdf" #modify relative path
