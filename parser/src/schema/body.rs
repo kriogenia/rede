@@ -18,6 +18,7 @@ pub(crate) enum Body {
     Pdf(String),
     #[serde(alias = "png")]
     Png(String),
+    #[serde(alias = "jpg")]
     #[serde(alias = "jpeg")]
     Jpeg(String),
     #[serde(alias = "file")]

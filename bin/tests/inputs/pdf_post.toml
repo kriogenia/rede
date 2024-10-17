@@ -7,4 +7,4 @@ Content-Disposition = "inline; filename=dummy-pdf_2.pdf"
 Content-Type = "application/pdf"
 
 [body]
-file = "D:/open-source/rede/bin/tests/assets/dummy-pdf_2.pdf" #modify relative path
+file = "./tests/assets/dummy-pdf_2.pdf"

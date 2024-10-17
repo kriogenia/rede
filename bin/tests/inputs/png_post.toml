@@ -7,7 +7,6 @@ Content-Disposition = "inline; filename=moon.png"
 Content-Type = "image/png"
 
 [body]
-file = "D:/open-source/rede/bin/tests/assets/moon.png" #modify relative path
+file = "./tests/assets/moon.png"
 
-[metadata]
-name = "moon.png"
+
