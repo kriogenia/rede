@@ -18,8 +18,7 @@ pub(crate) enum Body {
     Pdf(String),
     #[serde(alias = "png")]
     Png(String),
-    #[serde(alias = "jpg")]
-    #[serde(alias = "jpeg")]
+    #[serde(alias = "jpg", alias = "jpeg")]
     Jpeg(String),
     #[serde(alias = "file")]
     Binary(String),
@@ -65,13 +64,13 @@ impl From<Body> for SchemaBody {
                 path,
                 mime: mime::APPLICATION_PDF,
             },
-            Body::Png(path)=> SchemaBody::Binary { 
+            Body::Png(path) => SchemaBody::Binary {
                 path,
-                mime: mime::IMAGE_PNG 
+                mime: mime::IMAGE_PNG,
             },
-            Body::Jpeg(path)=> SchemaBody::Binary { 
+            Body::Jpeg(path) => SchemaBody::Binary {
                 path,
-                mime: mime::IMAGE_JPEG
+                mime: mime::IMAGE_JPEG,
             },
             Body::Binary(path) => SchemaBody::Binary {
                 path,

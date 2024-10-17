@@ -4,3 +4,4 @@
 
 * [Soto Estévez](https://github.com/kriogenia)
 * [Sachith C Shetty](https://github.com/shettysach)
+* [Toastx](https://github.com/toastx)
