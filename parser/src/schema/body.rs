@@ -14,6 +14,12 @@ pub(crate) enum Body {
     Json(String),
     #[serde(alias = "xml")]
     Xml(String),
+    #[serde(alias = "pdf")]
+    Pdf(String),
+    #[serde(alias = "png")]
+    Png(String),
+    #[serde(alias = "jpeg")]
+    Jpeg(String),
     #[serde(alias = "file")]
     Binary(String),
     #[serde(
@@ -53,6 +59,18 @@ impl From<Body> for SchemaBody {
             Body::Xml(content) => SchemaBody::Raw {
                 content,
                 mime: mime::TEXT_XML,
+            },
+            Body::Pdf(path) => SchemaBody::Binary {
+                path,
+                mime: mime::APPLICATION_PDF,
+            },
+            Body::Png(path)=> SchemaBody::Binary { 
+                path,
+                mime: mime::IMAGE_PNG 
+            },
+            Body::Jpeg(path)=> SchemaBody::Binary { 
+                path,
+                mime: mime::IMAGE_JPEG
             },
             Body::Binary(path) => SchemaBody::Binary {
                 path,
