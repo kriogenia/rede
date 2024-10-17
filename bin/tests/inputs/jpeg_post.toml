@@ -7,4 +7,4 @@ Content-Disposition = "inline; filename=earth.jpeg"
 Content-Type = "image/jpeg"
 
 [body]
-file = "D:/open-source/rede/bin/tests/assets/earth.jpeg" #modify relative path
+file = "./tests/assets/earth.jpeg"
