@@ -7,4 +7,4 @@ Content-Disposition = "inline; filename=assets.zip"
 Content-Type = "application/zip"
 
 [body]
-file = "D:/open-source/rede/bin/tests/assets/assets.zip"
+file = "./tests/assets/assets.zip"
