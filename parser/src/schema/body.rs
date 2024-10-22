@@ -1,5 +1,8 @@
+use std::str::FromStr;
+
 use crate::schema::table::{FormDataTable, PrimitiveTable, Transform};
 use crate::schema::types::PrimitiveArray;
+use mime::Mime;
 use rede_schema::Body as SchemaBody;
 use serde::Deserialize;
 
@@ -14,6 +17,8 @@ pub(crate) enum Body {
     Json(String),
     #[serde(alias = "xml")]
     Xml(String),
+    #[serde(alias = "zip")]
+    Zip(String),
     #[serde(alias = "gif")]
     Gif(String),
     #[serde(alias = "pdf")]
@@ -61,6 +66,11 @@ impl From<Body> for SchemaBody {
             Body::Xml(content) => SchemaBody::Raw {
                 content,
                 mime: mime::TEXT_XML,
+            },
+
+            Body::Zip(path) => SchemaBody::Binary { 
+                path, 
+                mime: Mime::from_str("application/zip").unwrap() 
             },
             Body::Gif(path) => SchemaBody::Binary { 
                 path, 

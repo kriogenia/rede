@@ -1,0 +1,10 @@
+[http]
+method = "POST"
+url = "http://127.0.0.1:8000/post"
+
+[headers]
+Content-Disposition = "inline; filename=assets.zip"
+Content-Type = "application/zip"
+
+[body]
+file = "D:/open-source/rede/bin/tests/assets/assets.zip"
