@@ -17,6 +17,8 @@ pub(crate) enum Body {
     Json(String),
     #[serde(alias = "xml")]
     Xml(String),
+    #[serde(alias = "gzip", alias = "gz")]
+    Gzip(String),
     #[serde(alias = "zip")]
     Zip(String),
     #[serde(alias = "gif")]
@@ -67,7 +69,10 @@ impl From<Body> for SchemaBody {
                 content,
                 mime: mime::TEXT_XML,
             },
-
+            Body::Gzip(path) => SchemaBody::Binary { 
+                path, 
+                mime: Mime::from_str("application/gzip").unwrap()
+            },
             Body::Zip(path) => SchemaBody::Binary { 
                 path, 
                 mime: Mime::from_str("application/zip").unwrap() 
