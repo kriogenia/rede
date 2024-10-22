@@ -7,4 +7,4 @@ Content-Disposition = "inline; filename=monkey-developer.gif"
 Content-Type = "image/gif"
 
 [body]
-file = "D:/open-source/rede/bin/tests/assets/monkey-developer.gif"
+file = "./tests/assets/monkey-developer.gif"

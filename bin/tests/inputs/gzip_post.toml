@@ -7,4 +7,4 @@ Content-Disposition = "inline; filename=moon.png.gz"
 Content-Type = "application/gzip"
 
 [body]
-file = "D:/open-source/rede/bin/tests/assets/moon.png.gz"
+file = "./tests/assets/moon.png.gz"
