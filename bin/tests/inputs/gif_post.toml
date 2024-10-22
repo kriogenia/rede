@@ -1,0 +1,10 @@
+[http]
+method = "POST"
+url = "http://127.0.0.1:8000/post"
+
+[headers]
+Content-Disposition = "inline; filename=monkey-developer.gif"
+Content-Type = "image/gif"
+
+[body]
+file = "D:/open-source/rede/bin/tests/assets/monkey-developer.gif"

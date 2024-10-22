@@ -14,6 +14,8 @@ pub(crate) enum Body {
     Json(String),
     #[serde(alias = "xml")]
     Xml(String),
+    #[serde(alias = "gif")]
+    Gif(String),
     #[serde(alias = "pdf")]
     Pdf(String),
     #[serde(alias = "png")]
@@ -59,6 +61,10 @@ impl From<Body> for SchemaBody {
             Body::Xml(content) => SchemaBody::Raw {
                 content,
                 mime: mime::TEXT_XML,
+            },
+            Body::Gif(path) => SchemaBody::Binary { 
+                path, 
+                mime: mime::IMAGE_GIF,
             },
             Body::Pdf(path) => SchemaBody::Binary {
                 path,
