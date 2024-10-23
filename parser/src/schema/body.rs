@@ -69,15 +69,15 @@ impl From<Body> for SchemaBody {
                 content,
                 mime: mime::TEXT_XML,
             },
-            Body::Gzip(path) => SchemaBody::Binary { 
-                path, 
+            Body::Gzip(path) => SchemaBody::Binary {
+                path,
                 mime: Mime::from_str("application/gzip").unwrap(),
             },
-            Body::Zip(path) => SchemaBody::Binary { 
-                path, 
+            Body::Zip(path) => SchemaBody::Binary {
+                path,
                 mime: Mime::from_str("application/zip").unwrap(),
             },
-            Body::Gif(path) => SchemaBody::Binary { 
+            Body::Gif(path) => SchemaBody::Binary {
                 path,
                 mime: mime::IMAGE_GIF,
             },
