@@ -71,14 +71,14 @@ impl From<Body> for SchemaBody {
             },
             Body::Gzip(path) => SchemaBody::Binary { 
                 path, 
-                mime: Mime::from_str("application/gzip").unwrap()
+                mime: Mime::from_str("application/gzip").unwrap(),
             },
             Body::Zip(path) => SchemaBody::Binary { 
                 path, 
-                mime: Mime::from_str("application/zip").unwrap() 
+                mime: Mime::from_str("application/zip").unwrap(),
             },
             Body::Gif(path) => SchemaBody::Binary { 
-                path, 
+                path,
                 mime: mime::IMAGE_GIF,
             },
             Body::Pdf(path) => SchemaBody::Binary {
