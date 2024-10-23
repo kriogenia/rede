@@ -23,7 +23,7 @@ mime.workspace = true
 thiserror.workspace = true
 
 rede_schema = "0.2"
-#rede_schema = { path = "../schema" } # local 
+# rede_schema = { path = "../schema" } # local 
 
 http-serde = "2.0"
 serde = { version = "1.0", features = ["derive"] }
