@@ -18,7 +18,7 @@ description = "CLI tool to run and configure suites of HTTP requests defined in 
 documentation = "https://rede.sotoestevez.dev/"
 keywords = ["cli", "http", "api", "request"]
 readme = "../README.md"
-
+exclude = ["./tests/assets/*"]
 [features]
 default = ["input_params"]
 input_params = [
